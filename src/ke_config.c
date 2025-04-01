@@ -1158,8 +1158,11 @@ static DYNAMIC_COMPARISON settings_dynamic_compare[MAX_ALERTS] = {DEFAULT_DYNAMI
 static float settings_dynamic_threshold[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_THRESHOLD};
 static uint8_t settings_dynamic_index[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_INDEX};
 
+static settings_write *write;
+static settings_read *read;
 
-
+void settings_setWriteHandler(settings_write *writeHandler) { write = writeHandler; }
+void settings_setReadHandler(settings_read *readHandler) { read = readHandler; }
 
 /********************************************************************************
 *                                  View enable                                  
