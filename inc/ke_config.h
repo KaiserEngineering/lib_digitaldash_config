@@ -33,7 +33,6 @@ extern "C"
 {
 #endif
 
-#include "lvgl.h"
 #include "stdbool.h"
 #include "string.h"
 #include "lib_pid.h"
