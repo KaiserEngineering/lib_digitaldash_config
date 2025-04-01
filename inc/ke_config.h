@@ -37,11 +37,11 @@ extern "C"
 #include "string.h"
 #include "lib_pid.h"
 
-typedef void(settings_write)(uint16_t bAdd, uint8_t bData);
-typedef uint8_t(settings_read)(uint16_t bAdd);
+    typedef void(settings_write)(uint16_t bAdd, uint8_t bData);
+    typedef uint8_t(settings_read)(uint16_t bAdd);
 
-void settings_setWriteHandler(settings_write *writeHandler);
-void settings_setReadHandler(settings_read *readHandler);
+    void settings_setWriteHandler(settings_write *writeHandler);
+    void settings_setReadHandler(settings_read *readHandler);
 
 #define GAUGES_PER_VIEW 3
 #define MAX_ALERTS 5
