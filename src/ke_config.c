@@ -43,6 +43,7 @@
 #define DEFAULT_DYNAMIC_THRESHOLD 0
 #define DEFAULT_DYNAMIC_INDEX 0
 #define DEFAULT_DYNAMIC_PID 0
+#define DEFAULT_DYNAMIC_UNITS PID_UNITS_RESERVED
 
 // EEPROM Memory Map - view enable
 #define EEPROM_VIEW_ENABLE1_BYTE1 (uint16_t)0x0000
@@ -1171,6 +1172,14 @@ static const uint16_t map_dynamic_pid_byte4[NUM_DYNAMIC] = {
     EEPROM_DYNAMIC_PID2_BYTE4
     };
 
+// EEPROM Memory Map - dynamic units
+#define EEPROM_DYNAMIC_UNITS1_BYTE1 (uint16_t)0x0D0C
+#define EEPROM_DYNAMIC_UNITS2_BYTE1 (uint16_t)0x0D0D
+static const uint16_t map_dynamic_units_byte1[NUM_DYNAMIC] = {
+    EEPROM_DYNAMIC_UNITS1_BYTE1,
+    EEPROM_DYNAMIC_UNITS2_BYTE1
+    };
+
 
 static VIEW_STATE settings_view_enable[MAX_VIEWS] = {DEFAULT_VIEW_ENABLE};
 static uint8_t settings_view_num_gauges[GAUGES_PER_VIEW] = {DEFAULT_VIEW_NUM_GAUGES};
@@ -1188,6 +1197,7 @@ static DYNAMIC_COMPARISON settings_dynamic_compare[MAX_ALERTS] = {DEFAULT_DYNAMI
 static float settings_dynamic_threshold[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_THRESHOLD};
 static uint8_t settings_dynamic_index[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_INDEX};
 static uint32_t settings_dynamic_pid[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_PID};
+static PID_UNITS settings_dynamic_units[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_UNITS};
 
 static settings_write *write;
 static settings_read *read;
@@ -2363,6 +2373,77 @@ bool set_dynamic_pid(uint8_t idx, uint32_t dynamic_pid, bool save)
     }
 
     settings_dynamic_pid[idx] = dynamic_pid;
+
+    return 1;
+}
+
+
+/********************************************************************************
+*                       PID units assigned to the dynamic                       
+*
+* @param idx_dynamic    index of the dynamic
+* @param units    Set the PID units by dynamic index
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+static PID_UNITS load_dynamic_units(uint8_t idx)
+{
+    PID_UNITS load_dynamic_units_val = DEFAULT_DYNAMIC_UNITS;
+
+    if (true)
+    {
+        load_dynamic_units_val = (uint8_t)read(map_dynamic_units_byte1[idx]);
+    }
+    return load_dynamic_units_val;
+}
+
+static void save_dynamic_units(uint8_t idx, PID_UNITS dynamic_units)
+{
+    if (true)
+    {
+        write(map_dynamic_units_byte1[idx], (uint32_t)dynamic_units & 0xFF);
+    }
+}
+
+bool verify_dynamic_units(PID_UNITS dynamic_units)
+{
+    if (dynamic_units < 1)
+        return 0;
+
+    if (dynamic_units > 255)
+        return 0;
+
+    else
+        return 1;
+}
+
+PID_UNITS get_dynamic_units(uint8_t idx)
+{
+    // Verify the PID units assigned to the dynamic value is valid
+    if (!verify_dynamic_units(settings_dynamic_units[idx]))
+        return DEFAULT_DYNAMIC_UNITS;
+
+    return settings_dynamic_units[idx];
+}
+
+// Set the PID units assigned to the dynamic
+bool set_dynamic_units(uint8_t idx, PID_UNITS dynamic_units, bool save)
+{
+    // Verify the PID units assigned to the dynamic value is valid
+    if (!verify_dynamic_units(dynamic_units))
+        return false;
+
+    // Check to see if the PID units assigned to the dynamic EEPROM value needs to be
+    // updated if immediate save is set
+    if (save)
+    {
+        if (load_dynamic_units(idx) != dynamic_units)
+        {
+            save_dynamic_units(idx, dynamic_units);
+        }
+    }
+
+    settings_dynamic_units[idx] = dynamic_units;
 
     return 1;
 }

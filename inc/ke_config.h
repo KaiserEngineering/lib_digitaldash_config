@@ -325,6 +325,19 @@ bool verify_dynamic_pid(uint32_t pid);
 uint32_t get_dynamic_pid(uint8_t idx_dynamic);
 bool set_dynamic_pid(uint8_t idx_dynamic, uint32_t pid, bool save);
 
+
+/********************************************************************************
+*                       PID units assigned to the dynamic                       
+*
+* @param idx_dynamic    index of the dynamic
+* @param units    Set the PID units by dynamic index
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+bool verify_dynamic_units(PID_UNITS units);
+PID_UNITS get_dynamic_units(uint8_t idx_dynamic);
+bool set_dynamic_units(uint8_t idx_dynamic, PID_UNITS units, bool save);
+
 #ifdef __cplusplus
 }
 #endif
