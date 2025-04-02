@@ -37,11 +37,11 @@ extern "C"
 #include "string.h"
 #include "lib_pid.h"
 
-    typedef void(settings_write)(uint16_t bAdd, uint8_t bData);
-    typedef uint8_t(settings_read)(uint16_t bAdd);
+typedef void(settings_write)(uint16_t bAdd, uint8_t bData);
+typedef uint8_t(settings_read)(uint16_t bAdd);
 
-    void settings_setWriteHandler(settings_write *writeHandler);
-    void settings_setReadHandler(settings_read *readHandler);
+void settings_setWriteHandler(settings_write *writeHandler);
+void settings_setReadHandler(settings_read *readHandler);
 
 #define GAUGES_PER_VIEW 3
 #define MAX_ALERTS 5
@@ -311,6 +311,19 @@ bool set_dynamic_threshold(uint8_t idx_dynamic, float threshold, bool save);
 bool verify_dynamic_index(uint8_t index);
 uint8_t get_dynamic_index(uint8_t idx_dynamic);
 bool set_dynamic_index(uint8_t idx_dynamic, uint8_t index, bool save);
+
+
+/********************************************************************************
+*                       PID assigned to the dynamic gauge                       
+*
+* @param idx_dynamic    index of the dynamic
+* @param pid    Set the dynamic PID by dynamic index
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+bool verify_dynamic_pid(uint32_t pid);
+uint32_t get_dynamic_pid(uint8_t idx_dynamic);
+bool set_dynamic_pid(uint8_t idx_dynamic, uint32_t pid, bool save);
 
 #ifdef __cplusplus
 }

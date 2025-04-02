@@ -42,6 +42,7 @@
 #define DEFAULT_DYNAMIC_COMPARE DYNAMIC_COMPARISON_GREATER_THAN
 #define DEFAULT_DYNAMIC_THRESHOLD 0
 #define DEFAULT_DYNAMIC_INDEX 0
+#define DEFAULT_DYNAMIC_PID 0
 
 // EEPROM Memory Map - view enable
 #define EEPROM_VIEW_ENABLE1_BYTE1 (uint16_t)0x0000
@@ -1141,6 +1142,35 @@ static const uint16_t map_dynamic_index_byte1[NUM_DYNAMIC] = {
     EEPROM_DYNAMIC_INDEX2_BYTE1
     };
 
+// EEPROM Memory Map - dynamic pid
+#define EEPROM_DYNAMIC_PID1_BYTE1 (uint16_t)0x0D04
+#define EEPROM_DYNAMIC_PID1_BYTE2 (uint16_t)0x0D05
+#define EEPROM_DYNAMIC_PID1_BYTE3 (uint16_t)0x0D06
+#define EEPROM_DYNAMIC_PID1_BYTE4 (uint16_t)0x0D07
+#define EEPROM_DYNAMIC_PID2_BYTE1 (uint16_t)0x0D08
+#define EEPROM_DYNAMIC_PID2_BYTE2 (uint16_t)0x0D09
+#define EEPROM_DYNAMIC_PID2_BYTE3 (uint16_t)0x0D0A
+#define EEPROM_DYNAMIC_PID2_BYTE4 (uint16_t)0x0D0B
+static const uint16_t map_dynamic_pid_byte1[NUM_DYNAMIC] = {
+    EEPROM_DYNAMIC_PID1_BYTE1,
+    EEPROM_DYNAMIC_PID2_BYTE1
+    };
+
+static const uint16_t map_dynamic_pid_byte2[NUM_DYNAMIC] = {
+    EEPROM_DYNAMIC_PID1_BYTE2,
+    EEPROM_DYNAMIC_PID2_BYTE2
+    };
+
+static const uint16_t map_dynamic_pid_byte3[NUM_DYNAMIC] = {
+    EEPROM_DYNAMIC_PID1_BYTE3,
+    EEPROM_DYNAMIC_PID2_BYTE3
+    };
+
+static const uint16_t map_dynamic_pid_byte4[NUM_DYNAMIC] = {
+    EEPROM_DYNAMIC_PID1_BYTE4,
+    EEPROM_DYNAMIC_PID2_BYTE4
+    };
+
 
 static VIEW_STATE settings_view_enable[MAX_VIEWS] = {DEFAULT_VIEW_ENABLE};
 static uint8_t settings_view_num_gauges[GAUGES_PER_VIEW] = {DEFAULT_VIEW_NUM_GAUGES};
@@ -1157,6 +1187,7 @@ static DYNAMIC_PRIORITY settings_dynamic_priority[NUM_DYNAMIC] = {DEFAULT_DYNAMI
 static DYNAMIC_COMPARISON settings_dynamic_compare[MAX_ALERTS] = {DEFAULT_DYNAMIC_COMPARE};
 static float settings_dynamic_threshold[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_THRESHOLD};
 static uint8_t settings_dynamic_index[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_INDEX};
+static uint32_t settings_dynamic_pid[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_PID};
 
 static settings_write *write;
 static settings_read *read;
@@ -2255,6 +2286,83 @@ bool set_dynamic_index(uint8_t idx, uint8_t dynamic_index, bool save)
     }
 
     settings_dynamic_index[idx] = dynamic_index;
+
+    return 1;
+}
+
+
+/********************************************************************************
+*                       PID assigned to the dynamic gauge                       
+*
+* @param idx_dynamic    index of the dynamic
+* @param pid    Set the dynamic PID by dynamic index
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+static uint32_t load_dynamic_pid(uint8_t idx)
+{
+    uint32_t load_dynamic_pid_val = DEFAULT_DYNAMIC_PID;
+
+    if (true)
+    {
+        load_dynamic_pid_val = (uint32_t)read(map_dynamic_pid_byte1[idx]);
+        load_dynamic_pid_val = ((uint32_t)load_dynamic_pid_val << 8) | (uint32_t)read(map_dynamic_pid_byte2[idx]);
+        load_dynamic_pid_val = ((uint32_t)load_dynamic_pid_val << 16) | (uint32_t)read(map_dynamic_pid_byte3[idx]);
+        load_dynamic_pid_val = ((uint32_t)load_dynamic_pid_val << 24) | (uint32_t)read(map_dynamic_pid_byte4[idx]);
+    }
+    return load_dynamic_pid_val;
+}
+
+static void save_dynamic_pid(uint8_t idx, uint32_t dynamic_pid)
+{
+    if (true)
+    {
+        write(map_dynamic_pid_byte1[idx], ((uint32_t)dynamic_pid >> 24) & 0xFF);
+        write(map_dynamic_pid_byte2[idx], ((uint32_t)dynamic_pid >> 16) & 0xFF);
+        write(map_dynamic_pid_byte3[idx], ((uint32_t)dynamic_pid >> 8) & 0xFF);
+        write(map_dynamic_pid_byte4[idx], (uint32_t)dynamic_pid & 0xFF);
+    }
+}
+
+bool verify_dynamic_pid(uint32_t dynamic_pid)
+{
+    if (dynamic_pid < 1)
+        return 0;
+
+    if (dynamic_pid > 16777215)
+        return 0;
+
+    else
+        return 1;
+}
+
+uint32_t get_dynamic_pid(uint8_t idx)
+{
+    // Verify the PID assigned to the dynamic gauge value is valid
+    if (!verify_dynamic_pid(settings_dynamic_pid[idx]))
+        return DEFAULT_DYNAMIC_PID;
+
+    return settings_dynamic_pid[idx];
+}
+
+// Set the PID assigned to the dynamic gauge
+bool set_dynamic_pid(uint8_t idx, uint32_t dynamic_pid, bool save)
+{
+    // Verify the PID assigned to the dynamic gauge value is valid
+    if (!verify_dynamic_pid(dynamic_pid))
+        return false;
+
+    // Check to see if the PID assigned to the dynamic gauge EEPROM value needs to be
+    // updated if immediate save is set
+    if (save)
+    {
+        if (load_dynamic_pid(idx) != dynamic_pid)
+        {
+            save_dynamic_pid(idx, dynamic_pid);
+        }
+    }
+
+    settings_dynamic_pid[idx] = dynamic_pid;
 
     return 1;
 }
