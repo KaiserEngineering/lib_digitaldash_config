@@ -49,6 +49,9 @@ void settings_setReadHandler(settings_read *readHandler);
 #define MAX_VIEWS 3
 #define NUM_DYNAMIC 2
 
+void load_settings(void);
+
+
 /********************************************************************************
 *                                  View enable                                  
 *

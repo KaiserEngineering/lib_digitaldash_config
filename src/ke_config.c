@@ -1199,11 +1199,91 @@ static uint8_t settings_dynamic_index[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_INDEX};
 static uint32_t settings_dynamic_pid[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_PID};
 static PID_UNITS settings_dynamic_units[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_UNITS};
 
+
+static VIEW_STATE load_view_enable(uint8_t idx);
+static uint8_t load_view_num_gauges(uint8_t idx);
+static VIEW_BACKGROUND load_view_background(uint8_t idx);
+static GAUGE_THEME load_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge);
+static uint32_t load_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge);
+static PID_UNITS load_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge);
+static ALERT_STATE load_alert_enable(uint8_t idx);
+static char load_alert_message(uint8_t idx);
+static ALERT_COMPARISON load_alert_compare(uint8_t idx);
+static float load_alert_threshold(uint8_t idx);
+static DYNAMIC_STATE load_dynamic_enable(uint8_t idx);
+static DYNAMIC_PRIORITY load_dynamic_priority(uint8_t idx);
+static DYNAMIC_COMPARISON load_dynamic_compare(uint8_t idx);
+static float load_dynamic_threshold(uint8_t idx);
+static uint8_t load_dynamic_index(uint8_t idx);
+static uint32_t load_dynamic_pid(uint8_t idx);
+static PID_UNITS load_dynamic_units(uint8_t idx);
+
 static settings_write *write;
 static settings_read *read;
 
 void settings_setWriteHandler(settings_write *writeHandler) { write = writeHandler; }
 void settings_setReadHandler(settings_read *readHandler) { read = readHandler; }
+
+void load_settings(void)
+{
+    for( uint8_t idx = 0; idx < MAX_VIEWS; idx++ )
+        settings_view_enable[idx] = load_view_enable(idx);
+
+    for( uint8_t idx = 0; idx < GAUGES_PER_VIEW; idx++ )
+        settings_view_num_gauges[idx] = load_view_num_gauges(idx);
+
+    for( uint8_t idx = 0; idx < MAX_VIEWS; idx++ )
+        settings_view_background[idx] = load_view_background(idx);
+
+    for( uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++ )
+        for( uint8_t idx_gauge = 0; idx_gauge < GAUGES_PER_VIEW; idx_gauge++ )
+            settings_view_gauge_theme[idx_view][idx_gauge] = load_view_gauge_theme(idx_view, idx_gauge);
+
+    for( uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++ )
+        for( uint8_t idx_gauge = 0; idx_gauge < GAUGES_PER_VIEW; idx_gauge++ )
+            settings_view_gauge_pid[idx_view][idx_gauge] = load_view_gauge_pid(idx_view, idx_gauge);
+
+    for( uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++ )
+        for( uint8_t idx_gauge = 0; idx_gauge < GAUGES_PER_VIEW; idx_gauge++ )
+            settings_view_gauge_units[idx_view][idx_gauge] = load_view_gauge_units(idx_view, idx_gauge);
+
+    for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
+        settings_alert_enable[idx] = load_alert_enable(idx);
+
+//  for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
+//      settings_alert_message[idx] = load_alert_message(idx);
+
+    for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
+        settings_alert_compare[idx] = load_alert_compare(idx);
+
+    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+        settings_alert_threshold[idx] = load_alert_threshold(idx);
+
+    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+        settings_dynamic_enable[idx] = load_dynamic_enable(idx);
+
+    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+        settings_dynamic_priority[idx] = load_dynamic_priority(idx);
+
+    for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
+        settings_dynamic_compare[idx] = load_dynamic_compare(idx);
+
+    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+        settings_dynamic_threshold[idx] = load_dynamic_threshold(idx);
+
+    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+        settings_dynamic_index[idx] = load_dynamic_index(idx);
+
+    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+        settings_dynamic_pid[idx] = load_dynamic_pid(idx);
+
+    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+        settings_dynamic_units[idx] = load_dynamic_units(idx);
+
+}
+
+
+
 
 /********************************************************************************
 *                                  View enable                                  
