@@ -50,7 +50,7 @@ void settings_setReadHandler(settings_read *readHandler);
 #define NUM_DYNAMIC 2
 
 void load_settings(void);
-
+uint8_t get_eeprom_byte(uint16_t bAdd);
 
 /********************************************************************************
 *                                  View enable                                  
