@@ -1238,14 +1238,14 @@ uint8_t read_eeprom(uint16_t bAdd)
 {
 	uint8_t byte = 0xFF;
 	byte = read(bAdd); // Read from the EEPROM
-	cached_settings[eeprom_address_to_linear_index(bAdd)] = byte; // cache the data
+	cached_settings[bAdd] = byte; // cache the data
 	return byte;
 }
 
 void write_eeprom(uint16_t bAdd, uint8_t bData)
 {
 	write(bAdd, bData); // Write to the EEPROM
-	cached_settings[eeprom_address_to_linear_index(bAdd)] = bData; // cache the data
+	cached_settings[bAdd] = bData; // cache the data
 }
 
 uint8_t get_eeprom_byte(uint16_t bAdd)
