@@ -1619,10 +1619,10 @@ static void load_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t *v
 {
     uint8_t bytes[EE_SIZE_VIEW_GAUGE_PID];
 
-    bytes[0] = read_eeprom(map_view_gauge_pid_byte1[idx_view][idx_gauge]);
-    bytes[1] = read_eeprom(map_view_gauge_pid_byte2[idx_view][idx_gauge]);
-    bytes[2] = read_eeprom(map_view_gauge_pid_byte3[idx_view][idx_gauge]);
-    bytes[3] = read_eeprom(map_view_gauge_pid_byte4[idx_view][idx_gauge]);
+    bytes[3] = read_eeprom(map_view_gauge_pid_byte1[idx_view][idx_gauge]);
+    bytes[2] = read_eeprom(map_view_gauge_pid_byte2[idx_view][idx_gauge]);
+    bytes[1] = read_eeprom(map_view_gauge_pid_byte3[idx_view][idx_gauge]);
+    bytes[0] = read_eeprom(map_view_gauge_pid_byte4[idx_view][idx_gauge]);
 
     memcpy(view_gauge_pid_val, bytes, EE_SIZE_VIEW_GAUGE_PID);
 }
@@ -2093,10 +2093,10 @@ static void load_alert_threshold(uint8_t idx, float *alert_threshold_val)
 {
     uint8_t bytes[EE_SIZE_ALERT_THRESHOLD];
 
-    bytes[0] = read_eeprom(map_alert_threshold_byte1[idx]);
-    bytes[1] = read_eeprom(map_alert_threshold_byte2[idx]);
-    bytes[2] = read_eeprom(map_alert_threshold_byte3[idx]);
-    bytes[3] = read_eeprom(map_alert_threshold_byte4[idx]);
+    bytes[3] = read_eeprom(map_alert_threshold_byte1[idx]);
+    bytes[2] = read_eeprom(map_alert_threshold_byte2[idx]);
+    bytes[1] = read_eeprom(map_alert_threshold_byte3[idx]);
+    bytes[0] = read_eeprom(map_alert_threshold_byte4[idx]);
 
     memcpy(alert_threshold_val, bytes, EE_SIZE_ALERT_THRESHOLD);
 }
@@ -2375,10 +2375,10 @@ static void load_dynamic_threshold(uint8_t idx, float *dynamic_threshold_val)
 {
     uint8_t bytes[EE_SIZE_DYNAMIC_THRESHOLD];
 
-    bytes[0] = read_eeprom(map_dynamic_threshold_byte1[idx]);
-    bytes[1] = read_eeprom(map_dynamic_threshold_byte2[idx]);
-    bytes[2] = read_eeprom(map_dynamic_threshold_byte3[idx]);
-    bytes[3] = read_eeprom(map_dynamic_threshold_byte4[idx]);
+    bytes[3] = read_eeprom(map_dynamic_threshold_byte1[idx]);
+    bytes[2] = read_eeprom(map_dynamic_threshold_byte2[idx]);
+    bytes[1] = read_eeprom(map_dynamic_threshold_byte3[idx]);
+    bytes[0] = read_eeprom(map_dynamic_threshold_byte4[idx]);
 
     memcpy(dynamic_threshold_val, bytes, EE_SIZE_DYNAMIC_THRESHOLD);
 }
@@ -2522,10 +2522,10 @@ static void load_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid_val)
 {
     uint8_t bytes[EE_SIZE_DYNAMIC_PID];
 
-    bytes[0] = read_eeprom(map_dynamic_pid_byte1[idx]);
-    bytes[1] = read_eeprom(map_dynamic_pid_byte2[idx]);
-    bytes[2] = read_eeprom(map_dynamic_pid_byte3[idx]);
-    bytes[3] = read_eeprom(map_dynamic_pid_byte4[idx]);
+    bytes[3] = read_eeprom(map_dynamic_pid_byte1[idx]);
+    bytes[2] = read_eeprom(map_dynamic_pid_byte2[idx]);
+    bytes[1] = read_eeprom(map_dynamic_pid_byte3[idx]);
+    bytes[0] = read_eeprom(map_dynamic_pid_byte4[idx]);
 
     memcpy(dynamic_pid_val, bytes, EE_SIZE_DYNAMIC_PID);
 }
