@@ -1218,23 +1218,23 @@ static uint32_t settings_dynamic_pid[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_PID};
 static PID_UNITS settings_dynamic_units[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_UNITS};
 
 
-static VIEW_STATE load_view_enable(uint8_t idx);
-static uint8_t load_view_num_gauges(uint8_t idx);
-static VIEW_BACKGROUND load_view_background(uint8_t idx);
-static GAUGE_THEME load_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge);
-static uint32_t load_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge);
-static PID_UNITS load_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge);
-static ALERT_STATE load_alert_enable(uint8_t idx);
-static char load_alert_message(uint8_t idx);
-static ALERT_COMPARISON load_alert_compare(uint8_t idx);
-static float load_alert_threshold(uint8_t idx);
-static DYNAMIC_STATE load_dynamic_enable(uint8_t idx);
-static DYNAMIC_PRIORITY load_dynamic_priority(uint8_t idx);
-static DYNAMIC_COMPARISON load_dynamic_compare(uint8_t idx);
-static float load_dynamic_threshold(uint8_t idx);
-static uint8_t load_dynamic_index(uint8_t idx);
-static uint32_t load_dynamic_pid(uint8_t idx);
-static PID_UNITS load_dynamic_units(uint8_t idx);
+static void load_view_enable(uint8_t idx, VIEW_STATE *view_enable_val);
+static void load_view_num_gauges(uint8_t idx, uint8_t *view_num_gauges_val);
+static void load_view_background(uint8_t idx, VIEW_BACKGROUND *view_background_val);
+static void load_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME *view_gauge_theme_val);
+static void load_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t *view_gauge_pid_val);
+static void load_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS *view_gauge_units_val);
+static void load_alert_enable(uint8_t idx, ALERT_STATE *alert_enable_val);
+static void load_alert_message(uint8_t idx, char *alert_message_val);
+static void load_alert_compare(uint8_t idx, ALERT_COMPARISON *alert_compare_val);
+static void load_alert_threshold(uint8_t idx, float *alert_threshold_val);
+static void load_dynamic_enable(uint8_t idx, DYNAMIC_STATE *dynamic_enable_val);
+static void load_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY *dynamic_priority_val);
+static void load_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON *dynamic_compare_val);
+static void load_dynamic_threshold(uint8_t idx, float *dynamic_threshold_val);
+static void load_dynamic_index(uint8_t idx, uint8_t *dynamic_index_val);
+static void load_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid_val);
+static void load_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units_val);
 
 static uint8_t cached_settings[430];
 
@@ -1274,58 +1274,58 @@ uint8_t get_eeprom_byte(uint16_t bAdd)
 void load_settings(void)
 {
     for( uint8_t idx = 0; idx < MAX_VIEWS; idx++ )
-        settings_view_enable[idx] = load_view_enable(idx);
+        load_view_enable(idx, &settings_view_enable[idx]);
 
     for( uint8_t idx = 0; idx < GAUGES_PER_VIEW; idx++ )
-        settings_view_num_gauges[idx] = load_view_num_gauges(idx);
+        load_view_num_gauges(idx, &settings_view_num_gauges[idx]);
 
     for( uint8_t idx = 0; idx < MAX_VIEWS; idx++ )
-        settings_view_background[idx] = load_view_background(idx);
+        load_view_background(idx, &settings_view_background[idx]);
 
     for( uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++ )
         for( uint8_t idx_gauge = 0; idx_gauge < GAUGES_PER_VIEW; idx_gauge++ )
-            settings_view_gauge_theme[idx_view][idx_gauge] = load_view_gauge_theme(idx_view, idx_gauge);
+            load_view_gauge_theme(idx_view, idx_gauge, &settings_view_gauge_theme[idx_view][idx_gauge]);
 
     for( uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++ )
         for( uint8_t idx_gauge = 0; idx_gauge < GAUGES_PER_VIEW; idx_gauge++ )
-            settings_view_gauge_pid[idx_view][idx_gauge] = load_view_gauge_pid(idx_view, idx_gauge);
+            load_view_gauge_pid(idx_view, idx_gauge, &settings_view_gauge_pid[idx_view][idx_gauge]);
 
     for( uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++ )
         for( uint8_t idx_gauge = 0; idx_gauge < GAUGES_PER_VIEW; idx_gauge++ )
-            settings_view_gauge_units[idx_view][idx_gauge] = load_view_gauge_units(idx_view, idx_gauge);
+            load_view_gauge_units(idx_view, idx_gauge, &settings_view_gauge_units[idx_view][idx_gauge]);
 
     for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
-        settings_alert_enable[idx] = load_alert_enable(idx);
-
-//  for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
-//      settings_alert_message[idx] = load_alert_message(idx);
+        load_alert_enable(idx, &settings_alert_enable[idx]);
 
     for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
-        settings_alert_compare[idx] = load_alert_compare(idx);
-
-    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
-        settings_alert_threshold[idx] = load_alert_threshold(idx);
-
-    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
-        settings_dynamic_enable[idx] = load_dynamic_enable(idx);
-
-    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
-        settings_dynamic_priority[idx] = load_dynamic_priority(idx);
+        load_alert_message(idx, settings_alert_message[idx]);
 
     for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
-        settings_dynamic_compare[idx] = load_dynamic_compare(idx);
+        load_alert_compare(idx, &settings_alert_compare[idx]);
 
     for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
-        settings_dynamic_threshold[idx] = load_dynamic_threshold(idx);
+        load_alert_threshold(idx, &settings_alert_threshold[idx]);
 
     for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
-        settings_dynamic_index[idx] = load_dynamic_index(idx);
+        load_dynamic_enable(idx, &settings_dynamic_enable[idx]);
 
     for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
-        settings_dynamic_pid[idx] = load_dynamic_pid(idx);
+        load_dynamic_priority(idx, &settings_dynamic_priority[idx]);
+
+    for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
+        load_dynamic_compare(idx, &settings_dynamic_compare[idx]);
 
     for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
-        settings_dynamic_units[idx] = load_dynamic_units(idx);
+        load_dynamic_threshold(idx, &settings_dynamic_threshold[idx]);
+
+    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+        load_dynamic_index(idx, &settings_dynamic_index[idx]);
+
+    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+        load_dynamic_pid(idx, &settings_dynamic_pid[idx]);
+
+    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+        load_dynamic_units(idx, &settings_dynamic_units[idx]);
 
 }
 
@@ -1340,15 +1340,13 @@ void load_settings(void)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static VIEW_STATE load_view_enable(uint8_t idx)
+static void load_view_enable(uint8_t idx, VIEW_STATE *view_enable_val)
 {
-    VIEW_STATE load_view_enable_val = DEFAULT_VIEW_ENABLE;
+    uint8_t bytes[EE_SIZE_VIEW_ENABLE];
 
-    if (true)
-    {
-        load_view_enable_val = (uint8_t)read_eeprom(map_view_enable_byte1[idx]);
-    }
-    return load_view_enable_val;
+    bytes[0] = read_eeprom(map_view_enable_byte1[idx]);
+
+    memcpy(view_enable_val, bytes, EE_SIZE_VIEW_ENABLE);
 }
 
 static void save_view_enable(uint8_t idx, VIEW_STATE view_enable)
@@ -1387,7 +1385,10 @@ bool set_view_enable(uint8_t idx, VIEW_STATE view_enable, bool save)
     // updated if immediate save is set
     if (save)
     {
-        if (load_view_enable(idx) != view_enable)
+        // Reload the current setting saved in EEPROM
+        load_view_enable(idx, &settings_view_enable[idx]);
+
+        if (settings_view_enable[idx] != view_enable)
         {
             save_view_enable(idx, view_enable);
         }
@@ -1407,15 +1408,13 @@ bool set_view_enable(uint8_t idx, VIEW_STATE view_enable, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static uint8_t load_view_num_gauges(uint8_t idx)
+static void load_view_num_gauges(uint8_t idx, uint8_t *view_num_gauges_val)
 {
-    uint8_t load_view_num_gauges_val = DEFAULT_VIEW_NUM_GAUGES;
+    uint8_t bytes[EE_SIZE_VIEW_NUM_GAUGES];
 
-    if (true)
-    {
-        load_view_num_gauges_val = (uint8_t)read_eeprom(map_view_num_gauges_byte1[idx]);
-    }
-    return load_view_num_gauges_val;
+    bytes[0] = read_eeprom(map_view_num_gauges_byte1[idx]);
+
+    memcpy(view_num_gauges_val, bytes, EE_SIZE_VIEW_NUM_GAUGES);
 }
 
 static void save_view_num_gauges(uint8_t idx, uint8_t view_num_gauges)
@@ -1455,7 +1454,10 @@ bool set_view_num_gauges(uint8_t idx, uint8_t view_num_gauges, bool save)
     // updated if immediate save is set
     if (save)
     {
-        if (load_view_num_gauges(idx) != view_num_gauges)
+        // Reload the current setting saved in EEPROM
+        load_view_num_gauges(idx, &settings_view_num_gauges[idx]);
+
+        if (settings_view_num_gauges[idx] != view_num_gauges)
         {
             save_view_num_gauges(idx, view_num_gauges);
         }
@@ -1475,15 +1477,13 @@ bool set_view_num_gauges(uint8_t idx, uint8_t view_num_gauges, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static VIEW_BACKGROUND load_view_background(uint8_t idx)
+static void load_view_background(uint8_t idx, VIEW_BACKGROUND *view_background_val)
 {
-    VIEW_BACKGROUND load_view_background_val = DEFAULT_VIEW_BACKGROUND;
+    uint8_t bytes[EE_SIZE_VIEW_BACKGROUND];
 
-    if (true)
-    {
-        load_view_background_val = (uint8_t)read_eeprom(map_view_background_byte1[idx]);
-    }
-    return load_view_background_val;
+    bytes[0] = read_eeprom(map_view_background_byte1[idx]);
+
+    memcpy(view_background_val, bytes, EE_SIZE_VIEW_BACKGROUND);
 }
 
 static void save_view_background(uint8_t idx, VIEW_BACKGROUND view_background)
@@ -1522,7 +1522,10 @@ bool set_view_background(uint8_t idx, VIEW_BACKGROUND view_background, bool save
     // updated if immediate save is set
     if (save)
     {
-        if (load_view_background(idx) != view_background)
+        // Reload the current setting saved in EEPROM
+        load_view_background(idx, &settings_view_background[idx]);
+
+        if (settings_view_background[idx] != view_background)
         {
             save_view_background(idx, view_background);
         }
@@ -1543,15 +1546,13 @@ bool set_view_background(uint8_t idx, VIEW_BACKGROUND view_background, bool save
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static GAUGE_THEME load_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge)
+static void load_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME *view_gauge_theme_val)
 {
-    GAUGE_THEME load_view_gauge_theme_val = DEFAULT_VIEW_GAUGE_THEME;
+    uint8_t bytes[EE_SIZE_VIEW_GAUGE_THEME];
 
-    if (true)
-    {
-        load_view_gauge_theme_val = (uint8_t)read_eeprom(map_view_gauge_theme_byte1[idx_view][idx_gauge]);
-    }
-    return load_view_gauge_theme_val;
+    bytes[0] = read_eeprom(map_view_gauge_theme_byte1[idx_view][idx_gauge]);
+
+    memcpy(view_gauge_theme_val, bytes, EE_SIZE_VIEW_GAUGE_THEME);
 }
 
 static void save_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME view_gauge_theme)
@@ -1590,7 +1591,10 @@ bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME view_
     // updated if immediate save is set
     if (save)
     {
-        if (load_view_gauge_theme(idx_view, idx_gauge) != view_gauge_theme)
+        // Reload the current setting saved in EEPROM
+        load_view_gauge_theme(idx_view, idx_gauge, &settings_view_gauge_theme[idx_view][idx_gauge]);
+
+        if (settings_view_gauge_theme[idx_view][idx_gauge] != view_gauge_theme)
         {
             save_view_gauge_theme(idx_view, idx_gauge, view_gauge_theme);
         }
@@ -1611,18 +1615,16 @@ bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME view_
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static uint32_t load_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge)
+static void load_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t *view_gauge_pid_val)
 {
-    uint32_t load_view_gauge_pid_val = DEFAULT_VIEW_GAUGE_PID;
+    uint8_t bytes[EE_SIZE_VIEW_GAUGE_PID];
 
-    if (true)
-    {
-        load_view_gauge_pid_val = (uint32_t)read_eeprom(map_view_gauge_pid_byte1[idx_view][idx_gauge]);
-        load_view_gauge_pid_val = ((uint32_t)load_view_gauge_pid_val << 8) | (uint32_t)read_eeprom(map_view_gauge_pid_byte2[idx_view][idx_gauge]);
-        load_view_gauge_pid_val = ((uint32_t)load_view_gauge_pid_val << 16) | (uint32_t)read_eeprom(map_view_gauge_pid_byte3[idx_view][idx_gauge]);
-        load_view_gauge_pid_val = ((uint32_t)load_view_gauge_pid_val << 24) | (uint32_t)read_eeprom(map_view_gauge_pid_byte4[idx_view][idx_gauge]);
-    }
-    return load_view_gauge_pid_val;
+    bytes[0] = read_eeprom(map_view_gauge_pid_byte1[idx_view][idx_gauge]);
+    bytes[1] = read_eeprom(map_view_gauge_pid_byte2[idx_view][idx_gauge]);
+    bytes[2] = read_eeprom(map_view_gauge_pid_byte3[idx_view][idx_gauge]);
+    bytes[3] = read_eeprom(map_view_gauge_pid_byte4[idx_view][idx_gauge]);
+
+    memcpy(view_gauge_pid_val, bytes, EE_SIZE_VIEW_GAUGE_PID);
 }
 
 static void save_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t view_gauge_pid)
@@ -1668,7 +1670,10 @@ bool set_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t view_gauge
     // updated if immediate save is set
     if (save)
     {
-        if (load_view_gauge_pid(idx_view, idx_gauge) != view_gauge_pid)
+        // Reload the current setting saved in EEPROM
+        load_view_gauge_pid(idx_view, idx_gauge, &settings_view_gauge_pid[idx_view][idx_gauge]);
+
+        if (settings_view_gauge_pid[idx_view][idx_gauge] != view_gauge_pid)
         {
             save_view_gauge_pid(idx_view, idx_gauge, view_gauge_pid);
         }
@@ -1689,15 +1694,13 @@ bool set_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t view_gauge
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static PID_UNITS load_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge)
+static void load_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS *view_gauge_units_val)
 {
-    PID_UNITS load_view_gauge_units_val = DEFAULT_VIEW_GAUGE_UNITS;
+    uint8_t bytes[EE_SIZE_VIEW_GAUGE_UNITS];
 
-    if (true)
-    {
-        load_view_gauge_units_val = (uint8_t)read_eeprom(map_view_gauge_units_byte1[idx_view][idx_gauge]);
-    }
-    return load_view_gauge_units_val;
+    bytes[0] = read_eeprom(map_view_gauge_units_byte1[idx_view][idx_gauge]);
+
+    memcpy(view_gauge_units_val, bytes, EE_SIZE_VIEW_GAUGE_UNITS);
 }
 
 static void save_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS view_gauge_units)
@@ -1740,7 +1743,10 @@ bool set_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS view_ga
     // updated if immediate save is set
     if (save)
     {
-        if (load_view_gauge_units(idx_view, idx_gauge) != view_gauge_units)
+        // Reload the current setting saved in EEPROM
+        load_view_gauge_units(idx_view, idx_gauge, &settings_view_gauge_units[idx_view][idx_gauge]);
+
+        if (settings_view_gauge_units[idx_view][idx_gauge] != view_gauge_units)
         {
             save_view_gauge_units(idx_view, idx_gauge, view_gauge_units);
         }
@@ -1760,15 +1766,13 @@ bool set_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS view_ga
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static ALERT_STATE load_alert_enable(uint8_t idx)
+static void load_alert_enable(uint8_t idx, ALERT_STATE *alert_enable_val)
 {
-    ALERT_STATE load_alert_enable_val = DEFAULT_ALERT_ENABLE;
+    uint8_t bytes[EE_SIZE_ALERT_ENABLE];
 
-    if (true)
-    {
-        load_alert_enable_val = (uint8_t)read_eeprom(map_alert_enable_byte1[idx]);
-    }
-    return load_alert_enable_val;
+    bytes[0] = read_eeprom(map_alert_enable_byte1[idx]);
+
+    memcpy(alert_enable_val, bytes, EE_SIZE_ALERT_ENABLE);
 }
 
 static void save_alert_enable(uint8_t idx, ALERT_STATE alert_enable)
@@ -1807,7 +1811,10 @@ bool set_alert_enable(uint8_t idx, ALERT_STATE alert_enable, bool save)
     // updated if immediate save is set
     if (save)
     {
-        if (load_alert_enable(idx) != alert_enable)
+        // Reload the current setting saved in EEPROM
+        load_alert_enable(idx, &settings_alert_enable[idx]);
+
+        if (settings_alert_enable[idx] != alert_enable)
         {
             save_alert_enable(idx, alert_enable);
         }
@@ -1827,75 +1834,76 @@ bool set_alert_enable(uint8_t idx, ALERT_STATE alert_enable, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static char load_alert_message(uint8_t idx)
+static void load_alert_message(uint8_t idx, char *alert_message_val)
 {
-    char load_alert_message_val[ALERT_MESSAGE_LEN] = {DEFAULT_ALERT_MESSAGE};
+    uint8_t bytes[EE_SIZE_ALERT_MESSAGE];
 
-    load_alert_message_val[0] = read_eeprom(map_alert_message_byte1[idx]);
-    load_alert_message_val[1] = read_eeprom(map_alert_message_byte2[idx]);
-    load_alert_message_val[2] = read_eeprom(map_alert_message_byte3[idx]);
-    load_alert_message_val[3] = read_eeprom(map_alert_message_byte4[idx]);
-    load_alert_message_val[4] = read_eeprom(map_alert_message_byte5[idx]);
-    load_alert_message_val[5] = read_eeprom(map_alert_message_byte6[idx]);
-    load_alert_message_val[6] = read_eeprom(map_alert_message_byte7[idx]);
-    load_alert_message_val[7] = read_eeprom(map_alert_message_byte8[idx]);
-    load_alert_message_val[8] = read_eeprom(map_alert_message_byte9[idx]);
-    load_alert_message_val[9] = read_eeprom(map_alert_message_byte10[idx]);
-    load_alert_message_val[10] = read_eeprom(map_alert_message_byte11[idx]);
-    load_alert_message_val[11] = read_eeprom(map_alert_message_byte12[idx]);
-    load_alert_message_val[12] = read_eeprom(map_alert_message_byte13[idx]);
-    load_alert_message_val[13] = read_eeprom(map_alert_message_byte14[idx]);
-    load_alert_message_val[14] = read_eeprom(map_alert_message_byte15[idx]);
-    load_alert_message_val[15] = read_eeprom(map_alert_message_byte16[idx]);
-    load_alert_message_val[16] = read_eeprom(map_alert_message_byte17[idx]);
-    load_alert_message_val[17] = read_eeprom(map_alert_message_byte18[idx]);
-    load_alert_message_val[18] = read_eeprom(map_alert_message_byte19[idx]);
-    load_alert_message_val[19] = read_eeprom(map_alert_message_byte20[idx]);
-    load_alert_message_val[20] = read_eeprom(map_alert_message_byte21[idx]);
-    load_alert_message_val[21] = read_eeprom(map_alert_message_byte22[idx]);
-    load_alert_message_val[22] = read_eeprom(map_alert_message_byte23[idx]);
-    load_alert_message_val[23] = read_eeprom(map_alert_message_byte24[idx]);
-    load_alert_message_val[24] = read_eeprom(map_alert_message_byte25[idx]);
-    load_alert_message_val[25] = read_eeprom(map_alert_message_byte26[idx]);
-    load_alert_message_val[26] = read_eeprom(map_alert_message_byte27[idx]);
-    load_alert_message_val[27] = read_eeprom(map_alert_message_byte28[idx]);
-    load_alert_message_val[28] = read_eeprom(map_alert_message_byte29[idx]);
-    load_alert_message_val[29] = read_eeprom(map_alert_message_byte30[idx]);
-    load_alert_message_val[30] = read_eeprom(map_alert_message_byte31[idx]);
-    load_alert_message_val[31] = read_eeprom(map_alert_message_byte32[idx]);
-    load_alert_message_val[32] = read_eeprom(map_alert_message_byte33[idx]);
-    load_alert_message_val[33] = read_eeprom(map_alert_message_byte34[idx]);
-    load_alert_message_val[34] = read_eeprom(map_alert_message_byte35[idx]);
-    load_alert_message_val[35] = read_eeprom(map_alert_message_byte36[idx]);
-    load_alert_message_val[36] = read_eeprom(map_alert_message_byte37[idx]);
-    load_alert_message_val[37] = read_eeprom(map_alert_message_byte38[idx]);
-    load_alert_message_val[38] = read_eeprom(map_alert_message_byte39[idx]);
-    load_alert_message_val[39] = read_eeprom(map_alert_message_byte40[idx]);
-    load_alert_message_val[40] = read_eeprom(map_alert_message_byte41[idx]);
-    load_alert_message_val[41] = read_eeprom(map_alert_message_byte42[idx]);
-    load_alert_message_val[42] = read_eeprom(map_alert_message_byte43[idx]);
-    load_alert_message_val[43] = read_eeprom(map_alert_message_byte44[idx]);
-    load_alert_message_val[44] = read_eeprom(map_alert_message_byte45[idx]);
-    load_alert_message_val[45] = read_eeprom(map_alert_message_byte46[idx]);
-    load_alert_message_val[46] = read_eeprom(map_alert_message_byte47[idx]);
-    load_alert_message_val[47] = read_eeprom(map_alert_message_byte48[idx]);
-    load_alert_message_val[48] = read_eeprom(map_alert_message_byte49[idx]);
-    load_alert_message_val[49] = read_eeprom(map_alert_message_byte50[idx]);
-    load_alert_message_val[50] = read_eeprom(map_alert_message_byte51[idx]);
-    load_alert_message_val[51] = read_eeprom(map_alert_message_byte52[idx]);
-    load_alert_message_val[52] = read_eeprom(map_alert_message_byte53[idx]);
-    load_alert_message_val[53] = read_eeprom(map_alert_message_byte54[idx]);
-    load_alert_message_val[54] = read_eeprom(map_alert_message_byte55[idx]);
-    load_alert_message_val[55] = read_eeprom(map_alert_message_byte56[idx]);
-    load_alert_message_val[56] = read_eeprom(map_alert_message_byte57[idx]);
-    load_alert_message_val[57] = read_eeprom(map_alert_message_byte58[idx]);
-    load_alert_message_val[58] = read_eeprom(map_alert_message_byte59[idx]);
-    load_alert_message_val[59] = read_eeprom(map_alert_message_byte60[idx]);
-    load_alert_message_val[60] = read_eeprom(map_alert_message_byte61[idx]);
-    load_alert_message_val[61] = read_eeprom(map_alert_message_byte62[idx]);
-    load_alert_message_val[62] = read_eeprom(map_alert_message_byte63[idx]);
-    load_alert_message_val[63] = read_eeprom(map_alert_message_byte64[idx]);
-    return load_alert_message_val;
+    bytes[0] = read_eeprom(map_alert_message_byte1[idx]);
+    bytes[1] = read_eeprom(map_alert_message_byte2[idx]);
+    bytes[2] = read_eeprom(map_alert_message_byte3[idx]);
+    bytes[3] = read_eeprom(map_alert_message_byte4[idx]);
+    bytes[4] = read_eeprom(map_alert_message_byte5[idx]);
+    bytes[5] = read_eeprom(map_alert_message_byte6[idx]);
+    bytes[6] = read_eeprom(map_alert_message_byte7[idx]);
+    bytes[7] = read_eeprom(map_alert_message_byte8[idx]);
+    bytes[8] = read_eeprom(map_alert_message_byte9[idx]);
+    bytes[9] = read_eeprom(map_alert_message_byte10[idx]);
+    bytes[10] = read_eeprom(map_alert_message_byte11[idx]);
+    bytes[11] = read_eeprom(map_alert_message_byte12[idx]);
+    bytes[12] = read_eeprom(map_alert_message_byte13[idx]);
+    bytes[13] = read_eeprom(map_alert_message_byte14[idx]);
+    bytes[14] = read_eeprom(map_alert_message_byte15[idx]);
+    bytes[15] = read_eeprom(map_alert_message_byte16[idx]);
+    bytes[16] = read_eeprom(map_alert_message_byte17[idx]);
+    bytes[17] = read_eeprom(map_alert_message_byte18[idx]);
+    bytes[18] = read_eeprom(map_alert_message_byte19[idx]);
+    bytes[19] = read_eeprom(map_alert_message_byte20[idx]);
+    bytes[20] = read_eeprom(map_alert_message_byte21[idx]);
+    bytes[21] = read_eeprom(map_alert_message_byte22[idx]);
+    bytes[22] = read_eeprom(map_alert_message_byte23[idx]);
+    bytes[23] = read_eeprom(map_alert_message_byte24[idx]);
+    bytes[24] = read_eeprom(map_alert_message_byte25[idx]);
+    bytes[25] = read_eeprom(map_alert_message_byte26[idx]);
+    bytes[26] = read_eeprom(map_alert_message_byte27[idx]);
+    bytes[27] = read_eeprom(map_alert_message_byte28[idx]);
+    bytes[28] = read_eeprom(map_alert_message_byte29[idx]);
+    bytes[29] = read_eeprom(map_alert_message_byte30[idx]);
+    bytes[30] = read_eeprom(map_alert_message_byte31[idx]);
+    bytes[31] = read_eeprom(map_alert_message_byte32[idx]);
+    bytes[32] = read_eeprom(map_alert_message_byte33[idx]);
+    bytes[33] = read_eeprom(map_alert_message_byte34[idx]);
+    bytes[34] = read_eeprom(map_alert_message_byte35[idx]);
+    bytes[35] = read_eeprom(map_alert_message_byte36[idx]);
+    bytes[36] = read_eeprom(map_alert_message_byte37[idx]);
+    bytes[37] = read_eeprom(map_alert_message_byte38[idx]);
+    bytes[38] = read_eeprom(map_alert_message_byte39[idx]);
+    bytes[39] = read_eeprom(map_alert_message_byte40[idx]);
+    bytes[40] = read_eeprom(map_alert_message_byte41[idx]);
+    bytes[41] = read_eeprom(map_alert_message_byte42[idx]);
+    bytes[42] = read_eeprom(map_alert_message_byte43[idx]);
+    bytes[43] = read_eeprom(map_alert_message_byte44[idx]);
+    bytes[44] = read_eeprom(map_alert_message_byte45[idx]);
+    bytes[45] = read_eeprom(map_alert_message_byte46[idx]);
+    bytes[46] = read_eeprom(map_alert_message_byte47[idx]);
+    bytes[47] = read_eeprom(map_alert_message_byte48[idx]);
+    bytes[48] = read_eeprom(map_alert_message_byte49[idx]);
+    bytes[49] = read_eeprom(map_alert_message_byte50[idx]);
+    bytes[50] = read_eeprom(map_alert_message_byte51[idx]);
+    bytes[51] = read_eeprom(map_alert_message_byte52[idx]);
+    bytes[52] = read_eeprom(map_alert_message_byte53[idx]);
+    bytes[53] = read_eeprom(map_alert_message_byte54[idx]);
+    bytes[54] = read_eeprom(map_alert_message_byte55[idx]);
+    bytes[55] = read_eeprom(map_alert_message_byte56[idx]);
+    bytes[56] = read_eeprom(map_alert_message_byte57[idx]);
+    bytes[57] = read_eeprom(map_alert_message_byte58[idx]);
+    bytes[58] = read_eeprom(map_alert_message_byte59[idx]);
+    bytes[59] = read_eeprom(map_alert_message_byte60[idx]);
+    bytes[60] = read_eeprom(map_alert_message_byte61[idx]);
+    bytes[61] = read_eeprom(map_alert_message_byte62[idx]);
+    bytes[62] = read_eeprom(map_alert_message_byte63[idx]);
+    bytes[63] = read_eeprom(map_alert_message_byte64[idx]);
+
+    memcpy(alert_message_val, bytes, EE_SIZE_ALERT_MESSAGE);
 }
 
 static void save_alert_message(uint8_t idx, char* alert_message)
@@ -1976,7 +1984,7 @@ bool verify_alert_message(char* alert_message)
 
 void get_alert_message(uint8_t idx, char* alert_message)
 {
-    memcpy(alert_message, (char)settings_alert_message[idx][0], ALERT_MESSAGE_LEN);
+    memcpy(alert_message, settings_alert_message[idx], ALERT_MESSAGE_LEN);
 }
 
 // Set the Alert message
@@ -1990,13 +1998,16 @@ bool set_alert_message(uint8_t idx, char* alert_message, bool save)
     // updated if immediate save is set
     if (save)
     {
-        if (load_alert_message(idx) != alert_message)
+        // Reload the current setting saved in EEPROM
+        load_alert_message(idx, settings_alert_message[idx]);
+
+        if (settings_alert_message[idx] != alert_message)
         {
             save_alert_message(idx, alert_message);
         }
     }
 
-    memcpy(settings_alert_message[idx][0], alert_message, ALERT_MESSAGE_LEN);
+    memcpy(settings_alert_message[idx], alert_message, ALERT_MESSAGE_LEN);
 
     return 1;
 }
@@ -2010,15 +2021,13 @@ bool set_alert_message(uint8_t idx, char* alert_message, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static ALERT_COMPARISON load_alert_compare(uint8_t idx)
+static void load_alert_compare(uint8_t idx, ALERT_COMPARISON *alert_compare_val)
 {
-    ALERT_COMPARISON load_alert_compare_val = DEFAULT_ALERT_COMPARE;
+    uint8_t bytes[EE_SIZE_ALERT_COMPARE];
 
-    if (true)
-    {
-        load_alert_compare_val = (uint8_t)read_eeprom(map_alert_compare_byte1[idx]);
-    }
-    return load_alert_compare_val;
+    bytes[0] = read_eeprom(map_alert_compare_byte1[idx]);
+
+    memcpy(alert_compare_val, bytes, EE_SIZE_ALERT_COMPARE);
 }
 
 static void save_alert_compare(uint8_t idx, ALERT_COMPARISON alert_compare)
@@ -2057,7 +2066,10 @@ bool set_alert_compare(uint8_t idx, ALERT_COMPARISON alert_compare, bool save)
     // updated if immediate save is set
     if (save)
     {
-        if (load_alert_compare(idx) != alert_compare)
+        // Reload the current setting saved in EEPROM
+        load_alert_compare(idx, &settings_alert_compare[idx]);
+
+        if (settings_alert_compare[idx] != alert_compare)
         {
             save_alert_compare(idx, alert_compare);
         }
@@ -2077,18 +2089,16 @@ bool set_alert_compare(uint8_t idx, ALERT_COMPARISON alert_compare, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static float load_alert_threshold(uint8_t idx)
+static void load_alert_threshold(uint8_t idx, float *alert_threshold_val)
 {
-    float load_alert_threshold_val = DEFAULT_ALERT_THRESHOLD;
+    uint8_t bytes[EE_SIZE_ALERT_THRESHOLD];
 
-    if (true)
-    {
-        load_alert_threshold_val = (uint32_t)read_eeprom(map_alert_threshold_byte1[idx]);
-        load_alert_threshold_val = ((uint32_t)load_alert_threshold_val << 8) | (uint32_t)read_eeprom(map_alert_threshold_byte2[idx]);
-        load_alert_threshold_val = ((uint32_t)load_alert_threshold_val << 16) | (uint32_t)read_eeprom(map_alert_threshold_byte3[idx]);
-        load_alert_threshold_val = ((uint32_t)load_alert_threshold_val << 24) | (uint32_t)read_eeprom(map_alert_threshold_byte4[idx]);
-    }
-    return load_alert_threshold_val;
+    bytes[0] = read_eeprom(map_alert_threshold_byte1[idx]);
+    bytes[1] = read_eeprom(map_alert_threshold_byte2[idx]);
+    bytes[2] = read_eeprom(map_alert_threshold_byte3[idx]);
+    bytes[3] = read_eeprom(map_alert_threshold_byte4[idx]);
+
+    memcpy(alert_threshold_val, bytes, EE_SIZE_ALERT_THRESHOLD);
 }
 
 static void save_alert_threshold(uint8_t idx, float alert_threshold)
@@ -2134,7 +2144,10 @@ bool set_alert_threshold(uint8_t idx, float alert_threshold, bool save)
     // updated if immediate save is set
     if (save)
     {
-        if (load_alert_threshold(idx) != alert_threshold)
+        // Reload the current setting saved in EEPROM
+        load_alert_threshold(idx, &settings_alert_threshold[idx]);
+
+        if (settings_alert_threshold[idx] != alert_threshold)
         {
             save_alert_threshold(idx, alert_threshold);
         }
@@ -2154,15 +2167,13 @@ bool set_alert_threshold(uint8_t idx, float alert_threshold, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static DYNAMIC_STATE load_dynamic_enable(uint8_t idx)
+static void load_dynamic_enable(uint8_t idx, DYNAMIC_STATE *dynamic_enable_val)
 {
-    DYNAMIC_STATE load_dynamic_enable_val = DEFAULT_DYNAMIC_ENABLE;
+    uint8_t bytes[EE_SIZE_DYNAMIC_ENABLE];
 
-    if (true)
-    {
-        load_dynamic_enable_val = (uint8_t)read_eeprom(map_dynamic_enable_byte1[idx]);
-    }
-    return load_dynamic_enable_val;
+    bytes[0] = read_eeprom(map_dynamic_enable_byte1[idx]);
+
+    memcpy(dynamic_enable_val, bytes, EE_SIZE_DYNAMIC_ENABLE);
 }
 
 static void save_dynamic_enable(uint8_t idx, DYNAMIC_STATE dynamic_enable)
@@ -2201,7 +2212,10 @@ bool set_dynamic_enable(uint8_t idx, DYNAMIC_STATE dynamic_enable, bool save)
     // updated if immediate save is set
     if (save)
     {
-        if (load_dynamic_enable(idx) != dynamic_enable)
+        // Reload the current setting saved in EEPROM
+        load_dynamic_enable(idx, &settings_dynamic_enable[idx]);
+
+        if (settings_dynamic_enable[idx] != dynamic_enable)
         {
             save_dynamic_enable(idx, dynamic_enable);
         }
@@ -2221,15 +2235,13 @@ bool set_dynamic_enable(uint8_t idx, DYNAMIC_STATE dynamic_enable, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static DYNAMIC_PRIORITY load_dynamic_priority(uint8_t idx)
+static void load_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY *dynamic_priority_val)
 {
-    DYNAMIC_PRIORITY load_dynamic_priority_val = DEFAULT_DYNAMIC_PRIORITY;
+    uint8_t bytes[EE_SIZE_DYNAMIC_PRIORITY];
 
-    if (true)
-    {
-        load_dynamic_priority_val = (uint8_t)read_eeprom(map_dynamic_priority_byte1[idx]);
-    }
-    return load_dynamic_priority_val;
+    bytes[0] = read_eeprom(map_dynamic_priority_byte1[idx]);
+
+    memcpy(dynamic_priority_val, bytes, EE_SIZE_DYNAMIC_PRIORITY);
 }
 
 static void save_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY dynamic_priority)
@@ -2268,7 +2280,10 @@ bool set_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY dynamic_priority, bool s
     // updated if immediate save is set
     if (save)
     {
-        if (load_dynamic_priority(idx) != dynamic_priority)
+        // Reload the current setting saved in EEPROM
+        load_dynamic_priority(idx, &settings_dynamic_priority[idx]);
+
+        if (settings_dynamic_priority[idx] != dynamic_priority)
         {
             save_dynamic_priority(idx, dynamic_priority);
         }
@@ -2288,15 +2303,13 @@ bool set_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY dynamic_priority, bool s
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static DYNAMIC_COMPARISON load_dynamic_compare(uint8_t idx)
+static void load_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON *dynamic_compare_val)
 {
-    DYNAMIC_COMPARISON load_dynamic_compare_val = DEFAULT_DYNAMIC_COMPARE;
+    uint8_t bytes[EE_SIZE_DYNAMIC_COMPARE];
 
-    if (true)
-    {
-        load_dynamic_compare_val = (uint8_t)read_eeprom(map_dynamic_compare_byte1[idx]);
-    }
-    return load_dynamic_compare_val;
+    bytes[0] = read_eeprom(map_dynamic_compare_byte1[idx]);
+
+    memcpy(dynamic_compare_val, bytes, EE_SIZE_DYNAMIC_COMPARE);
 }
 
 static void save_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON dynamic_compare)
@@ -2335,7 +2348,10 @@ bool set_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON dynamic_compare, bool s
     // updated if immediate save is set
     if (save)
     {
-        if (load_dynamic_compare(idx) != dynamic_compare)
+        // Reload the current setting saved in EEPROM
+        load_dynamic_compare(idx, &settings_dynamic_compare[idx]);
+
+        if (settings_dynamic_compare[idx] != dynamic_compare)
         {
             save_dynamic_compare(idx, dynamic_compare);
         }
@@ -2355,18 +2371,16 @@ bool set_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON dynamic_compare, bool s
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static float load_dynamic_threshold(uint8_t idx)
+static void load_dynamic_threshold(uint8_t idx, float *dynamic_threshold_val)
 {
-    float load_dynamic_threshold_val = DEFAULT_DYNAMIC_THRESHOLD;
+    uint8_t bytes[EE_SIZE_DYNAMIC_THRESHOLD];
 
-    if (true)
-    {
-        load_dynamic_threshold_val = (uint32_t)read_eeprom(map_dynamic_threshold_byte1[idx]);
-        load_dynamic_threshold_val = ((uint32_t)load_dynamic_threshold_val << 8) | (uint32_t)read_eeprom(map_dynamic_threshold_byte2[idx]);
-        load_dynamic_threshold_val = ((uint32_t)load_dynamic_threshold_val << 16) | (uint32_t)read_eeprom(map_dynamic_threshold_byte3[idx]);
-        load_dynamic_threshold_val = ((uint32_t)load_dynamic_threshold_val << 24) | (uint32_t)read_eeprom(map_dynamic_threshold_byte4[idx]);
-    }
-    return load_dynamic_threshold_val;
+    bytes[0] = read_eeprom(map_dynamic_threshold_byte1[idx]);
+    bytes[1] = read_eeprom(map_dynamic_threshold_byte2[idx]);
+    bytes[2] = read_eeprom(map_dynamic_threshold_byte3[idx]);
+    bytes[3] = read_eeprom(map_dynamic_threshold_byte4[idx]);
+
+    memcpy(dynamic_threshold_val, bytes, EE_SIZE_DYNAMIC_THRESHOLD);
 }
 
 static void save_dynamic_threshold(uint8_t idx, float dynamic_threshold)
@@ -2412,7 +2426,10 @@ bool set_dynamic_threshold(uint8_t idx, float dynamic_threshold, bool save)
     // updated if immediate save is set
     if (save)
     {
-        if (load_dynamic_threshold(idx) != dynamic_threshold)
+        // Reload the current setting saved in EEPROM
+        load_dynamic_threshold(idx, &settings_dynamic_threshold[idx]);
+
+        if (settings_dynamic_threshold[idx] != dynamic_threshold)
         {
             save_dynamic_threshold(idx, dynamic_threshold);
         }
@@ -2432,15 +2449,13 @@ bool set_dynamic_threshold(uint8_t idx, float dynamic_threshold, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static uint8_t load_dynamic_index(uint8_t idx)
+static void load_dynamic_index(uint8_t idx, uint8_t *dynamic_index_val)
 {
-    uint8_t load_dynamic_index_val = DEFAULT_DYNAMIC_INDEX;
+    uint8_t bytes[EE_SIZE_DYNAMIC_INDEX];
 
-    if (true)
-    {
-        load_dynamic_index_val = (uint8_t)read_eeprom(map_dynamic_index_byte1[idx]);
-    }
-    return load_dynamic_index_val;
+    bytes[0] = read_eeprom(map_dynamic_index_byte1[idx]);
+
+    memcpy(dynamic_index_val, bytes, EE_SIZE_DYNAMIC_INDEX);
 }
 
 static void save_dynamic_index(uint8_t idx, uint8_t dynamic_index)
@@ -2480,7 +2495,10 @@ bool set_dynamic_index(uint8_t idx, uint8_t dynamic_index, bool save)
     // updated if immediate save is set
     if (save)
     {
-        if (load_dynamic_index(idx) != dynamic_index)
+        // Reload the current setting saved in EEPROM
+        load_dynamic_index(idx, &settings_dynamic_index[idx]);
+
+        if (settings_dynamic_index[idx] != dynamic_index)
         {
             save_dynamic_index(idx, dynamic_index);
         }
@@ -2500,18 +2518,16 @@ bool set_dynamic_index(uint8_t idx, uint8_t dynamic_index, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static uint32_t load_dynamic_pid(uint8_t idx)
+static void load_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid_val)
 {
-    uint32_t load_dynamic_pid_val = DEFAULT_DYNAMIC_PID;
+    uint8_t bytes[EE_SIZE_DYNAMIC_PID];
 
-    if (true)
-    {
-        load_dynamic_pid_val = (uint32_t)read_eeprom(map_dynamic_pid_byte1[idx]);
-        load_dynamic_pid_val = ((uint32_t)load_dynamic_pid_val << 8) | (uint32_t)read_eeprom(map_dynamic_pid_byte2[idx]);
-        load_dynamic_pid_val = ((uint32_t)load_dynamic_pid_val << 16) | (uint32_t)read_eeprom(map_dynamic_pid_byte3[idx]);
-        load_dynamic_pid_val = ((uint32_t)load_dynamic_pid_val << 24) | (uint32_t)read_eeprom(map_dynamic_pid_byte4[idx]);
-    }
-    return load_dynamic_pid_val;
+    bytes[0] = read_eeprom(map_dynamic_pid_byte1[idx]);
+    bytes[1] = read_eeprom(map_dynamic_pid_byte2[idx]);
+    bytes[2] = read_eeprom(map_dynamic_pid_byte3[idx]);
+    bytes[3] = read_eeprom(map_dynamic_pid_byte4[idx]);
+
+    memcpy(dynamic_pid_val, bytes, EE_SIZE_DYNAMIC_PID);
 }
 
 static void save_dynamic_pid(uint8_t idx, uint32_t dynamic_pid)
@@ -2557,7 +2573,10 @@ bool set_dynamic_pid(uint8_t idx, uint32_t dynamic_pid, bool save)
     // updated if immediate save is set
     if (save)
     {
-        if (load_dynamic_pid(idx) != dynamic_pid)
+        // Reload the current setting saved in EEPROM
+        load_dynamic_pid(idx, &settings_dynamic_pid[idx]);
+
+        if (settings_dynamic_pid[idx] != dynamic_pid)
         {
             save_dynamic_pid(idx, dynamic_pid);
         }
@@ -2577,15 +2596,13 @@ bool set_dynamic_pid(uint8_t idx, uint32_t dynamic_pid, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static PID_UNITS load_dynamic_units(uint8_t idx)
+static void load_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units_val)
 {
-    PID_UNITS load_dynamic_units_val = DEFAULT_DYNAMIC_UNITS;
+    uint8_t bytes[EE_SIZE_DYNAMIC_UNITS];
 
-    if (true)
-    {
-        load_dynamic_units_val = (uint8_t)read_eeprom(map_dynamic_units_byte1[idx]);
-    }
-    return load_dynamic_units_val;
+    bytes[0] = read_eeprom(map_dynamic_units_byte1[idx]);
+
+    memcpy(dynamic_units_val, bytes, EE_SIZE_DYNAMIC_UNITS);
 }
 
 static void save_dynamic_units(uint8_t idx, PID_UNITS dynamic_units)
@@ -2628,7 +2645,10 @@ bool set_dynamic_units(uint8_t idx, PID_UNITS dynamic_units, bool save)
     // updated if immediate save is set
     if (save)
     {
-        if (load_dynamic_units(idx) != dynamic_units)
+        // Reload the current setting saved in EEPROM
+        load_dynamic_units(idx, &settings_dynamic_units[idx]);
+
+        if (settings_dynamic_units[idx] != dynamic_units)
         {
             save_dynamic_units(idx, dynamic_units);
         }
