@@ -1349,12 +1349,13 @@ static void load_view_enable(uint8_t idx, VIEW_STATE *view_enable_val)
     memcpy(view_enable_val, bytes, EE_SIZE_VIEW_ENABLE);
 }
 
-static void save_view_enable(uint8_t idx, VIEW_STATE view_enable)
+static void save_view_enable(uint8_t idx, VIEW_STATE *view_enable)
 {
-    if (true)
-    {
-        write_eeprom(map_view_enable_byte1[idx], (uint32_t)view_enable & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_VIEW_ENABLE];
+
+    memcpy(bytes, view_enable, EE_SIZE_VIEW_ENABLE);
+
+    write_eeprom(map_view_enable_byte1[idx], bytes[0]);
 }
 
 bool verify_view_enable(VIEW_STATE view_enable)
@@ -1390,7 +1391,7 @@ bool set_view_enable(uint8_t idx, VIEW_STATE view_enable, bool save)
 
         if (settings_view_enable[idx] != view_enable)
         {
-            save_view_enable(idx, view_enable);
+            save_view_enable(idx, &view_enable);
         }
     }
 
@@ -1417,12 +1418,13 @@ static void load_view_num_gauges(uint8_t idx, uint8_t *view_num_gauges_val)
     memcpy(view_num_gauges_val, bytes, EE_SIZE_VIEW_NUM_GAUGES);
 }
 
-static void save_view_num_gauges(uint8_t idx, uint8_t view_num_gauges)
+static void save_view_num_gauges(uint8_t idx, uint8_t *view_num_gauges)
 {
-    if (true)
-    {
-        write_eeprom(map_view_num_gauges_byte1[idx], (uint32_t)view_num_gauges & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_VIEW_NUM_GAUGES];
+
+    memcpy(bytes, view_num_gauges, EE_SIZE_VIEW_NUM_GAUGES);
+
+    write_eeprom(map_view_num_gauges_byte1[idx], bytes[0]);
 }
 
 bool verify_view_num_gauges(uint8_t view_num_gauges)
@@ -1459,7 +1461,7 @@ bool set_view_num_gauges(uint8_t idx, uint8_t view_num_gauges, bool save)
 
         if (settings_view_num_gauges[idx] != view_num_gauges)
         {
-            save_view_num_gauges(idx, view_num_gauges);
+            save_view_num_gauges(idx, &view_num_gauges);
         }
     }
 
@@ -1486,12 +1488,13 @@ static void load_view_background(uint8_t idx, VIEW_BACKGROUND *view_background_v
     memcpy(view_background_val, bytes, EE_SIZE_VIEW_BACKGROUND);
 }
 
-static void save_view_background(uint8_t idx, VIEW_BACKGROUND view_background)
+static void save_view_background(uint8_t idx, VIEW_BACKGROUND *view_background)
 {
-    if (true)
-    {
-        write_eeprom(map_view_background_byte1[idx], (uint32_t)view_background & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_VIEW_BACKGROUND];
+
+    memcpy(bytes, view_background, EE_SIZE_VIEW_BACKGROUND);
+
+    write_eeprom(map_view_background_byte1[idx], bytes[0]);
 }
 
 bool verify_view_background(VIEW_BACKGROUND view_background)
@@ -1527,7 +1530,7 @@ bool set_view_background(uint8_t idx, VIEW_BACKGROUND view_background, bool save
 
         if (settings_view_background[idx] != view_background)
         {
-            save_view_background(idx, view_background);
+            save_view_background(idx, &view_background);
         }
     }
 
@@ -1555,12 +1558,13 @@ static void load_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THE
     memcpy(view_gauge_theme_val, bytes, EE_SIZE_VIEW_GAUGE_THEME);
 }
 
-static void save_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME view_gauge_theme)
+static void save_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME *view_gauge_theme)
 {
-    if (true)
-    {
-        write_eeprom(map_view_gauge_theme_byte1[idx_view][idx_gauge], (uint32_t)view_gauge_theme & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_VIEW_GAUGE_THEME];
+
+    memcpy(bytes, view_gauge_theme, EE_SIZE_VIEW_GAUGE_THEME);
+
+    write_eeprom(map_view_gauge_theme_byte1[idx_view][idx_gauge], bytes[0]);
 }
 
 bool verify_view_gauge_theme(GAUGE_THEME view_gauge_theme)
@@ -1596,7 +1600,7 @@ bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME view_
 
         if (settings_view_gauge_theme[idx_view][idx_gauge] != view_gauge_theme)
         {
-            save_view_gauge_theme(idx_view, idx_gauge, view_gauge_theme);
+            save_view_gauge_theme(idx_view, idx_gauge, &view_gauge_theme);
         }
     }
 
@@ -1627,15 +1631,16 @@ static void load_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t *v
     memcpy(view_gauge_pid_val, bytes, EE_SIZE_VIEW_GAUGE_PID);
 }
 
-static void save_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t view_gauge_pid)
+static void save_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t *view_gauge_pid)
 {
-    if (true)
-    {
-        write_eeprom(map_view_gauge_pid_byte1[idx_view][idx_gauge], ((uint32_t)view_gauge_pid >> 24) & 0xFF);
-        write_eeprom(map_view_gauge_pid_byte2[idx_view][idx_gauge], ((uint32_t)view_gauge_pid >> 16) & 0xFF);
-        write_eeprom(map_view_gauge_pid_byte3[idx_view][idx_gauge], ((uint32_t)view_gauge_pid >> 8) & 0xFF);
-        write_eeprom(map_view_gauge_pid_byte4[idx_view][idx_gauge], (uint32_t)view_gauge_pid & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_VIEW_GAUGE_PID];
+
+    memcpy(bytes, view_gauge_pid, EE_SIZE_VIEW_GAUGE_PID);
+
+    write_eeprom(map_view_gauge_pid_byte1[idx_view][idx_gauge], bytes[3]);
+    write_eeprom(map_view_gauge_pid_byte2[idx_view][idx_gauge], bytes[2]);
+    write_eeprom(map_view_gauge_pid_byte3[idx_view][idx_gauge], bytes[1]);
+    write_eeprom(map_view_gauge_pid_byte4[idx_view][idx_gauge], bytes[0]);
 }
 
 bool verify_view_gauge_pid(uint32_t view_gauge_pid)
@@ -1675,7 +1680,7 @@ bool set_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t view_gauge
 
         if (settings_view_gauge_pid[idx_view][idx_gauge] != view_gauge_pid)
         {
-            save_view_gauge_pid(idx_view, idx_gauge, view_gauge_pid);
+            save_view_gauge_pid(idx_view, idx_gauge, &view_gauge_pid);
         }
     }
 
@@ -1703,12 +1708,13 @@ static void load_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS
     memcpy(view_gauge_units_val, bytes, EE_SIZE_VIEW_GAUGE_UNITS);
 }
 
-static void save_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS view_gauge_units)
+static void save_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS *view_gauge_units)
 {
-    if (true)
-    {
-        write_eeprom(map_view_gauge_units_byte1[idx_view][idx_gauge], (uint32_t)view_gauge_units & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_VIEW_GAUGE_UNITS];
+
+    memcpy(bytes, view_gauge_units, EE_SIZE_VIEW_GAUGE_UNITS);
+
+    write_eeprom(map_view_gauge_units_byte1[idx_view][idx_gauge], bytes[0]);
 }
 
 bool verify_view_gauge_units(PID_UNITS view_gauge_units)
@@ -1748,7 +1754,7 @@ bool set_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS view_ga
 
         if (settings_view_gauge_units[idx_view][idx_gauge] != view_gauge_units)
         {
-            save_view_gauge_units(idx_view, idx_gauge, view_gauge_units);
+            save_view_gauge_units(idx_view, idx_gauge, &view_gauge_units);
         }
     }
 
@@ -1775,12 +1781,13 @@ static void load_alert_enable(uint8_t idx, ALERT_STATE *alert_enable_val)
     memcpy(alert_enable_val, bytes, EE_SIZE_ALERT_ENABLE);
 }
 
-static void save_alert_enable(uint8_t idx, ALERT_STATE alert_enable)
+static void save_alert_enable(uint8_t idx, ALERT_STATE *alert_enable)
 {
-    if (true)
-    {
-        write_eeprom(map_alert_enable_byte1[idx], (uint32_t)alert_enable & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_ALERT_ENABLE];
+
+    memcpy(bytes, alert_enable, EE_SIZE_ALERT_ENABLE);
+
+    write_eeprom(map_alert_enable_byte1[idx], bytes[0]);
 }
 
 bool verify_alert_enable(ALERT_STATE alert_enable)
@@ -1816,7 +1823,7 @@ bool set_alert_enable(uint8_t idx, ALERT_STATE alert_enable, bool save)
 
         if (settings_alert_enable[idx] != alert_enable)
         {
-            save_alert_enable(idx, alert_enable);
+            save_alert_enable(idx, &alert_enable);
         }
     }
 
@@ -1838,143 +1845,144 @@ static void load_alert_message(uint8_t idx, char *alert_message_val)
 {
     uint8_t bytes[EE_SIZE_ALERT_MESSAGE];
 
-    bytes[0] = read_eeprom(map_alert_message_byte1[idx]);
-    bytes[1] = read_eeprom(map_alert_message_byte2[idx]);
-    bytes[2] = read_eeprom(map_alert_message_byte3[idx]);
-    bytes[3] = read_eeprom(map_alert_message_byte4[idx]);
-    bytes[4] = read_eeprom(map_alert_message_byte5[idx]);
-    bytes[5] = read_eeprom(map_alert_message_byte6[idx]);
-    bytes[6] = read_eeprom(map_alert_message_byte7[idx]);
-    bytes[7] = read_eeprom(map_alert_message_byte8[idx]);
-    bytes[8] = read_eeprom(map_alert_message_byte9[idx]);
-    bytes[9] = read_eeprom(map_alert_message_byte10[idx]);
-    bytes[10] = read_eeprom(map_alert_message_byte11[idx]);
-    bytes[11] = read_eeprom(map_alert_message_byte12[idx]);
-    bytes[12] = read_eeprom(map_alert_message_byte13[idx]);
-    bytes[13] = read_eeprom(map_alert_message_byte14[idx]);
-    bytes[14] = read_eeprom(map_alert_message_byte15[idx]);
-    bytes[15] = read_eeprom(map_alert_message_byte16[idx]);
-    bytes[16] = read_eeprom(map_alert_message_byte17[idx]);
-    bytes[17] = read_eeprom(map_alert_message_byte18[idx]);
-    bytes[18] = read_eeprom(map_alert_message_byte19[idx]);
-    bytes[19] = read_eeprom(map_alert_message_byte20[idx]);
-    bytes[20] = read_eeprom(map_alert_message_byte21[idx]);
-    bytes[21] = read_eeprom(map_alert_message_byte22[idx]);
-    bytes[22] = read_eeprom(map_alert_message_byte23[idx]);
-    bytes[23] = read_eeprom(map_alert_message_byte24[idx]);
-    bytes[24] = read_eeprom(map_alert_message_byte25[idx]);
-    bytes[25] = read_eeprom(map_alert_message_byte26[idx]);
-    bytes[26] = read_eeprom(map_alert_message_byte27[idx]);
-    bytes[27] = read_eeprom(map_alert_message_byte28[idx]);
-    bytes[28] = read_eeprom(map_alert_message_byte29[idx]);
-    bytes[29] = read_eeprom(map_alert_message_byte30[idx]);
-    bytes[30] = read_eeprom(map_alert_message_byte31[idx]);
-    bytes[31] = read_eeprom(map_alert_message_byte32[idx]);
-    bytes[32] = read_eeprom(map_alert_message_byte33[idx]);
-    bytes[33] = read_eeprom(map_alert_message_byte34[idx]);
-    bytes[34] = read_eeprom(map_alert_message_byte35[idx]);
-    bytes[35] = read_eeprom(map_alert_message_byte36[idx]);
-    bytes[36] = read_eeprom(map_alert_message_byte37[idx]);
-    bytes[37] = read_eeprom(map_alert_message_byte38[idx]);
-    bytes[38] = read_eeprom(map_alert_message_byte39[idx]);
-    bytes[39] = read_eeprom(map_alert_message_byte40[idx]);
-    bytes[40] = read_eeprom(map_alert_message_byte41[idx]);
-    bytes[41] = read_eeprom(map_alert_message_byte42[idx]);
-    bytes[42] = read_eeprom(map_alert_message_byte43[idx]);
-    bytes[43] = read_eeprom(map_alert_message_byte44[idx]);
-    bytes[44] = read_eeprom(map_alert_message_byte45[idx]);
-    bytes[45] = read_eeprom(map_alert_message_byte46[idx]);
-    bytes[46] = read_eeprom(map_alert_message_byte47[idx]);
-    bytes[47] = read_eeprom(map_alert_message_byte48[idx]);
-    bytes[48] = read_eeprom(map_alert_message_byte49[idx]);
-    bytes[49] = read_eeprom(map_alert_message_byte50[idx]);
-    bytes[50] = read_eeprom(map_alert_message_byte51[idx]);
-    bytes[51] = read_eeprom(map_alert_message_byte52[idx]);
-    bytes[52] = read_eeprom(map_alert_message_byte53[idx]);
-    bytes[53] = read_eeprom(map_alert_message_byte54[idx]);
-    bytes[54] = read_eeprom(map_alert_message_byte55[idx]);
-    bytes[55] = read_eeprom(map_alert_message_byte56[idx]);
-    bytes[56] = read_eeprom(map_alert_message_byte57[idx]);
-    bytes[57] = read_eeprom(map_alert_message_byte58[idx]);
-    bytes[58] = read_eeprom(map_alert_message_byte59[idx]);
-    bytes[59] = read_eeprom(map_alert_message_byte60[idx]);
-    bytes[60] = read_eeprom(map_alert_message_byte61[idx]);
-    bytes[61] = read_eeprom(map_alert_message_byte62[idx]);
-    bytes[62] = read_eeprom(map_alert_message_byte63[idx]);
-    bytes[63] = read_eeprom(map_alert_message_byte64[idx]);
+    bytes[63] = read_eeprom(map_alert_message_byte1[idx]);
+    bytes[62] = read_eeprom(map_alert_message_byte2[idx]);
+    bytes[61] = read_eeprom(map_alert_message_byte3[idx]);
+    bytes[60] = read_eeprom(map_alert_message_byte4[idx]);
+    bytes[59] = read_eeprom(map_alert_message_byte5[idx]);
+    bytes[58] = read_eeprom(map_alert_message_byte6[idx]);
+    bytes[57] = read_eeprom(map_alert_message_byte7[idx]);
+    bytes[56] = read_eeprom(map_alert_message_byte8[idx]);
+    bytes[55] = read_eeprom(map_alert_message_byte9[idx]);
+    bytes[54] = read_eeprom(map_alert_message_byte10[idx]);
+    bytes[53] = read_eeprom(map_alert_message_byte11[idx]);
+    bytes[52] = read_eeprom(map_alert_message_byte12[idx]);
+    bytes[51] = read_eeprom(map_alert_message_byte13[idx]);
+    bytes[50] = read_eeprom(map_alert_message_byte14[idx]);
+    bytes[49] = read_eeprom(map_alert_message_byte15[idx]);
+    bytes[48] = read_eeprom(map_alert_message_byte16[idx]);
+    bytes[47] = read_eeprom(map_alert_message_byte17[idx]);
+    bytes[46] = read_eeprom(map_alert_message_byte18[idx]);
+    bytes[45] = read_eeprom(map_alert_message_byte19[idx]);
+    bytes[44] = read_eeprom(map_alert_message_byte20[idx]);
+    bytes[43] = read_eeprom(map_alert_message_byte21[idx]);
+    bytes[42] = read_eeprom(map_alert_message_byte22[idx]);
+    bytes[41] = read_eeprom(map_alert_message_byte23[idx]);
+    bytes[40] = read_eeprom(map_alert_message_byte24[idx]);
+    bytes[39] = read_eeprom(map_alert_message_byte25[idx]);
+    bytes[38] = read_eeprom(map_alert_message_byte26[idx]);
+    bytes[37] = read_eeprom(map_alert_message_byte27[idx]);
+    bytes[36] = read_eeprom(map_alert_message_byte28[idx]);
+    bytes[35] = read_eeprom(map_alert_message_byte29[idx]);
+    bytes[34] = read_eeprom(map_alert_message_byte30[idx]);
+    bytes[33] = read_eeprom(map_alert_message_byte31[idx]);
+    bytes[32] = read_eeprom(map_alert_message_byte32[idx]);
+    bytes[31] = read_eeprom(map_alert_message_byte33[idx]);
+    bytes[30] = read_eeprom(map_alert_message_byte34[idx]);
+    bytes[29] = read_eeprom(map_alert_message_byte35[idx]);
+    bytes[28] = read_eeprom(map_alert_message_byte36[idx]);
+    bytes[27] = read_eeprom(map_alert_message_byte37[idx]);
+    bytes[26] = read_eeprom(map_alert_message_byte38[idx]);
+    bytes[25] = read_eeprom(map_alert_message_byte39[idx]);
+    bytes[24] = read_eeprom(map_alert_message_byte40[idx]);
+    bytes[23] = read_eeprom(map_alert_message_byte41[idx]);
+    bytes[22] = read_eeprom(map_alert_message_byte42[idx]);
+    bytes[21] = read_eeprom(map_alert_message_byte43[idx]);
+    bytes[20] = read_eeprom(map_alert_message_byte44[idx]);
+    bytes[19] = read_eeprom(map_alert_message_byte45[idx]);
+    bytes[18] = read_eeprom(map_alert_message_byte46[idx]);
+    bytes[17] = read_eeprom(map_alert_message_byte47[idx]);
+    bytes[16] = read_eeprom(map_alert_message_byte48[idx]);
+    bytes[15] = read_eeprom(map_alert_message_byte49[idx]);
+    bytes[14] = read_eeprom(map_alert_message_byte50[idx]);
+    bytes[13] = read_eeprom(map_alert_message_byte51[idx]);
+    bytes[12] = read_eeprom(map_alert_message_byte52[idx]);
+    bytes[11] = read_eeprom(map_alert_message_byte53[idx]);
+    bytes[10] = read_eeprom(map_alert_message_byte54[idx]);
+    bytes[9] = read_eeprom(map_alert_message_byte55[idx]);
+    bytes[8] = read_eeprom(map_alert_message_byte56[idx]);
+    bytes[7] = read_eeprom(map_alert_message_byte57[idx]);
+    bytes[6] = read_eeprom(map_alert_message_byte58[idx]);
+    bytes[5] = read_eeprom(map_alert_message_byte59[idx]);
+    bytes[4] = read_eeprom(map_alert_message_byte60[idx]);
+    bytes[3] = read_eeprom(map_alert_message_byte61[idx]);
+    bytes[2] = read_eeprom(map_alert_message_byte62[idx]);
+    bytes[1] = read_eeprom(map_alert_message_byte63[idx]);
+    bytes[0] = read_eeprom(map_alert_message_byte64[idx]);
 
     memcpy(alert_message_val, bytes, EE_SIZE_ALERT_MESSAGE);
 }
 
-static void save_alert_message(uint8_t idx, char* alert_message)
+static void save_alert_message(uint8_t idx, char *alert_message)
 {
-    if (true)
-    {
-        write_eeprom(map_alert_message_byte1[idx], alert_message[0]);
-        write_eeprom(map_alert_message_byte2[idx], alert_message[1]);
-        write_eeprom(map_alert_message_byte3[idx], alert_message[2]);
-        write_eeprom(map_alert_message_byte4[idx], alert_message[3]);
-        write_eeprom(map_alert_message_byte5[idx], alert_message[4]);
-        write_eeprom(map_alert_message_byte6[idx], alert_message[5]);
-        write_eeprom(map_alert_message_byte7[idx], alert_message[6]);
-        write_eeprom(map_alert_message_byte8[idx], alert_message[7]);
-        write_eeprom(map_alert_message_byte9[idx], alert_message[8]);
-        write_eeprom(map_alert_message_byte10[idx], alert_message[9]);
-        write_eeprom(map_alert_message_byte11[idx], alert_message[10]);
-        write_eeprom(map_alert_message_byte12[idx], alert_message[11]);
-        write_eeprom(map_alert_message_byte13[idx], alert_message[12]);
-        write_eeprom(map_alert_message_byte14[idx], alert_message[13]);
-        write_eeprom(map_alert_message_byte15[idx], alert_message[14]);
-        write_eeprom(map_alert_message_byte16[idx], alert_message[15]);
-        write_eeprom(map_alert_message_byte17[idx], alert_message[16]);
-        write_eeprom(map_alert_message_byte18[idx], alert_message[17]);
-        write_eeprom(map_alert_message_byte19[idx], alert_message[18]);
-        write_eeprom(map_alert_message_byte20[idx], alert_message[19]);
-        write_eeprom(map_alert_message_byte21[idx], alert_message[20]);
-        write_eeprom(map_alert_message_byte22[idx], alert_message[21]);
-        write_eeprom(map_alert_message_byte23[idx], alert_message[22]);
-        write_eeprom(map_alert_message_byte24[idx], alert_message[23]);
-        write_eeprom(map_alert_message_byte25[idx], alert_message[24]);
-        write_eeprom(map_alert_message_byte26[idx], alert_message[25]);
-        write_eeprom(map_alert_message_byte27[idx], alert_message[26]);
-        write_eeprom(map_alert_message_byte28[idx], alert_message[27]);
-        write_eeprom(map_alert_message_byte29[idx], alert_message[28]);
-        write_eeprom(map_alert_message_byte30[idx], alert_message[29]);
-        write_eeprom(map_alert_message_byte31[idx], alert_message[30]);
-        write_eeprom(map_alert_message_byte32[idx], alert_message[31]);
-        write_eeprom(map_alert_message_byte33[idx], alert_message[32]);
-        write_eeprom(map_alert_message_byte34[idx], alert_message[33]);
-        write_eeprom(map_alert_message_byte35[idx], alert_message[34]);
-        write_eeprom(map_alert_message_byte36[idx], alert_message[35]);
-        write_eeprom(map_alert_message_byte37[idx], alert_message[36]);
-        write_eeprom(map_alert_message_byte38[idx], alert_message[37]);
-        write_eeprom(map_alert_message_byte39[idx], alert_message[38]);
-        write_eeprom(map_alert_message_byte40[idx], alert_message[39]);
-        write_eeprom(map_alert_message_byte41[idx], alert_message[40]);
-        write_eeprom(map_alert_message_byte42[idx], alert_message[41]);
-        write_eeprom(map_alert_message_byte43[idx], alert_message[42]);
-        write_eeprom(map_alert_message_byte44[idx], alert_message[43]);
-        write_eeprom(map_alert_message_byte45[idx], alert_message[44]);
-        write_eeprom(map_alert_message_byte46[idx], alert_message[45]);
-        write_eeprom(map_alert_message_byte47[idx], alert_message[46]);
-        write_eeprom(map_alert_message_byte48[idx], alert_message[47]);
-        write_eeprom(map_alert_message_byte49[idx], alert_message[48]);
-        write_eeprom(map_alert_message_byte50[idx], alert_message[49]);
-        write_eeprom(map_alert_message_byte51[idx], alert_message[50]);
-        write_eeprom(map_alert_message_byte52[idx], alert_message[51]);
-        write_eeprom(map_alert_message_byte53[idx], alert_message[52]);
-        write_eeprom(map_alert_message_byte54[idx], alert_message[53]);
-        write_eeprom(map_alert_message_byte55[idx], alert_message[54]);
-        write_eeprom(map_alert_message_byte56[idx], alert_message[55]);
-        write_eeprom(map_alert_message_byte57[idx], alert_message[56]);
-        write_eeprom(map_alert_message_byte58[idx], alert_message[57]);
-        write_eeprom(map_alert_message_byte59[idx], alert_message[58]);
-        write_eeprom(map_alert_message_byte60[idx], alert_message[59]);
-        write_eeprom(map_alert_message_byte61[idx], alert_message[60]);
-        write_eeprom(map_alert_message_byte62[idx], alert_message[61]);
-        write_eeprom(map_alert_message_byte63[idx], alert_message[62]);
-        write_eeprom(map_alert_message_byte64[idx], alert_message[63]);
-    }
+    uint8_t bytes[EE_SIZE_ALERT_MESSAGE];
+
+    memcpy(bytes, alert_message, EE_SIZE_ALERT_MESSAGE);
+
+    write_eeprom(map_alert_message_byte1[idx], bytes[63]);
+    write_eeprom(map_alert_message_byte2[idx], bytes[62]);
+    write_eeprom(map_alert_message_byte3[idx], bytes[61]);
+    write_eeprom(map_alert_message_byte4[idx], bytes[60]);
+    write_eeprom(map_alert_message_byte5[idx], bytes[59]);
+    write_eeprom(map_alert_message_byte6[idx], bytes[58]);
+    write_eeprom(map_alert_message_byte7[idx], bytes[57]);
+    write_eeprom(map_alert_message_byte8[idx], bytes[56]);
+    write_eeprom(map_alert_message_byte9[idx], bytes[55]);
+    write_eeprom(map_alert_message_byte10[idx], bytes[54]);
+    write_eeprom(map_alert_message_byte11[idx], bytes[53]);
+    write_eeprom(map_alert_message_byte12[idx], bytes[52]);
+    write_eeprom(map_alert_message_byte13[idx], bytes[51]);
+    write_eeprom(map_alert_message_byte14[idx], bytes[50]);
+    write_eeprom(map_alert_message_byte15[idx], bytes[49]);
+    write_eeprom(map_alert_message_byte16[idx], bytes[48]);
+    write_eeprom(map_alert_message_byte17[idx], bytes[47]);
+    write_eeprom(map_alert_message_byte18[idx], bytes[46]);
+    write_eeprom(map_alert_message_byte19[idx], bytes[45]);
+    write_eeprom(map_alert_message_byte20[idx], bytes[44]);
+    write_eeprom(map_alert_message_byte21[idx], bytes[43]);
+    write_eeprom(map_alert_message_byte22[idx], bytes[42]);
+    write_eeprom(map_alert_message_byte23[idx], bytes[41]);
+    write_eeprom(map_alert_message_byte24[idx], bytes[40]);
+    write_eeprom(map_alert_message_byte25[idx], bytes[39]);
+    write_eeprom(map_alert_message_byte26[idx], bytes[38]);
+    write_eeprom(map_alert_message_byte27[idx], bytes[37]);
+    write_eeprom(map_alert_message_byte28[idx], bytes[36]);
+    write_eeprom(map_alert_message_byte29[idx], bytes[35]);
+    write_eeprom(map_alert_message_byte30[idx], bytes[34]);
+    write_eeprom(map_alert_message_byte31[idx], bytes[33]);
+    write_eeprom(map_alert_message_byte32[idx], bytes[32]);
+    write_eeprom(map_alert_message_byte33[idx], bytes[31]);
+    write_eeprom(map_alert_message_byte34[idx], bytes[30]);
+    write_eeprom(map_alert_message_byte35[idx], bytes[29]);
+    write_eeprom(map_alert_message_byte36[idx], bytes[28]);
+    write_eeprom(map_alert_message_byte37[idx], bytes[27]);
+    write_eeprom(map_alert_message_byte38[idx], bytes[26]);
+    write_eeprom(map_alert_message_byte39[idx], bytes[25]);
+    write_eeprom(map_alert_message_byte40[idx], bytes[24]);
+    write_eeprom(map_alert_message_byte41[idx], bytes[23]);
+    write_eeprom(map_alert_message_byte42[idx], bytes[22]);
+    write_eeprom(map_alert_message_byte43[idx], bytes[21]);
+    write_eeprom(map_alert_message_byte44[idx], bytes[20]);
+    write_eeprom(map_alert_message_byte45[idx], bytes[19]);
+    write_eeprom(map_alert_message_byte46[idx], bytes[18]);
+    write_eeprom(map_alert_message_byte47[idx], bytes[17]);
+    write_eeprom(map_alert_message_byte48[idx], bytes[16]);
+    write_eeprom(map_alert_message_byte49[idx], bytes[15]);
+    write_eeprom(map_alert_message_byte50[idx], bytes[14]);
+    write_eeprom(map_alert_message_byte51[idx], bytes[13]);
+    write_eeprom(map_alert_message_byte52[idx], bytes[12]);
+    write_eeprom(map_alert_message_byte53[idx], bytes[11]);
+    write_eeprom(map_alert_message_byte54[idx], bytes[10]);
+    write_eeprom(map_alert_message_byte55[idx], bytes[9]);
+    write_eeprom(map_alert_message_byte56[idx], bytes[8]);
+    write_eeprom(map_alert_message_byte57[idx], bytes[7]);
+    write_eeprom(map_alert_message_byte58[idx], bytes[6]);
+    write_eeprom(map_alert_message_byte59[idx], bytes[5]);
+    write_eeprom(map_alert_message_byte60[idx], bytes[4]);
+    write_eeprom(map_alert_message_byte61[idx], bytes[3]);
+    write_eeprom(map_alert_message_byte62[idx], bytes[2]);
+    write_eeprom(map_alert_message_byte63[idx], bytes[1]);
+    write_eeprom(map_alert_message_byte64[idx], bytes[0]);
 }
 
 bool verify_alert_message(char* alert_message)
@@ -2030,12 +2038,13 @@ static void load_alert_compare(uint8_t idx, ALERT_COMPARISON *alert_compare_val)
     memcpy(alert_compare_val, bytes, EE_SIZE_ALERT_COMPARE);
 }
 
-static void save_alert_compare(uint8_t idx, ALERT_COMPARISON alert_compare)
+static void save_alert_compare(uint8_t idx, ALERT_COMPARISON *alert_compare)
 {
-    if (true)
-    {
-        write_eeprom(map_alert_compare_byte1[idx], (uint32_t)alert_compare & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_ALERT_COMPARE];
+
+    memcpy(bytes, alert_compare, EE_SIZE_ALERT_COMPARE);
+
+    write_eeprom(map_alert_compare_byte1[idx], bytes[0]);
 }
 
 bool verify_alert_compare(ALERT_COMPARISON alert_compare)
@@ -2071,7 +2080,7 @@ bool set_alert_compare(uint8_t idx, ALERT_COMPARISON alert_compare, bool save)
 
         if (settings_alert_compare[idx] != alert_compare)
         {
-            save_alert_compare(idx, alert_compare);
+            save_alert_compare(idx, &alert_compare);
         }
     }
 
@@ -2101,15 +2110,16 @@ static void load_alert_threshold(uint8_t idx, float *alert_threshold_val)
     memcpy(alert_threshold_val, bytes, EE_SIZE_ALERT_THRESHOLD);
 }
 
-static void save_alert_threshold(uint8_t idx, float alert_threshold)
+static void save_alert_threshold(uint8_t idx, float *alert_threshold)
 {
-    if (true)
-    {
-        write_eeprom(map_alert_threshold_byte1[idx], ((uint32_t)alert_threshold >> 24) & 0xFF);
-        write_eeprom(map_alert_threshold_byte2[idx], ((uint32_t)alert_threshold >> 16) & 0xFF);
-        write_eeprom(map_alert_threshold_byte3[idx], ((uint32_t)alert_threshold >> 8) & 0xFF);
-        write_eeprom(map_alert_threshold_byte4[idx], (uint32_t)alert_threshold & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_ALERT_THRESHOLD];
+
+    memcpy(bytes, alert_threshold, EE_SIZE_ALERT_THRESHOLD);
+
+    write_eeprom(map_alert_threshold_byte1[idx], bytes[3]);
+    write_eeprom(map_alert_threshold_byte2[idx], bytes[2]);
+    write_eeprom(map_alert_threshold_byte3[idx], bytes[1]);
+    write_eeprom(map_alert_threshold_byte4[idx], bytes[0]);
 }
 
 bool verify_alert_threshold(float alert_threshold)
@@ -2149,7 +2159,7 @@ bool set_alert_threshold(uint8_t idx, float alert_threshold, bool save)
 
         if (settings_alert_threshold[idx] != alert_threshold)
         {
-            save_alert_threshold(idx, alert_threshold);
+            save_alert_threshold(idx, &alert_threshold);
         }
     }
 
@@ -2176,12 +2186,13 @@ static void load_dynamic_enable(uint8_t idx, DYNAMIC_STATE *dynamic_enable_val)
     memcpy(dynamic_enable_val, bytes, EE_SIZE_DYNAMIC_ENABLE);
 }
 
-static void save_dynamic_enable(uint8_t idx, DYNAMIC_STATE dynamic_enable)
+static void save_dynamic_enable(uint8_t idx, DYNAMIC_STATE *dynamic_enable)
 {
-    if (true)
-    {
-        write_eeprom(map_dynamic_enable_byte1[idx], (uint32_t)dynamic_enable & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_DYNAMIC_ENABLE];
+
+    memcpy(bytes, dynamic_enable, EE_SIZE_DYNAMIC_ENABLE);
+
+    write_eeprom(map_dynamic_enable_byte1[idx], bytes[0]);
 }
 
 bool verify_dynamic_enable(DYNAMIC_STATE dynamic_enable)
@@ -2217,7 +2228,7 @@ bool set_dynamic_enable(uint8_t idx, DYNAMIC_STATE dynamic_enable, bool save)
 
         if (settings_dynamic_enable[idx] != dynamic_enable)
         {
-            save_dynamic_enable(idx, dynamic_enable);
+            save_dynamic_enable(idx, &dynamic_enable);
         }
     }
 
@@ -2244,12 +2255,13 @@ static void load_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY *dynamic_priorit
     memcpy(dynamic_priority_val, bytes, EE_SIZE_DYNAMIC_PRIORITY);
 }
 
-static void save_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY dynamic_priority)
+static void save_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY *dynamic_priority)
 {
-    if (true)
-    {
-        write_eeprom(map_dynamic_priority_byte1[idx], (uint32_t)dynamic_priority & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_DYNAMIC_PRIORITY];
+
+    memcpy(bytes, dynamic_priority, EE_SIZE_DYNAMIC_PRIORITY);
+
+    write_eeprom(map_dynamic_priority_byte1[idx], bytes[0]);
 }
 
 bool verify_dynamic_priority(DYNAMIC_PRIORITY dynamic_priority)
@@ -2285,7 +2297,7 @@ bool set_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY dynamic_priority, bool s
 
         if (settings_dynamic_priority[idx] != dynamic_priority)
         {
-            save_dynamic_priority(idx, dynamic_priority);
+            save_dynamic_priority(idx, &dynamic_priority);
         }
     }
 
@@ -2312,12 +2324,13 @@ static void load_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON *dynamic_compar
     memcpy(dynamic_compare_val, bytes, EE_SIZE_DYNAMIC_COMPARE);
 }
 
-static void save_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON dynamic_compare)
+static void save_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON *dynamic_compare)
 {
-    if (true)
-    {
-        write_eeprom(map_dynamic_compare_byte1[idx], (uint32_t)dynamic_compare & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_DYNAMIC_COMPARE];
+
+    memcpy(bytes, dynamic_compare, EE_SIZE_DYNAMIC_COMPARE);
+
+    write_eeprom(map_dynamic_compare_byte1[idx], bytes[0]);
 }
 
 bool verify_dynamic_compare(DYNAMIC_COMPARISON dynamic_compare)
@@ -2353,7 +2366,7 @@ bool set_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON dynamic_compare, bool s
 
         if (settings_dynamic_compare[idx] != dynamic_compare)
         {
-            save_dynamic_compare(idx, dynamic_compare);
+            save_dynamic_compare(idx, &dynamic_compare);
         }
     }
 
@@ -2383,15 +2396,16 @@ static void load_dynamic_threshold(uint8_t idx, float *dynamic_threshold_val)
     memcpy(dynamic_threshold_val, bytes, EE_SIZE_DYNAMIC_THRESHOLD);
 }
 
-static void save_dynamic_threshold(uint8_t idx, float dynamic_threshold)
+static void save_dynamic_threshold(uint8_t idx, float *dynamic_threshold)
 {
-    if (true)
-    {
-        write_eeprom(map_dynamic_threshold_byte1[idx], ((uint32_t)dynamic_threshold >> 24) & 0xFF);
-        write_eeprom(map_dynamic_threshold_byte2[idx], ((uint32_t)dynamic_threshold >> 16) & 0xFF);
-        write_eeprom(map_dynamic_threshold_byte3[idx], ((uint32_t)dynamic_threshold >> 8) & 0xFF);
-        write_eeprom(map_dynamic_threshold_byte4[idx], (uint32_t)dynamic_threshold & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_DYNAMIC_THRESHOLD];
+
+    memcpy(bytes, dynamic_threshold, EE_SIZE_DYNAMIC_THRESHOLD);
+
+    write_eeprom(map_dynamic_threshold_byte1[idx], bytes[3]);
+    write_eeprom(map_dynamic_threshold_byte2[idx], bytes[2]);
+    write_eeprom(map_dynamic_threshold_byte3[idx], bytes[1]);
+    write_eeprom(map_dynamic_threshold_byte4[idx], bytes[0]);
 }
 
 bool verify_dynamic_threshold(float dynamic_threshold)
@@ -2431,7 +2445,7 @@ bool set_dynamic_threshold(uint8_t idx, float dynamic_threshold, bool save)
 
         if (settings_dynamic_threshold[idx] != dynamic_threshold)
         {
-            save_dynamic_threshold(idx, dynamic_threshold);
+            save_dynamic_threshold(idx, &dynamic_threshold);
         }
     }
 
@@ -2458,12 +2472,13 @@ static void load_dynamic_index(uint8_t idx, uint8_t *dynamic_index_val)
     memcpy(dynamic_index_val, bytes, EE_SIZE_DYNAMIC_INDEX);
 }
 
-static void save_dynamic_index(uint8_t idx, uint8_t dynamic_index)
+static void save_dynamic_index(uint8_t idx, uint8_t *dynamic_index)
 {
-    if (true)
-    {
-        write_eeprom(map_dynamic_index_byte1[idx], (uint32_t)dynamic_index & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_DYNAMIC_INDEX];
+
+    memcpy(bytes, dynamic_index, EE_SIZE_DYNAMIC_INDEX);
+
+    write_eeprom(map_dynamic_index_byte1[idx], bytes[0]);
 }
 
 bool verify_dynamic_index(uint8_t dynamic_index)
@@ -2500,7 +2515,7 @@ bool set_dynamic_index(uint8_t idx, uint8_t dynamic_index, bool save)
 
         if (settings_dynamic_index[idx] != dynamic_index)
         {
-            save_dynamic_index(idx, dynamic_index);
+            save_dynamic_index(idx, &dynamic_index);
         }
     }
 
@@ -2530,15 +2545,16 @@ static void load_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid_val)
     memcpy(dynamic_pid_val, bytes, EE_SIZE_DYNAMIC_PID);
 }
 
-static void save_dynamic_pid(uint8_t idx, uint32_t dynamic_pid)
+static void save_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid)
 {
-    if (true)
-    {
-        write_eeprom(map_dynamic_pid_byte1[idx], ((uint32_t)dynamic_pid >> 24) & 0xFF);
-        write_eeprom(map_dynamic_pid_byte2[idx], ((uint32_t)dynamic_pid >> 16) & 0xFF);
-        write_eeprom(map_dynamic_pid_byte3[idx], ((uint32_t)dynamic_pid >> 8) & 0xFF);
-        write_eeprom(map_dynamic_pid_byte4[idx], (uint32_t)dynamic_pid & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_DYNAMIC_PID];
+
+    memcpy(bytes, dynamic_pid, EE_SIZE_DYNAMIC_PID);
+
+    write_eeprom(map_dynamic_pid_byte1[idx], bytes[3]);
+    write_eeprom(map_dynamic_pid_byte2[idx], bytes[2]);
+    write_eeprom(map_dynamic_pid_byte3[idx], bytes[1]);
+    write_eeprom(map_dynamic_pid_byte4[idx], bytes[0]);
 }
 
 bool verify_dynamic_pid(uint32_t dynamic_pid)
@@ -2578,7 +2594,7 @@ bool set_dynamic_pid(uint8_t idx, uint32_t dynamic_pid, bool save)
 
         if (settings_dynamic_pid[idx] != dynamic_pid)
         {
-            save_dynamic_pid(idx, dynamic_pid);
+            save_dynamic_pid(idx, &dynamic_pid);
         }
     }
 
@@ -2605,12 +2621,13 @@ static void load_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units_val)
     memcpy(dynamic_units_val, bytes, EE_SIZE_DYNAMIC_UNITS);
 }
 
-static void save_dynamic_units(uint8_t idx, PID_UNITS dynamic_units)
+static void save_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units)
 {
-    if (true)
-    {
-        write_eeprom(map_dynamic_units_byte1[idx], (uint32_t)dynamic_units & 0xFF);
-    }
+    uint8_t bytes[EE_SIZE_DYNAMIC_UNITS];
+
+    memcpy(bytes, dynamic_units, EE_SIZE_DYNAMIC_UNITS);
+
+    write_eeprom(map_dynamic_units_byte1[idx], bytes[0]);
 }
 
 bool verify_dynamic_units(PID_UNITS dynamic_units)
@@ -2650,7 +2667,7 @@ bool set_dynamic_units(uint8_t idx, PID_UNITS dynamic_units, bool save)
 
         if (settings_dynamic_units[idx] != dynamic_units)
         {
-            save_dynamic_units(idx, dynamic_units);
+            save_dynamic_units(idx, &dynamic_units);
         }
     }
 
