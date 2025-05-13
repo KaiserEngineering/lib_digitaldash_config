@@ -179,6 +179,32 @@ bool set_alert_enable(uint8_t idx_alert, ALERT_STATE enable, bool save);
 
 
 /********************************************************************************
+*                           PID assigned to the alert                           
+*
+* @param idx_alert    index of the alert
+* @param pid    Set the PID by alert index
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+bool verify_alert_pid(uint32_t pid);
+uint32_t get_alert_pid(uint8_t idx_alert);
+bool set_alert_pid(uint8_t idx_alert, uint32_t pid, bool save);
+
+
+/********************************************************************************
+*                        PID units assigned to the alert                        
+*
+* @param idx_alert    index of the alert
+* @param units    Set the PID units by alert index
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+bool verify_alert_units(PID_UNITS units);
+PID_UNITS get_alert_units(uint8_t idx_alert);
+bool set_alert_units(uint8_t idx_alert, PID_UNITS units, bool save);
+
+
+/********************************************************************************
 *                                 Alert message                                 
 *
 * @param idx_alert    index of the alert
