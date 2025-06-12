@@ -72,6 +72,7 @@ extern const char *view_state_string[];
 bool verify_view_enable(VIEW_STATE enable);
 VIEW_STATE get_view_enable(uint8_t idx_view);
 bool set_view_enable(uint8_t idx_view, VIEW_STATE enable, bool save);
+VIEW_STATE get_view_enable_from_string(const char *str);
 
 
 /********************************************************************************
@@ -107,6 +108,7 @@ extern const char *view_background_string[];
 bool verify_view_background(VIEW_BACKGROUND background);
 VIEW_BACKGROUND get_view_background(uint8_t idx_view);
 bool set_view_background(uint8_t idx_view, VIEW_BACKGROUND background, bool save);
+VIEW_BACKGROUND get_view_background_from_string(const char *str);
 
 
 /********************************************************************************
@@ -131,6 +133,7 @@ extern const char *gauge_theme_string[];
 bool verify_view_gauge_theme(GAUGE_THEME theme);
 GAUGE_THEME get_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge);
 bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge,  GAUGE_THEME theme, bool save);
+GAUGE_THEME get_view_gauge_theme_from_string(const char *str);
 
 
 /********************************************************************************
@@ -180,6 +183,7 @@ extern const char *alert_state_string[];
 bool verify_alert_enable(ALERT_STATE enable);
 ALERT_STATE get_alert_enable(uint8_t idx_alert);
 bool set_alert_enable(uint8_t idx_alert, ALERT_STATE enable, bool save);
+ALERT_STATE get_alert_enable_from_string(const char *str);
 
 
 /********************************************************************************
@@ -244,6 +248,7 @@ extern const char *alert_comparison_string[];
 bool verify_alert_compare(ALERT_COMPARISON compare);
 ALERT_COMPARISON get_alert_compare(uint8_t idx_alert);
 bool set_alert_compare(uint8_t idx_alert, ALERT_COMPARISON compare, bool save);
+ALERT_COMPARISON get_alert_compare_from_string(const char *str);
 
 
 /********************************************************************************
@@ -278,6 +283,7 @@ extern const char *dynamic_state_string[];
 bool verify_dynamic_enable(DYNAMIC_STATE enable);
 DYNAMIC_STATE get_dynamic_enable(uint8_t idx_dynamic);
 bool set_dynamic_enable(uint8_t idx_dynamic, DYNAMIC_STATE enable, bool save);
+DYNAMIC_STATE get_dynamic_enable_from_string(const char *str);
 
 
 /********************************************************************************
@@ -300,6 +306,7 @@ extern const char *dynamic_priority_string[];
 bool verify_dynamic_priority(DYNAMIC_PRIORITY priority);
 DYNAMIC_PRIORITY get_dynamic_priority(uint8_t idx_dynamic);
 bool set_dynamic_priority(uint8_t idx_dynamic, DYNAMIC_PRIORITY priority, bool save);
+DYNAMIC_PRIORITY get_dynamic_priority_from_string(const char *str);
 
 
 /********************************************************************************
@@ -325,6 +332,7 @@ extern const char *dynamic_comparison_string[];
 bool verify_dynamic_compare(DYNAMIC_COMPARISON compare);
 DYNAMIC_COMPARISON get_dynamic_compare(uint8_t idx_dynamic);
 bool set_dynamic_compare(uint8_t idx_dynamic, DYNAMIC_COMPARISON compare, bool save);
+DYNAMIC_COMPARISON get_dynamic_compare_from_string(const char *str);
 
 
 /********************************************************************************

@@ -1486,6 +1486,14 @@ bool set_view_enable(uint8_t idx, VIEW_STATE view_enable, bool save)
     return 1;
 }
 
+VIEW_STATE get_view_enable_from_string(const char *str)
+{
+    if(strcmp(str, "Disabled") == 0) return VIEW_STATE_DISABLED;
+    if(strcmp(str, "Enabled") == 0) return VIEW_STATE_ENABLED;
+    return VIEW_STATE_RESERVED;
+}
+
+
 
 /********************************************************************************
 *                                Number of gauges                               
@@ -1631,6 +1639,15 @@ bool set_view_background(uint8_t idx, VIEW_BACKGROUND view_background, bool save
     return 1;
 }
 
+VIEW_BACKGROUND get_view_background_from_string(const char *str)
+{
+    if(strcmp(str, "Black") == 0) return VIEW_BACKGROUND_BLACK;
+    if(strcmp(str, "Flare") == 0) return VIEW_BACKGROUND_FLARE;
+    if(strcmp(str, "User1") == 0) return VIEW_BACKGROUND_USER1;
+    return VIEW_BACKGROUND_RESERVED;
+}
+
+
 
 /********************************************************************************
 *                          Theme assigned to the gauge                          
@@ -1707,6 +1724,16 @@ bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME view_
 
     return 1;
 }
+
+GAUGE_THEME get_view_gauge_theme_from_string(const char *str)
+{
+    if(strcmp(str, "Stock ST") == 0) return GAUGE_THEME_STOCK_ST;
+    if(strcmp(str, "Grumpy Cat") == 0) return GAUGE_THEME_GRUMPY_CAT;
+    if(strcmp(str, "Linear") == 0) return GAUGE_THEME_LINEAR;
+    if(strcmp(str, "Radial") == 0) return GAUGE_THEME_RADIAL;
+    return GAUGE_THEME_RESERVED;
+}
+
 
 
 /********************************************************************************
@@ -1935,6 +1962,14 @@ bool set_alert_enable(uint8_t idx, ALERT_STATE alert_enable, bool save)
 
     return 1;
 }
+
+ALERT_STATE get_alert_enable_from_string(const char *str)
+{
+    if(strcmp(str, "Disabled") == 0) return ALERT_STATE_DISABLED;
+    if(strcmp(str, "Enabled") == 0) return ALERT_STATE_ENABLED;
+    return ALERT_STATE_RESERVED;
+}
+
 
 
 /********************************************************************************
@@ -2354,6 +2389,18 @@ bool set_alert_compare(uint8_t idx, ALERT_COMPARISON alert_compare, bool save)
     return 1;
 }
 
+ALERT_COMPARISON get_alert_compare_from_string(const char *str)
+{
+    if(strcmp(str, "Less Than") == 0) return ALERT_COMPARISON_LESS_THAN;
+    if(strcmp(str, "Less Than Or Equal To") == 0) return ALERT_COMPARISON_LESS_THAN_OR_EQUAL_TO;
+    if(strcmp(str, "Greater Than") == 0) return ALERT_COMPARISON_GREATER_THAN;
+    if(strcmp(str, "Greater Than Or Equal To") == 0) return ALERT_COMPARISON_GREATER_THAN_OR_EQUAL_TO;
+    if(strcmp(str, "Equal") == 0) return ALERT_COMPARISON_EQUAL;
+    if(strcmp(str, "Not Equal") == 0) return ALERT_COMPARISON_NOT_EQUAL;
+    return ALERT_COMPARISON_RESERVED;
+}
+
+
 
 /********************************************************************************
 *                            Dynamic gauge threshold                            
@@ -2507,6 +2554,14 @@ bool set_dynamic_enable(uint8_t idx, DYNAMIC_STATE dynamic_enable, bool save)
     return 1;
 }
 
+DYNAMIC_STATE get_dynamic_enable_from_string(const char *str)
+{
+    if(strcmp(str, "Disabled") == 0) return DYNAMIC_STATE_DISABLED;
+    if(strcmp(str, "Enabled") == 0) return DYNAMIC_STATE_ENABLED;
+    return DYNAMIC_STATE_RESERVED;
+}
+
+
 
 /********************************************************************************
 *                                    Priority                                   
@@ -2581,6 +2636,15 @@ bool set_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY dynamic_priority, bool s
 
     return 1;
 }
+
+DYNAMIC_PRIORITY get_dynamic_priority_from_string(const char *str)
+{
+    if(strcmp(str, "Low") == 0) return DYNAMIC_PRIORITY_LOW;
+    if(strcmp(str, "Medium") == 0) return DYNAMIC_PRIORITY_MEDIUM;
+    if(strcmp(str, "High") == 0) return DYNAMIC_PRIORITY_HIGH;
+    return DYNAMIC_PRIORITY_RESERVED;
+}
+
 
 
 /********************************************************************************
@@ -2659,6 +2723,18 @@ bool set_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON dynamic_compare, bool s
 
     return 1;
 }
+
+DYNAMIC_COMPARISON get_dynamic_compare_from_string(const char *str)
+{
+    if(strcmp(str, "Less Than") == 0) return DYNAMIC_COMPARISON_LESS_THAN;
+    if(strcmp(str, "Less Than Or Equal To") == 0) return DYNAMIC_COMPARISON_LESS_THAN_OR_EQUAL_TO;
+    if(strcmp(str, "Greater Than") == 0) return DYNAMIC_COMPARISON_GREATER_THAN;
+    if(strcmp(str, "Greater Than Or Equal To") == 0) return DYNAMIC_COMPARISON_GREATER_THAN_OR_EQUAL_TO;
+    if(strcmp(str, "Equal") == 0) return DYNAMIC_COMPARISON_EQUAL;
+    if(strcmp(str, "Not Equal") == 0) return DYNAMIC_COMPARISON_NOT_EQUAL;
+    return DYNAMIC_COMPARISON_RESERVED;
+}
+
 
 
 /********************************************************************************
