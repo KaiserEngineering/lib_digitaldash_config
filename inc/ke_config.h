@@ -68,11 +68,7 @@ typedef enum
     VIEW_STATE_RESERVED
 } VIEW_STATE;
 
-const char *view_state_string[] = {
-    "Disabled",
-    "Enabled"
-};
-
+extern const char *view_state_string[];
 bool verify_view_enable(VIEW_STATE enable);
 VIEW_STATE get_view_enable(uint8_t idx_view);
 bool set_view_enable(uint8_t idx_view, VIEW_STATE enable, bool save);
@@ -107,12 +103,7 @@ typedef enum
     VIEW_BACKGROUND_RESERVED
 } VIEW_BACKGROUND;
 
-const char *view_background_string[] = {
-    "Black",
-    "Flare",
-    "User1"
-};
-
+extern const char *view_background_string[];
 bool verify_view_background(VIEW_BACKGROUND background);
 VIEW_BACKGROUND get_view_background(uint8_t idx_view);
 bool set_view_background(uint8_t idx_view, VIEW_BACKGROUND background, bool save);
@@ -136,13 +127,7 @@ typedef enum
     GAUGE_THEME_RESERVED
 } GAUGE_THEME;
 
-const char *gauge_theme_string[] = {
-    "Stock ST",
-    "Grumpy Cat",
-    "Linear",
-    "Radial"
-};
-
+extern const char *gauge_theme_string[];
 bool verify_view_gauge_theme(GAUGE_THEME theme);
 GAUGE_THEME get_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge);
 bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge,  GAUGE_THEME theme, bool save);
@@ -191,11 +176,7 @@ typedef enum
     ALERT_STATE_RESERVED
 } ALERT_STATE;
 
-const char *alert_state_string[] = {
-    "Disabled",
-    "Enabled"
-};
-
+extern const char *alert_state_string[];
 bool verify_alert_enable(ALERT_STATE enable);
 ALERT_STATE get_alert_enable(uint8_t idx_alert);
 bool set_alert_enable(uint8_t idx_alert, ALERT_STATE enable, bool save);
@@ -259,15 +240,7 @@ typedef enum
     ALERT_COMPARISON_RESERVED
 } ALERT_COMPARISON;
 
-const char *alert_comparison_string[] = {
-    "Less Than",
-    "Less Than Or Equal To",
-    "Greater Than",
-    "Greater Than Or Equal To",
-    "Equal",
-    "Not Equal"
-};
-
+extern const char *alert_comparison_string[];
 bool verify_alert_compare(ALERT_COMPARISON compare);
 ALERT_COMPARISON get_alert_compare(uint8_t idx_alert);
 bool set_alert_compare(uint8_t idx_alert, ALERT_COMPARISON compare, bool save);
@@ -301,11 +274,7 @@ typedef enum
     DYNAMIC_STATE_RESERVED
 } DYNAMIC_STATE;
 
-const char *dynamic_state_string[] = {
-    "Disabled",
-    "Enabled"
-};
-
+extern const char *dynamic_state_string[];
 bool verify_dynamic_enable(DYNAMIC_STATE enable);
 DYNAMIC_STATE get_dynamic_enable(uint8_t idx_dynamic);
 bool set_dynamic_enable(uint8_t idx_dynamic, DYNAMIC_STATE enable, bool save);
@@ -327,12 +296,7 @@ typedef enum
     DYNAMIC_PRIORITY_RESERVED
 } DYNAMIC_PRIORITY;
 
-const char *dynamic_priority_string[] = {
-    "Low",
-    "Medium",
-    "High"
-};
-
+extern const char *dynamic_priority_string[];
 bool verify_dynamic_priority(DYNAMIC_PRIORITY priority);
 DYNAMIC_PRIORITY get_dynamic_priority(uint8_t idx_dynamic);
 bool set_dynamic_priority(uint8_t idx_dynamic, DYNAMIC_PRIORITY priority, bool save);
@@ -357,15 +321,7 @@ typedef enum
     DYNAMIC_COMPARISON_RESERVED
 } DYNAMIC_COMPARISON;
 
-const char *dynamic_comparison_string[] = {
-    "Less Than",
-    "Less Than Or Equal To",
-    "Greater Than",
-    "Greater Than Or Equal To",
-    "Equal",
-    "Not Equal"
-};
-
+extern const char *dynamic_comparison_string[];
 bool verify_dynamic_compare(DYNAMIC_COMPARISON compare);
 DYNAMIC_COMPARISON get_dynamic_compare(uint8_t idx_dynamic);
 bool set_dynamic_compare(uint8_t idx_dynamic, DYNAMIC_COMPARISON compare, bool save);

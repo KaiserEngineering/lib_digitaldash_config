@@ -1421,6 +1421,11 @@ void load_settings(void)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
+const char *view_state_string[] = {
+    "Disabled",
+    "Enabled"
+};
+
 static void load_view_enable(uint8_t idx, VIEW_STATE *view_enable_val)
 {
     uint8_t bytes[EE_SIZE_VIEW_ENABLE];
@@ -1560,6 +1565,12 @@ bool set_view_num_gauges(uint8_t idx, uint8_t view_num_gauges, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
+const char *view_background_string[] = {
+    "Black",
+    "Flare",
+    "User1"
+};
+
 static void load_view_background(uint8_t idx, VIEW_BACKGROUND *view_background_val)
 {
     uint8_t bytes[EE_SIZE_VIEW_BACKGROUND];
@@ -1630,6 +1641,13 @@ bool set_view_background(uint8_t idx, VIEW_BACKGROUND view_background, bool save
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
+const char *gauge_theme_string[] = {
+    "Stock ST",
+    "Grumpy Cat",
+    "Linear",
+    "Radial"
+};
+
 static void load_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME *view_gauge_theme_val)
 {
     uint8_t bytes[EE_SIZE_VIEW_GAUGE_THEME];
@@ -1853,6 +1871,11 @@ bool set_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS view_ga
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
+const char *alert_state_string[] = {
+    "Disabled",
+    "Enabled"
+};
+
 static void load_alert_enable(uint8_t idx, ALERT_STATE *alert_enable_val)
 {
     uint8_t bytes[EE_SIZE_ALERT_ENABLE];
@@ -2262,6 +2285,15 @@ bool set_alert_message(uint8_t idx, char* alert_message, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
+const char *alert_comparison_string[] = {
+    "Less Than",
+    "Less Than Or Equal To",
+    "Greater Than",
+    "Greater Than Or Equal To",
+    "Equal",
+    "Not Equal"
+};
+
 static void load_alert_compare(uint8_t idx, ALERT_COMPARISON *alert_compare_val)
 {
     uint8_t bytes[EE_SIZE_ALERT_COMPARE];
@@ -2410,6 +2442,11 @@ bool set_alert_threshold(uint8_t idx, float alert_threshold, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
+const char *dynamic_state_string[] = {
+    "Disabled",
+    "Enabled"
+};
+
 static void load_dynamic_enable(uint8_t idx, DYNAMIC_STATE *dynamic_enable_val)
 {
     uint8_t bytes[EE_SIZE_DYNAMIC_ENABLE];
@@ -2479,6 +2516,12 @@ bool set_dynamic_enable(uint8_t idx, DYNAMIC_STATE dynamic_enable, bool save)
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
+const char *dynamic_priority_string[] = {
+    "Low",
+    "Medium",
+    "High"
+};
+
 static void load_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY *dynamic_priority_val)
 {
     uint8_t bytes[EE_SIZE_DYNAMIC_PRIORITY];
@@ -2548,6 +2591,15 @@ bool set_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY dynamic_priority, bool s
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
+const char *dynamic_comparison_string[] = {
+    "Less Than",
+    "Less Than Or Equal To",
+    "Greater Than",
+    "Greater Than Or Equal To",
+    "Equal",
+    "Not Equal"
+};
+
 static void load_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON *dynamic_compare_val)
 {
     uint8_t bytes[EE_SIZE_DYNAMIC_COMPARE];
