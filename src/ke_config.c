@@ -1373,13 +1373,13 @@ void load_settings(void)
         load_alert_enable(idx, &settings_alert_enable[idx]);
 
     for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
-        load_alert_message(idx, settings_alert_message[idx]);
+        load_alert_pid(idx, &settings_alert_pid[idx]);
 
     for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
         load_alert_units(idx, &settings_alert_units[idx]);
 
     for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
-        load_alert_message(idx, &settings_alert_message[idx]);
+        load_alert_message(idx, settings_alert_message[idx]);
 
     for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
         load_alert_compare(idx, &settings_alert_compare[idx]);
