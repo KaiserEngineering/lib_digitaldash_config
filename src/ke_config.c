@@ -1321,9 +1321,7 @@ bool config_to_json(char *buffer, size_t buffer_size) {
     for(int i = 0; i < MAX_VIEWS; i++) {
         cJSON *view = cJSON_CreateObject();
         cJSON_AddStringToObject(view, "enable", view_state_string[get_view_enable(i)]);
-        cJSON_AddItemToArray(views, view);
         cJSON_AddNumberToObject(view, "num_gauges", get_view_num_gauges(i));
-        cJSON_AddItemToArray(views, view);
         cJSON_AddStringToObject(view, "background", view_background_string[get_view_background(i)]);
         cJSON_AddItemToArray(views, view);
     }
@@ -1333,17 +1331,12 @@ bool config_to_json(char *buffer, size_t buffer_size) {
     for(int i = 0; i < MAX_ALERTS; i++) {
         cJSON *alert = cJSON_CreateObject();
         cJSON_AddStringToObject(alert, "enable", alert_state_string[get_alert_enable(i)]);
-        cJSON_AddItemToArray(alerts, alert);
         cJSON_AddNumberToObject(alert, "pid", get_alert_pid(i));
-        cJSON_AddItemToArray(alerts, alert);
         cJSON_AddNumberToObject(alert, "units", get_alert_units(i));
-        cJSON_AddItemToArray(alerts, alert);
         char tmp_alert_message[64] = {0};
         get_alert_message(i, tmp_alert_message);
         cJSON_AddStringToObject(alert, "message", tmp_alert_message);
-        cJSON_AddItemToArray(alerts, alert);
         cJSON_AddStringToObject(alert, "compare", alert_comparison_string[get_alert_compare(i)]);
-        cJSON_AddItemToArray(alerts, alert);
         cJSON_AddNumberToObject(alert, "threshold", get_alert_threshold(i));
         cJSON_AddItemToArray(alerts, alert);
     }
@@ -1353,17 +1346,11 @@ bool config_to_json(char *buffer, size_t buffer_size) {
     for(int i = 0; i < MAX_DYNAMICS; i++) {
         cJSON *dynamic = cJSON_CreateObject();
         cJSON_AddStringToObject(dynamic, "enable", dynamic_state_string[get_dynamic_enable(i)]);
-        cJSON_AddItemToArray(dynamics, dynamic);
         cJSON_AddStringToObject(dynamic, "priority", dynamic_priority_string[get_dynamic_priority(i)]);
-        cJSON_AddItemToArray(dynamics, dynamic);
         cJSON_AddStringToObject(dynamic, "compare", dynamic_comparison_string[get_dynamic_compare(i)]);
-        cJSON_AddItemToArray(dynamics, dynamic);
         cJSON_AddNumberToObject(dynamic, "Threshold", get_dynamic_threshold(i));
-        cJSON_AddItemToArray(dynamics, dynamic);
         cJSON_AddNumberToObject(dynamic, "Index", get_dynamic_index(i));
-        cJSON_AddItemToArray(dynamics, dynamic);
         cJSON_AddNumberToObject(dynamic, "pid", get_dynamic_pid(i));
-        cJSON_AddItemToArray(dynamics, dynamic);
         cJSON_AddNumberToObject(dynamic, "units", get_dynamic_units(i));
         cJSON_AddItemToArray(dynamics, dynamic);
     }
