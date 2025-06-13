@@ -43,11 +43,11 @@ typedef uint8_t(settings_read)(uint16_t bAdd);
 void settings_setWriteHandler(settings_write *writeHandler);
 void settings_setReadHandler(settings_read *readHandler);
 
-#define GAUGES_PER_VIEW 3
+#define MAX_GAUGES_PER_VIEW 3
 #define MAX_ALERTS 5
 #define ALERT_MESSAGE_LEN 64
 #define MAX_VIEWS 3
-#define NUM_DYNAMIC 2
+#define MAX_DYNAMICS 2
 
 void load_settings(void);
 void write_eeprom(uint16_t bAdd, uint8_t bData);

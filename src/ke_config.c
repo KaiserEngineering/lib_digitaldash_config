@@ -81,7 +81,7 @@ static const uint16_t map_view_enable_byte1[MAX_VIEWS] = {
 #define EEPROM_VIEW_NUM_GAUGES1_BYTE1 (uint16_t)0x0003
 #define EEPROM_VIEW_NUM_GAUGES2_BYTE1 (uint16_t)0x0004
 #define EEPROM_VIEW_NUM_GAUGES3_BYTE1 (uint16_t)0x0005
-static const uint16_t map_view_num_gauges_byte1[GAUGES_PER_VIEW] = {
+static const uint16_t map_view_num_gauges_byte1[MAX_GAUGES_PER_VIEW] = {
     EEPROM_VIEW_NUM_GAUGES1_BYTE1,
     EEPROM_VIEW_NUM_GAUGES2_BYTE1,
     EEPROM_VIEW_NUM_GAUGES3_BYTE1
@@ -110,7 +110,7 @@ static const uint16_t map_view_background_byte1[MAX_VIEWS] = {
 #define EEPROM_VIEW1_GAUGE_THEME_BYTE1 {EEPROM_VIEW1_GAUGE_THEME1_BYTE1, EEPROM_VIEW1_GAUGE_THEME2_BYTE1, EEPROM_VIEW1_GAUGE_THEME3_BYTE1}
 #define EEPROM_VIEW2_GAUGE_THEME_BYTE1 {EEPROM_VIEW2_GAUGE_THEME1_BYTE1, EEPROM_VIEW2_GAUGE_THEME2_BYTE1, EEPROM_VIEW2_GAUGE_THEME3_BYTE1}
 #define EEPROM_VIEW3_GAUGE_THEME_BYTE1 {EEPROM_VIEW3_GAUGE_THEME1_BYTE1, EEPROM_VIEW3_GAUGE_THEME2_BYTE1, EEPROM_VIEW3_GAUGE_THEME3_BYTE1}
-static const uint16_t map_view_gauge_theme_byte1[MAX_VIEWS][GAUGES_PER_VIEW] = {
+static const uint16_t map_view_gauge_theme_byte1[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {
     EEPROM_VIEW1_GAUGE_THEME_BYTE1,
     EEPROM_VIEW2_GAUGE_THEME_BYTE1,
     EEPROM_VIEW3_GAUGE_THEME_BYTE1
@@ -156,7 +156,7 @@ static const uint16_t map_view_gauge_theme_byte1[MAX_VIEWS][GAUGES_PER_VIEW] = {
 #define EEPROM_VIEW1_GAUGE_PID_BYTE1 {EEPROM_VIEW1_GAUGE_PID1_BYTE1, EEPROM_VIEW1_GAUGE_PID2_BYTE1, EEPROM_VIEW1_GAUGE_PID3_BYTE1}
 #define EEPROM_VIEW2_GAUGE_PID_BYTE1 {EEPROM_VIEW2_GAUGE_PID1_BYTE1, EEPROM_VIEW2_GAUGE_PID2_BYTE1, EEPROM_VIEW2_GAUGE_PID3_BYTE1}
 #define EEPROM_VIEW3_GAUGE_PID_BYTE1 {EEPROM_VIEW3_GAUGE_PID1_BYTE1, EEPROM_VIEW3_GAUGE_PID2_BYTE1, EEPROM_VIEW3_GAUGE_PID3_BYTE1}
-static const uint16_t map_view_gauge_pid_byte1[MAX_VIEWS][GAUGES_PER_VIEW] = {
+static const uint16_t map_view_gauge_pid_byte1[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {
     EEPROM_VIEW1_GAUGE_PID_BYTE1,
     EEPROM_VIEW2_GAUGE_PID_BYTE1,
     EEPROM_VIEW3_GAUGE_PID_BYTE1
@@ -165,7 +165,7 @@ static const uint16_t map_view_gauge_pid_byte1[MAX_VIEWS][GAUGES_PER_VIEW] = {
 #define EEPROM_VIEW1_GAUGE_PID_BYTE2 {EEPROM_VIEW1_GAUGE_PID1_BYTE2, EEPROM_VIEW1_GAUGE_PID2_BYTE2, EEPROM_VIEW1_GAUGE_PID3_BYTE2}
 #define EEPROM_VIEW2_GAUGE_PID_BYTE2 {EEPROM_VIEW2_GAUGE_PID1_BYTE2, EEPROM_VIEW2_GAUGE_PID2_BYTE2, EEPROM_VIEW2_GAUGE_PID3_BYTE2}
 #define EEPROM_VIEW3_GAUGE_PID_BYTE2 {EEPROM_VIEW3_GAUGE_PID1_BYTE2, EEPROM_VIEW3_GAUGE_PID2_BYTE2, EEPROM_VIEW3_GAUGE_PID3_BYTE2}
-static const uint16_t map_view_gauge_pid_byte2[MAX_VIEWS][GAUGES_PER_VIEW] = {
+static const uint16_t map_view_gauge_pid_byte2[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {
     EEPROM_VIEW1_GAUGE_PID_BYTE2,
     EEPROM_VIEW2_GAUGE_PID_BYTE2,
     EEPROM_VIEW3_GAUGE_PID_BYTE2
@@ -174,7 +174,7 @@ static const uint16_t map_view_gauge_pid_byte2[MAX_VIEWS][GAUGES_PER_VIEW] = {
 #define EEPROM_VIEW1_GAUGE_PID_BYTE3 {EEPROM_VIEW1_GAUGE_PID1_BYTE3, EEPROM_VIEW1_GAUGE_PID2_BYTE3, EEPROM_VIEW1_GAUGE_PID3_BYTE3}
 #define EEPROM_VIEW2_GAUGE_PID_BYTE3 {EEPROM_VIEW2_GAUGE_PID1_BYTE3, EEPROM_VIEW2_GAUGE_PID2_BYTE3, EEPROM_VIEW2_GAUGE_PID3_BYTE3}
 #define EEPROM_VIEW3_GAUGE_PID_BYTE3 {EEPROM_VIEW3_GAUGE_PID1_BYTE3, EEPROM_VIEW3_GAUGE_PID2_BYTE3, EEPROM_VIEW3_GAUGE_PID3_BYTE3}
-static const uint16_t map_view_gauge_pid_byte3[MAX_VIEWS][GAUGES_PER_VIEW] = {
+static const uint16_t map_view_gauge_pid_byte3[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {
     EEPROM_VIEW1_GAUGE_PID_BYTE3,
     EEPROM_VIEW2_GAUGE_PID_BYTE3,
     EEPROM_VIEW3_GAUGE_PID_BYTE3
@@ -183,7 +183,7 @@ static const uint16_t map_view_gauge_pid_byte3[MAX_VIEWS][GAUGES_PER_VIEW] = {
 #define EEPROM_VIEW1_GAUGE_PID_BYTE4 {EEPROM_VIEW1_GAUGE_PID1_BYTE4, EEPROM_VIEW1_GAUGE_PID2_BYTE4, EEPROM_VIEW1_GAUGE_PID3_BYTE4}
 #define EEPROM_VIEW2_GAUGE_PID_BYTE4 {EEPROM_VIEW2_GAUGE_PID1_BYTE4, EEPROM_VIEW2_GAUGE_PID2_BYTE4, EEPROM_VIEW2_GAUGE_PID3_BYTE4}
 #define EEPROM_VIEW3_GAUGE_PID_BYTE4 {EEPROM_VIEW3_GAUGE_PID1_BYTE4, EEPROM_VIEW3_GAUGE_PID2_BYTE4, EEPROM_VIEW3_GAUGE_PID3_BYTE4}
-static const uint16_t map_view_gauge_pid_byte4[MAX_VIEWS][GAUGES_PER_VIEW] = {
+static const uint16_t map_view_gauge_pid_byte4[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {
     EEPROM_VIEW1_GAUGE_PID_BYTE4,
     EEPROM_VIEW2_GAUGE_PID_BYTE4,
     EEPROM_VIEW3_GAUGE_PID_BYTE4
@@ -202,7 +202,7 @@ static const uint16_t map_view_gauge_pid_byte4[MAX_VIEWS][GAUGES_PER_VIEW] = {
 #define EEPROM_VIEW1_GAUGE_UNITS_BYTE1 {EEPROM_VIEW1_GAUGE_UNITS1_BYTE1, EEPROM_VIEW1_GAUGE_UNITS2_BYTE1, EEPROM_VIEW1_GAUGE_UNITS3_BYTE1}
 #define EEPROM_VIEW2_GAUGE_UNITS_BYTE1 {EEPROM_VIEW2_GAUGE_UNITS1_BYTE1, EEPROM_VIEW2_GAUGE_UNITS2_BYTE1, EEPROM_VIEW2_GAUGE_UNITS3_BYTE1}
 #define EEPROM_VIEW3_GAUGE_UNITS_BYTE1 {EEPROM_VIEW3_GAUGE_UNITS1_BYTE1, EEPROM_VIEW3_GAUGE_UNITS2_BYTE1, EEPROM_VIEW3_GAUGE_UNITS3_BYTE1}
-static const uint16_t map_view_gauge_units_byte1[MAX_VIEWS][GAUGES_PER_VIEW] = {
+static const uint16_t map_view_gauge_units_byte1[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {
     EEPROM_VIEW1_GAUGE_UNITS_BYTE1,
     EEPROM_VIEW2_GAUGE_UNITS_BYTE1,
     EEPROM_VIEW3_GAUGE_UNITS_BYTE1
@@ -1145,22 +1145,22 @@ static const uint16_t map_alert_compare_byte1[MAX_ALERTS] = {
 #define EEPROM_ALERT_THRESHOLD2_BYTE2 (uint16_t)0x01A7
 #define EEPROM_ALERT_THRESHOLD2_BYTE3 (uint16_t)0x01A8
 #define EEPROM_ALERT_THRESHOLD2_BYTE4 (uint16_t)0x01A9
-static const uint16_t map_alert_threshold_byte1[NUM_DYNAMIC] = {
+static const uint16_t map_alert_threshold_byte1[MAX_DYNAMICS] = {
     EEPROM_ALERT_THRESHOLD1_BYTE1,
     EEPROM_ALERT_THRESHOLD2_BYTE1
     };
 
-static const uint16_t map_alert_threshold_byte2[NUM_DYNAMIC] = {
+static const uint16_t map_alert_threshold_byte2[MAX_DYNAMICS] = {
     EEPROM_ALERT_THRESHOLD1_BYTE2,
     EEPROM_ALERT_THRESHOLD2_BYTE2
     };
 
-static const uint16_t map_alert_threshold_byte3[NUM_DYNAMIC] = {
+static const uint16_t map_alert_threshold_byte3[MAX_DYNAMICS] = {
     EEPROM_ALERT_THRESHOLD1_BYTE3,
     EEPROM_ALERT_THRESHOLD2_BYTE3
     };
 
-static const uint16_t map_alert_threshold_byte4[NUM_DYNAMIC] = {
+static const uint16_t map_alert_threshold_byte4[MAX_DYNAMICS] = {
     EEPROM_ALERT_THRESHOLD1_BYTE4,
     EEPROM_ALERT_THRESHOLD2_BYTE4
     };
@@ -1168,7 +1168,7 @@ static const uint16_t map_alert_threshold_byte4[NUM_DYNAMIC] = {
 // EEPROM Memory Map - dynamic enable
 #define EEPROM_DYNAMIC_ENABLE1_BYTE1 (uint16_t)0x01AA
 #define EEPROM_DYNAMIC_ENABLE2_BYTE1 (uint16_t)0x01AB
-static const uint16_t map_dynamic_enable_byte1[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_enable_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_ENABLE1_BYTE1,
     EEPROM_DYNAMIC_ENABLE2_BYTE1
     };
@@ -1176,7 +1176,7 @@ static const uint16_t map_dynamic_enable_byte1[NUM_DYNAMIC] = {
 // EEPROM Memory Map - dynamic priority
 #define EEPROM_DYNAMIC_PRIORITY1_BYTE1 (uint16_t)0x01AC
 #define EEPROM_DYNAMIC_PRIORITY2_BYTE1 (uint16_t)0x01AD
-static const uint16_t map_dynamic_priority_byte1[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_priority_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PRIORITY1_BYTE1,
     EEPROM_DYNAMIC_PRIORITY2_BYTE1
     };
@@ -1204,22 +1204,22 @@ static const uint16_t map_dynamic_compare_byte1[MAX_ALERTS] = {
 #define EEPROM_DYNAMIC_THRESHOLD2_BYTE2 (uint16_t)0x01B8
 #define EEPROM_DYNAMIC_THRESHOLD2_BYTE3 (uint16_t)0x01B9
 #define EEPROM_DYNAMIC_THRESHOLD2_BYTE4 (uint16_t)0x01BA
-static const uint16_t map_dynamic_threshold_byte1[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_threshold_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_THRESHOLD1_BYTE1,
     EEPROM_DYNAMIC_THRESHOLD2_BYTE1
     };
 
-static const uint16_t map_dynamic_threshold_byte2[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_threshold_byte2[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_THRESHOLD1_BYTE2,
     EEPROM_DYNAMIC_THRESHOLD2_BYTE2
     };
 
-static const uint16_t map_dynamic_threshold_byte3[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_threshold_byte3[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_THRESHOLD1_BYTE3,
     EEPROM_DYNAMIC_THRESHOLD2_BYTE3
     };
 
-static const uint16_t map_dynamic_threshold_byte4[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_threshold_byte4[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_THRESHOLD1_BYTE4,
     EEPROM_DYNAMIC_THRESHOLD2_BYTE4
     };
@@ -1227,7 +1227,7 @@ static const uint16_t map_dynamic_threshold_byte4[NUM_DYNAMIC] = {
 // EEPROM Memory Map - dynamic Index
 #define EEPROM_DYNAMIC_INDEX1_BYTE1 (uint16_t)0x01BB
 #define EEPROM_DYNAMIC_INDEX2_BYTE1 (uint16_t)0x01BC
-static const uint16_t map_dynamic_index_byte1[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_index_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_INDEX1_BYTE1,
     EEPROM_DYNAMIC_INDEX2_BYTE1
     };
@@ -1241,22 +1241,22 @@ static const uint16_t map_dynamic_index_byte1[NUM_DYNAMIC] = {
 #define EEPROM_DYNAMIC_PID2_BYTE2 (uint16_t)0x01C2
 #define EEPROM_DYNAMIC_PID2_BYTE3 (uint16_t)0x01C3
 #define EEPROM_DYNAMIC_PID2_BYTE4 (uint16_t)0x01C4
-static const uint16_t map_dynamic_pid_byte1[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_pid_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PID1_BYTE1,
     EEPROM_DYNAMIC_PID2_BYTE1
     };
 
-static const uint16_t map_dynamic_pid_byte2[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_pid_byte2[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PID1_BYTE2,
     EEPROM_DYNAMIC_PID2_BYTE2
     };
 
-static const uint16_t map_dynamic_pid_byte3[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_pid_byte3[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PID1_BYTE3,
     EEPROM_DYNAMIC_PID2_BYTE3
     };
 
-static const uint16_t map_dynamic_pid_byte4[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_pid_byte4[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PID1_BYTE4,
     EEPROM_DYNAMIC_PID2_BYTE4
     };
@@ -1264,31 +1264,31 @@ static const uint16_t map_dynamic_pid_byte4[NUM_DYNAMIC] = {
 // EEPROM Memory Map - dynamic units
 #define EEPROM_DYNAMIC_UNITS1_BYTE1 (uint16_t)0x01C5
 #define EEPROM_DYNAMIC_UNITS2_BYTE1 (uint16_t)0x01C6
-static const uint16_t map_dynamic_units_byte1[NUM_DYNAMIC] = {
+static const uint16_t map_dynamic_units_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_UNITS1_BYTE1,
     EEPROM_DYNAMIC_UNITS2_BYTE1
     };
 
 
 static VIEW_STATE settings_view_enable[MAX_VIEWS] = {DEFAULT_VIEW_ENABLE};
-static uint8_t settings_view_num_gauges[GAUGES_PER_VIEW] = {DEFAULT_VIEW_NUM_GAUGES};
+static uint8_t settings_view_num_gauges[MAX_GAUGES_PER_VIEW] = {DEFAULT_VIEW_NUM_GAUGES};
 static VIEW_BACKGROUND settings_view_background[MAX_VIEWS] = {DEFAULT_VIEW_BACKGROUND};
-static GAUGE_THEME settings_view_gauge_theme[MAX_VIEWS][GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_THEME};
-static uint32_t settings_view_gauge_pid[MAX_VIEWS][GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_PID};
-static PID_UNITS settings_view_gauge_units[MAX_VIEWS][GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_UNITS};
+static GAUGE_THEME settings_view_gauge_theme[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_THEME};
+static uint32_t settings_view_gauge_pid[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_PID};
+static PID_UNITS settings_view_gauge_units[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_UNITS};
 static ALERT_STATE settings_alert_enable[MAX_ALERTS] = {DEFAULT_ALERT_ENABLE};
 static uint32_t settings_alert_pid[MAX_ALERTS] = {DEFAULT_ALERT_PID};
 static PID_UNITS settings_alert_units[MAX_ALERTS] = {DEFAULT_ALERT_UNITS};
 static char settings_alert_message[MAX_ALERTS][ALERT_MESSAGE_LEN] = {DEFAULT_ALERT_MESSAGE};
 static ALERT_COMPARISON settings_alert_compare[MAX_ALERTS] = {DEFAULT_ALERT_COMPARE};
-static float settings_alert_threshold[NUM_DYNAMIC] = {DEFAULT_ALERT_THRESHOLD};
-static DYNAMIC_STATE settings_dynamic_enable[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_ENABLE};
-static DYNAMIC_PRIORITY settings_dynamic_priority[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_PRIORITY};
+static float settings_alert_threshold[MAX_DYNAMICS] = {DEFAULT_ALERT_THRESHOLD};
+static DYNAMIC_STATE settings_dynamic_enable[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_ENABLE};
+static DYNAMIC_PRIORITY settings_dynamic_priority[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_PRIORITY};
 static DYNAMIC_COMPARISON settings_dynamic_compare[MAX_ALERTS] = {DEFAULT_DYNAMIC_COMPARE};
-static float settings_dynamic_threshold[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_THRESHOLD};
-static uint8_t settings_dynamic_index[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_INDEX};
-static uint32_t settings_dynamic_pid[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_PID};
-static PID_UNITS settings_dynamic_units[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_UNITS};
+static float settings_dynamic_threshold[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_THRESHOLD};
+static uint8_t settings_dynamic_index[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_INDEX};
+static uint32_t settings_dynamic_pid[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_PID};
+static PID_UNITS settings_dynamic_units[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_UNITS};
 
 
 static void load_view_enable(uint8_t idx, VIEW_STATE *view_enable_val);
@@ -1351,22 +1351,22 @@ void load_settings(void)
     for( uint8_t idx = 0; idx < MAX_VIEWS; idx++ )
         load_view_enable(idx, &settings_view_enable[idx]);
 
-    for( uint8_t idx = 0; idx < GAUGES_PER_VIEW; idx++ )
+    for( uint8_t idx = 0; idx < MAX_GAUGES_PER_VIEW; idx++ )
         load_view_num_gauges(idx, &settings_view_num_gauges[idx]);
 
     for( uint8_t idx = 0; idx < MAX_VIEWS; idx++ )
         load_view_background(idx, &settings_view_background[idx]);
 
     for( uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++ )
-        for( uint8_t idx_gauge = 0; idx_gauge < GAUGES_PER_VIEW; idx_gauge++ )
+        for( uint8_t idx_gauge = 0; idx_gauge < MAX_GAUGES_PER_VIEW; idx_gauge++ )
             load_view_gauge_theme(idx_view, idx_gauge, &settings_view_gauge_theme[idx_view][idx_gauge]);
 
     for( uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++ )
-        for( uint8_t idx_gauge = 0; idx_gauge < GAUGES_PER_VIEW; idx_gauge++ )
+        for( uint8_t idx_gauge = 0; idx_gauge < MAX_GAUGES_PER_VIEW; idx_gauge++ )
             load_view_gauge_pid(idx_view, idx_gauge, &settings_view_gauge_pid[idx_view][idx_gauge]);
 
     for( uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++ )
-        for( uint8_t idx_gauge = 0; idx_gauge < GAUGES_PER_VIEW; idx_gauge++ )
+        for( uint8_t idx_gauge = 0; idx_gauge < MAX_GAUGES_PER_VIEW; idx_gauge++ )
             load_view_gauge_units(idx_view, idx_gauge, &settings_view_gauge_units[idx_view][idx_gauge]);
 
     for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
@@ -1384,28 +1384,28 @@ void load_settings(void)
     for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
         load_alert_compare(idx, &settings_alert_compare[idx]);
 
-    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+    for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
         load_alert_threshold(idx, &settings_alert_threshold[idx]);
 
-    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+    for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
         load_dynamic_enable(idx, &settings_dynamic_enable[idx]);
 
-    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+    for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
         load_dynamic_priority(idx, &settings_dynamic_priority[idx]);
 
     for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
         load_dynamic_compare(idx, &settings_dynamic_compare[idx]);
 
-    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+    for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
         load_dynamic_threshold(idx, &settings_dynamic_threshold[idx]);
 
-    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+    for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
         load_dynamic_index(idx, &settings_dynamic_index[idx]);
 
-    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+    for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
         load_dynamic_pid(idx, &settings_dynamic_pid[idx]);
 
-    for( uint8_t idx = 0; idx < NUM_DYNAMIC; idx++ )
+    for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
         load_dynamic_units(idx, &settings_dynamic_units[idx]);
 
 }
@@ -1523,7 +1523,7 @@ static void save_view_num_gauges(uint8_t idx, uint8_t *view_num_gauges)
 
 bool verify_view_num_gauges(uint8_t view_num_gauges)
 {
-    if (view_num_gauges > GAUGES_PER_VIEW)
+    if (view_num_gauges > MAX_GAUGES_PER_VIEW)
         return 0;
 
     else
