@@ -1145,65 +1145,83 @@ static const uint16_t map_alert_compare_byte1[MAX_ALERTS] = {
 #define EEPROM_ALERT_THRESHOLD2_BYTE2 (uint16_t)0x01A7
 #define EEPROM_ALERT_THRESHOLD2_BYTE3 (uint16_t)0x01A8
 #define EEPROM_ALERT_THRESHOLD2_BYTE4 (uint16_t)0x01A9
-static const uint16_t map_alert_threshold_byte1[MAX_DYNAMICS] = {
+#define EEPROM_ALERT_THRESHOLD3_BYTE1 (uint16_t)0x01AA
+#define EEPROM_ALERT_THRESHOLD3_BYTE2 (uint16_t)0x01AB
+#define EEPROM_ALERT_THRESHOLD3_BYTE3 (uint16_t)0x01AC
+#define EEPROM_ALERT_THRESHOLD3_BYTE4 (uint16_t)0x01AD
+#define EEPROM_ALERT_THRESHOLD4_BYTE1 (uint16_t)0x01AE
+#define EEPROM_ALERT_THRESHOLD4_BYTE2 (uint16_t)0x01AF
+#define EEPROM_ALERT_THRESHOLD4_BYTE3 (uint16_t)0x01B0
+#define EEPROM_ALERT_THRESHOLD4_BYTE4 (uint16_t)0x01B1
+#define EEPROM_ALERT_THRESHOLD5_BYTE1 (uint16_t)0x01B2
+#define EEPROM_ALERT_THRESHOLD5_BYTE2 (uint16_t)0x01B3
+#define EEPROM_ALERT_THRESHOLD5_BYTE3 (uint16_t)0x01B4
+#define EEPROM_ALERT_THRESHOLD5_BYTE4 (uint16_t)0x01B5
+static const uint16_t map_alert_threshold_byte1[MAX_ALERTS] = {
     EEPROM_ALERT_THRESHOLD1_BYTE1,
-    EEPROM_ALERT_THRESHOLD2_BYTE1
+    EEPROM_ALERT_THRESHOLD2_BYTE1,
+    EEPROM_ALERT_THRESHOLD3_BYTE1,
+    EEPROM_ALERT_THRESHOLD4_BYTE1,
+    EEPROM_ALERT_THRESHOLD5_BYTE1
     };
 
-static const uint16_t map_alert_threshold_byte2[MAX_DYNAMICS] = {
+static const uint16_t map_alert_threshold_byte2[MAX_ALERTS] = {
     EEPROM_ALERT_THRESHOLD1_BYTE2,
-    EEPROM_ALERT_THRESHOLD2_BYTE2
+    EEPROM_ALERT_THRESHOLD2_BYTE2,
+    EEPROM_ALERT_THRESHOLD3_BYTE2,
+    EEPROM_ALERT_THRESHOLD4_BYTE2,
+    EEPROM_ALERT_THRESHOLD5_BYTE2
     };
 
-static const uint16_t map_alert_threshold_byte3[MAX_DYNAMICS] = {
+static const uint16_t map_alert_threshold_byte3[MAX_ALERTS] = {
     EEPROM_ALERT_THRESHOLD1_BYTE3,
-    EEPROM_ALERT_THRESHOLD2_BYTE3
+    EEPROM_ALERT_THRESHOLD2_BYTE3,
+    EEPROM_ALERT_THRESHOLD3_BYTE3,
+    EEPROM_ALERT_THRESHOLD4_BYTE3,
+    EEPROM_ALERT_THRESHOLD5_BYTE3
     };
 
-static const uint16_t map_alert_threshold_byte4[MAX_DYNAMICS] = {
+static const uint16_t map_alert_threshold_byte4[MAX_ALERTS] = {
     EEPROM_ALERT_THRESHOLD1_BYTE4,
-    EEPROM_ALERT_THRESHOLD2_BYTE4
+    EEPROM_ALERT_THRESHOLD2_BYTE4,
+    EEPROM_ALERT_THRESHOLD3_BYTE4,
+    EEPROM_ALERT_THRESHOLD4_BYTE4,
+    EEPROM_ALERT_THRESHOLD5_BYTE4
     };
 
 // EEPROM Memory Map - dynamic enable
-#define EEPROM_DYNAMIC_ENABLE1_BYTE1 (uint16_t)0x01AA
-#define EEPROM_DYNAMIC_ENABLE2_BYTE1 (uint16_t)0x01AB
+#define EEPROM_DYNAMIC_ENABLE1_BYTE1 (uint16_t)0x01B6
+#define EEPROM_DYNAMIC_ENABLE2_BYTE1 (uint16_t)0x01B7
 static const uint16_t map_dynamic_enable_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_ENABLE1_BYTE1,
     EEPROM_DYNAMIC_ENABLE2_BYTE1
     };
 
 // EEPROM Memory Map - dynamic priority
-#define EEPROM_DYNAMIC_PRIORITY1_BYTE1 (uint16_t)0x01AC
-#define EEPROM_DYNAMIC_PRIORITY2_BYTE1 (uint16_t)0x01AD
+#define EEPROM_DYNAMIC_PRIORITY1_BYTE1 (uint16_t)0x01B8
+#define EEPROM_DYNAMIC_PRIORITY2_BYTE1 (uint16_t)0x01B9
 static const uint16_t map_dynamic_priority_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PRIORITY1_BYTE1,
     EEPROM_DYNAMIC_PRIORITY2_BYTE1
     };
 
 // EEPROM Memory Map - dynamic compare
-#define EEPROM_DYNAMIC_COMPARE1_BYTE1 (uint16_t)0x01AE
-#define EEPROM_DYNAMIC_COMPARE2_BYTE1 (uint16_t)0x01AF
-#define EEPROM_DYNAMIC_COMPARE3_BYTE1 (uint16_t)0x01B0
-#define EEPROM_DYNAMIC_COMPARE4_BYTE1 (uint16_t)0x01B1
-#define EEPROM_DYNAMIC_COMPARE5_BYTE1 (uint16_t)0x01B2
-static const uint16_t map_dynamic_compare_byte1[MAX_ALERTS] = {
+#define EEPROM_DYNAMIC_COMPARE1_BYTE1 (uint16_t)0x01BA
+#define EEPROM_DYNAMIC_COMPARE2_BYTE1 (uint16_t)0x01BB
+static const uint16_t map_dynamic_compare_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_COMPARE1_BYTE1,
-    EEPROM_DYNAMIC_COMPARE2_BYTE1,
-    EEPROM_DYNAMIC_COMPARE3_BYTE1,
-    EEPROM_DYNAMIC_COMPARE4_BYTE1,
-    EEPROM_DYNAMIC_COMPARE5_BYTE1
+    EEPROM_DYNAMIC_COMPARE2_BYTE1
     };
 
 // EEPROM Memory Map - dynamic Threshold
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE1 (uint16_t)0x01B3
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE2 (uint16_t)0x01B4
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE3 (uint16_t)0x01B5
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE4 (uint16_t)0x01B6
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE1 (uint16_t)0x01B7
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE2 (uint16_t)0x01B8
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE3 (uint16_t)0x01B9
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE4 (uint16_t)0x01BA
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE1 (uint16_t)0x01BC
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE2 (uint16_t)0x01BD
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE3 (uint16_t)0x01BE
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE4 (uint16_t)0x01BF
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE1 (uint16_t)0x01C0
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE2 (uint16_t)0x01C1
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE3 (uint16_t)0x01C2
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE4 (uint16_t)0x01C3
 static const uint16_t map_dynamic_threshold_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_THRESHOLD1_BYTE1,
     EEPROM_DYNAMIC_THRESHOLD2_BYTE1
@@ -1225,22 +1243,22 @@ static const uint16_t map_dynamic_threshold_byte4[MAX_DYNAMICS] = {
     };
 
 // EEPROM Memory Map - dynamic Index
-#define EEPROM_DYNAMIC_INDEX1_BYTE1 (uint16_t)0x01BB
-#define EEPROM_DYNAMIC_INDEX2_BYTE1 (uint16_t)0x01BC
+#define EEPROM_DYNAMIC_INDEX1_BYTE1 (uint16_t)0x01C4
+#define EEPROM_DYNAMIC_INDEX2_BYTE1 (uint16_t)0x01C5
 static const uint16_t map_dynamic_index_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_INDEX1_BYTE1,
     EEPROM_DYNAMIC_INDEX2_BYTE1
     };
 
 // EEPROM Memory Map - dynamic pid
-#define EEPROM_DYNAMIC_PID1_BYTE1 (uint16_t)0x01BD
-#define EEPROM_DYNAMIC_PID1_BYTE2 (uint16_t)0x01BE
-#define EEPROM_DYNAMIC_PID1_BYTE3 (uint16_t)0x01BF
-#define EEPROM_DYNAMIC_PID1_BYTE4 (uint16_t)0x01C0
-#define EEPROM_DYNAMIC_PID2_BYTE1 (uint16_t)0x01C1
-#define EEPROM_DYNAMIC_PID2_BYTE2 (uint16_t)0x01C2
-#define EEPROM_DYNAMIC_PID2_BYTE3 (uint16_t)0x01C3
-#define EEPROM_DYNAMIC_PID2_BYTE4 (uint16_t)0x01C4
+#define EEPROM_DYNAMIC_PID1_BYTE1 (uint16_t)0x01C6
+#define EEPROM_DYNAMIC_PID1_BYTE2 (uint16_t)0x01C7
+#define EEPROM_DYNAMIC_PID1_BYTE3 (uint16_t)0x01C8
+#define EEPROM_DYNAMIC_PID1_BYTE4 (uint16_t)0x01C9
+#define EEPROM_DYNAMIC_PID2_BYTE1 (uint16_t)0x01CA
+#define EEPROM_DYNAMIC_PID2_BYTE2 (uint16_t)0x01CB
+#define EEPROM_DYNAMIC_PID2_BYTE3 (uint16_t)0x01CC
+#define EEPROM_DYNAMIC_PID2_BYTE4 (uint16_t)0x01CD
 static const uint16_t map_dynamic_pid_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PID1_BYTE1,
     EEPROM_DYNAMIC_PID2_BYTE1
@@ -1262,8 +1280,8 @@ static const uint16_t map_dynamic_pid_byte4[MAX_DYNAMICS] = {
     };
 
 // EEPROM Memory Map - dynamic units
-#define EEPROM_DYNAMIC_UNITS1_BYTE1 (uint16_t)0x01C5
-#define EEPROM_DYNAMIC_UNITS2_BYTE1 (uint16_t)0x01C6
+#define EEPROM_DYNAMIC_UNITS1_BYTE1 (uint16_t)0x01CE
+#define EEPROM_DYNAMIC_UNITS2_BYTE1 (uint16_t)0x01CF
 static const uint16_t map_dynamic_units_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_UNITS1_BYTE1,
     EEPROM_DYNAMIC_UNITS2_BYTE1
@@ -1281,10 +1299,10 @@ static uint32_t settings_alert_pid[MAX_ALERTS] = {DEFAULT_ALERT_PID};
 static PID_UNITS settings_alert_units[MAX_ALERTS] = {DEFAULT_ALERT_UNITS};
 static char settings_alert_message[MAX_ALERTS][ALERT_MESSAGE_LEN] = {DEFAULT_ALERT_MESSAGE};
 static ALERT_COMPARISON settings_alert_compare[MAX_ALERTS] = {DEFAULT_ALERT_COMPARE};
-static float settings_alert_threshold[MAX_DYNAMICS] = {DEFAULT_ALERT_THRESHOLD};
+static float settings_alert_threshold[MAX_ALERTS] = {DEFAULT_ALERT_THRESHOLD};
 static DYNAMIC_STATE settings_dynamic_enable[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_ENABLE};
 static DYNAMIC_PRIORITY settings_dynamic_priority[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_PRIORITY};
-static DYNAMIC_COMPARISON settings_dynamic_compare[MAX_ALERTS] = {DEFAULT_DYNAMIC_COMPARE};
+static DYNAMIC_COMPARISON settings_dynamic_compare[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_COMPARE};
 static float settings_dynamic_threshold[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_THRESHOLD};
 static uint8_t settings_dynamic_index[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_INDEX};
 static uint32_t settings_dynamic_pid[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_PID};
@@ -1326,6 +1344,14 @@ bool config_to_json(char *buffer, size_t buffer_size) {
         cJSON_AddItemToArray(views, view);
     }
 
+    // Serialize gauge
+    cJSON *gauges = cJSON_AddArrayToObject(root, "gauge");
+    for(int i = 0; i < MAX_GAUGES; i++) {
+        cJSON *gauge = cJSON_CreateObject();
+        // CMD theme
+        // CMD pid
+        // CMD units
+
     // Serialize alert
     cJSON *alerts = cJSON_AddArrayToObject(root, "alert");
     for(int i = 0; i < MAX_ALERTS; i++) {
@@ -1333,9 +1359,7 @@ bool config_to_json(char *buffer, size_t buffer_size) {
         cJSON_AddStringToObject(alert, "enable", alert_state_string[get_alert_enable(i)]);
         cJSON_AddNumberToObject(alert, "pid", get_alert_pid(i));
         cJSON_AddNumberToObject(alert, "units", get_alert_units(i));
-        char tmp_alert_message[64] = {0};
-        get_alert_message(i, tmp_alert_message);
-        cJSON_AddStringToObject(alert, "message", tmp_alert_message);
+        cJSON_AddStringToObject(alert, "message", get_alert_message(i));
         cJSON_AddStringToObject(alert, "compare", alert_comparison_string[get_alert_compare(i)]);
         cJSON_AddNumberToObject(alert, "threshold", get_alert_threshold(i));
         cJSON_AddItemToArray(alerts, alert);
@@ -1361,7 +1385,7 @@ bool config_to_json(char *buffer, size_t buffer_size) {
     return success;
 }
 
-static uint8_t cached_settings[455];
+static uint8_t cached_settings[464];
 
 static settings_write *write;
 static settings_read *read;
@@ -1434,7 +1458,7 @@ void load_settings(void)
     for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
         load_alert_compare(idx, &settings_alert_compare[idx]);
 
-    for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
+    for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
         load_alert_threshold(idx, &settings_alert_threshold[idx]);
 
     for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
@@ -1443,7 +1467,7 @@ void load_settings(void)
     for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
         load_dynamic_priority(idx, &settings_dynamic_priority[idx]);
 
-    for( uint8_t idx = 0; idx < MAX_ALERTS; idx++ )
+    for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
         load_dynamic_compare(idx, &settings_dynamic_compare[idx]);
 
     for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
