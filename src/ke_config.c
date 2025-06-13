@@ -1344,14 +1344,6 @@ bool config_to_json(char *buffer, size_t buffer_size) {
         cJSON_AddItemToArray(views, view);
     }
 
-    // Serialize gauge
-    cJSON *gauges = cJSON_AddArrayToObject(root, "gauge");
-    for(int i = 0; i < MAX_GAUGES; i++) {
-        cJSON *gauge = cJSON_CreateObject();
-        // CMD theme
-        // CMD pid
-        // CMD units
-
     // Serialize alert
     cJSON *alerts = cJSON_AddArrayToObject(root, "alert");
     for(int i = 0; i < MAX_ALERTS; i++) {
@@ -1359,7 +1351,9 @@ bool config_to_json(char *buffer, size_t buffer_size) {
         cJSON_AddStringToObject(alert, "enable", alert_state_string[get_alert_enable(i)]);
         cJSON_AddNumberToObject(alert, "pid", get_alert_pid(i));
         cJSON_AddNumberToObject(alert, "units", get_alert_units(i));
-        cJSON_AddStringToObject(alert, "message", get_alert_message(i));
+        char tmp_alert_message[64] = {0};
+        get_alert_message(i, tmp_alert_message);
+        cJSON_AddStringToObject(alert, "message", tmp_alert_message);
         cJSON_AddStringToObject(alert, "compare", alert_comparison_string[get_alert_compare(i)]);
         cJSON_AddNumberToObject(alert, "threshold", get_alert_threshold(i));
         cJSON_AddItemToArray(alerts, alert);
