@@ -1334,6 +1334,8 @@ bool config_to_json(char *buffer, size_t buffer_size) {
 
     if (!root) return false;
 
+    char str_buf[1024];
+
     // Serialize view
     cJSON *views = cJSON_AddArrayToObject(root, "view");
     for(int i = 0; i < MAX_VIEWS; i++) {
@@ -1349,11 +1351,11 @@ bool config_to_json(char *buffer, size_t buffer_size) {
     for(int i = 0; i < MAX_ALERTS; i++) {
         cJSON *alert = cJSON_CreateObject();
         cJSON_AddStringToObject(alert, "enable", alert_state_string[get_alert_enable(i)]);
-        cJSON_AddNumberToObject(alert, "pid", get_alert_pid(i));
+        get_pid_desc(get_alert_pid(i), str_buf);
+        cJSON_AddStringToObject(alert, "pid", str_buf);
         cJSON_AddNumberToObject(alert, "units", get_alert_units(i));
-        char tmp_alert_message[64] = {0};
-        get_alert_message(i, tmp_alert_message);
-        cJSON_AddStringToObject(alert, "message", tmp_alert_message);
+        get_alert_message(i, str_buf);
+        cJSON_AddStringToObject(alert, "message", str_buf);
         cJSON_AddStringToObject(alert, "compare", alert_comparison_string[get_alert_compare(i)]);
         cJSON_AddNumberToObject(alert, "threshold", get_alert_threshold(i));
         cJSON_AddItemToArray(alerts, alert);
@@ -1368,7 +1370,8 @@ bool config_to_json(char *buffer, size_t buffer_size) {
         cJSON_AddStringToObject(dynamic, "compare", dynamic_comparison_string[get_dynamic_compare(i)]);
         cJSON_AddNumberToObject(dynamic, "Threshold", get_dynamic_threshold(i));
         cJSON_AddNumberToObject(dynamic, "Index", get_dynamic_index(i));
-        cJSON_AddNumberToObject(dynamic, "pid", get_dynamic_pid(i));
+        get_pid_desc(get_dynamic_pid(i), str_buf);
+        cJSON_AddStringToObject(dynamic, "pid", str_buf);
         cJSON_AddNumberToObject(dynamic, "units", get_dynamic_units(i));
         cJSON_AddItemToArray(dynamics, dynamic);
     }
