@@ -1351,7 +1351,8 @@ bool config_to_json(char *buffer, size_t buffer_size) {
             cJSON_AddStringToObject(view_gauge, "theme", gauge_theme_string[get_view_gauge_theme(i, j)]);
             get_pid_desc(get_view_gauge_pid(i, j), str_buf);
             cJSON_AddStringToObject(view_gauge, "pid", str_buf);
-            cJSON_AddNumberToObject(view_gauge, "units", get_view_gauge_units(i, j));
+            get_unit_label(get_view_gauge_units(i, j), str_buf);
+            cJSON_AddStringToObject(view_gauge, "units", str_buf);
             cJSON_AddItemToArray(view_gauges, view_gauge);
         }
         cJSON_AddItemToArray(views, view);
@@ -1364,7 +1365,8 @@ bool config_to_json(char *buffer, size_t buffer_size) {
         cJSON_AddStringToObject(alert, "enable", alert_state_string[get_alert_enable(i)]);
         get_pid_desc(get_alert_pid(i), str_buf);
         cJSON_AddStringToObject(alert, "pid", str_buf);
-        cJSON_AddNumberToObject(alert, "units", get_alert_units(i));
+        get_unit_label(get_alert_units(i), str_buf);
+        cJSON_AddStringToObject(alert, "units", str_buf);
         get_alert_message(i, str_buf);
         cJSON_AddStringToObject(alert, "message", str_buf);
         cJSON_AddStringToObject(alert, "compare", alert_comparison_string[get_alert_compare(i)]);
@@ -1383,7 +1385,8 @@ bool config_to_json(char *buffer, size_t buffer_size) {
         cJSON_AddNumberToObject(dynamic, "Index", get_dynamic_index(i));
         get_pid_desc(get_dynamic_pid(i), str_buf);
         cJSON_AddStringToObject(dynamic, "pid", str_buf);
-        cJSON_AddNumberToObject(dynamic, "units", get_dynamic_units(i));
+        get_unit_label(get_dynamic_units(i), str_buf);
+        cJSON_AddStringToObject(dynamic, "units", str_buf);
         cJSON_AddItemToArray(dynamics, dynamic);
     }
 
