@@ -1343,6 +1343,17 @@ bool config_to_json(char *buffer, size_t buffer_size) {
         cJSON_AddStringToObject(view, "enable", view_state_string[get_view_enable(i)]);
         cJSON_AddNumberToObject(view, "num_gauges", get_view_num_gauges(i));
         cJSON_AddStringToObject(view, "background", view_background_string[get_view_background(i)]);
+
+        // Serialize gauge within view
+        cJSON *gauges = cJSON_AddArrayToObject(view, "gauge");
+        for(int i = 0; i < MAX_GAUGES; i++) {
+            cJSON *gauge = cJSON_CreateObject();
+            cJSON_AddStringToObject(gauge, "theme", gauge_theme_string[get_gauge_theme(i)]);
+            get_pid_desc(get_gauge_pid(i), str_buf);
+            cJSON_AddStringToObject(gauge, "pid", str_buf);
+            cJSON_AddNumberToObject(gauge, "units", get_gauge_units(i));
+            cJSON_AddItemToArray(gauges, gauge);
+        }
         cJSON_AddItemToArray(views, view);
     }
 
