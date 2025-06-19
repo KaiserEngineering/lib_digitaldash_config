@@ -1410,15 +1410,13 @@ bool json_to_config(const char *json_str) {
         set_view_background(i, get_view_background_from_string(cJSON_GetObjectItem(view, "background")->valuestring), true);
 
         // Get gauge within view
-        cJSON *view_gauges = cJSON_AddArrayToObject(view, "gauge");
+        cJSON *view_gauges = cJSON_GetObjectItem(view, "gauge");
         for(int j = 0; j < MAX_GAUGES_PER_VIEW; j++) {
-            cJSON *view_gauge = cJSON_CreateObject();
+            cJSON *view_gauge = cJSON_GetArrayItem(view_gauges, j);
             set_view_gauge_theme(i, j, get_view_gauge_theme_from_string(cJSON_GetObjectItem(view_gauge, "theme")->valuestring), true);
             set_view_gauge_pid(i, j, get_pid_by_string(cJSON_GetObjectItem(view_gauge, "pid")->valuestring), true);
             set_view_gauge_units(i, j, get_unit_by_string(cJSON_GetObjectItem(view_gauge, "units")->valuestring), true);
-            cJSON_AddItemToArray(view_gauges, view_gauge);
         }
-        cJSON_AddItemToArray(views, view);
     }
 
     // Get alert
@@ -1431,7 +1429,6 @@ bool json_to_config(const char *json_str) {
         set_alert_message(i, cJSON_GetObjectItem(alert, "message")->valuestring, true);
         set_alert_compare(i, get_alert_compare_from_string(cJSON_GetObjectItem(alert, "compare")->valuestring), true);
         set_alert_threshold(i, cJSON_GetObjectItem(alert, "threshold")->valuedouble, true);
-        cJSON_AddItemToArray(alerts, alert);
     }
 
     // Get dynamic
@@ -1445,7 +1442,6 @@ bool json_to_config(const char *json_str) {
         set_dynamic_index(i, cJSON_GetObjectItem(dynamic, "index")->valueint, true);
         set_dynamic_pid(i, get_pid_by_string(cJSON_GetObjectItem(dynamic, "pid")->valuestring), true);
         set_dynamic_units(i, get_unit_by_string(cJSON_GetObjectItem(dynamic, "units")->valuestring), true);
-        cJSON_AddItemToArray(dynamics, dynamic);
     }
 
     // Print into user buffer
