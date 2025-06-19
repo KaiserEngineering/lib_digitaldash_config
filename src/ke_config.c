@@ -1213,7 +1213,7 @@ static const uint16_t map_dynamic_compare_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_COMPARE2_BYTE1
     };
 
-// EEPROM Memory Map - dynamic Threshold
+// EEPROM Memory Map - dynamic threshold
 #define EEPROM_DYNAMIC_THRESHOLD1_BYTE1 (uint16_t)0x01BC
 #define EEPROM_DYNAMIC_THRESHOLD1_BYTE2 (uint16_t)0x01BD
 #define EEPROM_DYNAMIC_THRESHOLD1_BYTE3 (uint16_t)0x01BE
@@ -1242,7 +1242,7 @@ static const uint16_t map_dynamic_threshold_byte4[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_THRESHOLD2_BYTE4
     };
 
-// EEPROM Memory Map - dynamic Index
+// EEPROM Memory Map - dynamic index
 #define EEPROM_DYNAMIC_INDEX1_BYTE1 (uint16_t)0x01C4
 #define EEPROM_DYNAMIC_INDEX2_BYTE1 (uint16_t)0x01C5
 static const uint16_t map_dynamic_index_byte1[MAX_DYNAMICS] = {
@@ -1351,7 +1351,7 @@ bool config_to_json(char *buffer, size_t buffer_size) {
             cJSON_AddStringToObject(view_gauge, "theme", gauge_theme_string[get_view_gauge_theme(i, j)]);
             get_pid_desc(get_view_gauge_pid(i, j), str_buf);
             cJSON_AddStringToObject(view_gauge, "pid", str_buf);
-            get_unit_label(get_view_gauge_units(i, j), str_buf);
+            get_unit_desc(get_view_gauge_units(i, j), str_buf);
             cJSON_AddStringToObject(view_gauge, "units", str_buf);
             cJSON_AddItemToArray(view_gauges, view_gauge);
         }
@@ -1365,7 +1365,7 @@ bool config_to_json(char *buffer, size_t buffer_size) {
         cJSON_AddStringToObject(alert, "enable", alert_state_string[get_alert_enable(i)]);
         get_pid_desc(get_alert_pid(i), str_buf);
         cJSON_AddStringToObject(alert, "pid", str_buf);
-        get_unit_label(get_alert_units(i), str_buf);
+        get_unit_desc(get_alert_units(i), str_buf);
         cJSON_AddStringToObject(alert, "units", str_buf);
         get_alert_message(i, str_buf);
         cJSON_AddStringToObject(alert, "message", str_buf);
@@ -1381,11 +1381,11 @@ bool config_to_json(char *buffer, size_t buffer_size) {
         cJSON_AddStringToObject(dynamic, "enable", dynamic_state_string[get_dynamic_enable(i)]);
         cJSON_AddStringToObject(dynamic, "priority", dynamic_priority_string[get_dynamic_priority(i)]);
         cJSON_AddStringToObject(dynamic, "compare", dynamic_comparison_string[get_dynamic_compare(i)]);
-        cJSON_AddNumberToObject(dynamic, "Threshold", get_dynamic_threshold(i));
-        cJSON_AddNumberToObject(dynamic, "Index", get_dynamic_index(i));
+        cJSON_AddNumberToObject(dynamic, "threshold", get_dynamic_threshold(i));
+        cJSON_AddNumberToObject(dynamic, "index", get_dynamic_index(i));
         get_pid_desc(get_dynamic_pid(i), str_buf);
         cJSON_AddStringToObject(dynamic, "pid", str_buf);
-        get_unit_label(get_dynamic_units(i), str_buf);
+        get_unit_desc(get_dynamic_units(i), str_buf);
         cJSON_AddStringToObject(dynamic, "units", str_buf);
         cJSON_AddItemToArray(dynamics, dynamic);
     }
@@ -1394,6 +1394,63 @@ bool config_to_json(char *buffer, size_t buffer_size) {
     bool success = cJSON_PrintPreallocated(root, buffer, buffer_size, /*format*/ 1);
     cJSON_Delete(root);
     return success;
+}
+
+bool json_to_config(const char *json_str) {
+    cJSON *root = cJSON_Parse(json_str);
+
+    if (!root) return false;
+
+    // Get view
+    cJSON *views = cJSON_GetObjectItem(root, "view");
+    for(int i = 0; (i < MAX_VIEWS) && (i < cJSON_GetArraySize(views)); i++) {
+        cJSON *view = cJSON_GetArrayItem(views, i);
+        set_view_enable(i, get_view_enable_from_string(cJSON_GetObjectItem(view, "enable")->valuestring), true);
+        set_view_num_gauges(i, cJSON_GetObjectItem(view, "num_gauges")->valueint, true);
+        set_view_background(i, get_view_background_from_string(cJSON_GetObjectItem(view, "background")->valuestring), true);
+
+        // Get gauge within view
+        cJSON *view_gauges = cJSON_AddArrayToObject(view, "gauge");
+        for(int j = 0; j < MAX_GAUGES_PER_VIEW; j++) {
+            cJSON *view_gauge = cJSON_CreateObject();
+            set_view_gauge_theme(i, j, get_view_gauge_theme_from_string(cJSON_GetObjectItem(view_gauge, "theme")->valuestring), true);
+            set_view_gauge_pid(i, j, get_pid_by_string(cJSON_GetObjectItem(view_gauge, "pid")->valuestring), true);
+            set_view_gauge_units(i, j, get_unit_by_string(cJSON_GetObjectItem(view_gauge, "units")->valuestring), true);
+            cJSON_AddItemToArray(view_gauges, view_gauge);
+        }
+        cJSON_AddItemToArray(views, view);
+    }
+
+    // Get alert
+    cJSON *alerts = cJSON_GetObjectItem(root, "alert");
+    for(int i = 0; (i < MAX_ALERTS) && (i < cJSON_GetArraySize(alerts)); i++) {
+        cJSON *alert = cJSON_GetArrayItem(alerts, i);
+        set_alert_enable(i, get_alert_enable_from_string(cJSON_GetObjectItem(alert, "enable")->valuestring), true);
+        set_alert_pid(i, get_pid_by_string(cJSON_GetObjectItem(alert, "pid")->valuestring), true);
+        set_alert_units(i, get_unit_by_string(cJSON_GetObjectItem(alert, "units")->valuestring), true);
+        set_alert_message(i, cJSON_GetObjectItem(alert, "message")->valuestring, true);
+        set_alert_compare(i, get_alert_compare_from_string(cJSON_GetObjectItem(alert, "compare")->valuestring), true);
+        set_alert_threshold(i, cJSON_GetObjectItem(alert, "threshold")->valuedouble, true);
+        cJSON_AddItemToArray(alerts, alert);
+    }
+
+    // Get dynamic
+    cJSON *dynamics = cJSON_GetObjectItem(root, "dynamic");
+    for(int i = 0; (i < MAX_DYNAMICS) && (i < cJSON_GetArraySize(dynamics)); i++) {
+        cJSON *dynamic = cJSON_GetArrayItem(dynamics, i);
+        set_dynamic_enable(i, get_dynamic_enable_from_string(cJSON_GetObjectItem(dynamic, "enable")->valuestring), true);
+        set_dynamic_priority(i, get_dynamic_priority_from_string(cJSON_GetObjectItem(dynamic, "priority")->valuestring), true);
+        set_dynamic_compare(i, get_dynamic_compare_from_string(cJSON_GetObjectItem(dynamic, "compare")->valuestring), true);
+        set_dynamic_threshold(i, cJSON_GetObjectItem(dynamic, "threshold")->valuedouble, true);
+        set_dynamic_index(i, cJSON_GetObjectItem(dynamic, "index")->valueint, true);
+        set_dynamic_pid(i, get_pid_by_string(cJSON_GetObjectItem(dynamic, "pid")->valuestring), true);
+        set_dynamic_units(i, get_unit_by_string(cJSON_GetObjectItem(dynamic, "units")->valuestring), true);
+        cJSON_AddItemToArray(dynamics, dynamic);
+    }
+
+    // Print into user buffer
+    cJSON_Delete(root);
+    return true;
 }
 
 static uint8_t cached_settings[464];
@@ -2826,7 +2883,7 @@ DYNAMIC_COMPARISON get_dynamic_compare_from_string(const char *str)
 *                            Dynamic gauge threshold                            
 *
 * @param idx_dynamic    index of the dynamic
-* @param Threshold    Comparison value of the dynamic gauge
+* @param threshold    Comparison value of the dynamic gauge
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
@@ -2905,7 +2962,7 @@ bool set_dynamic_threshold(uint8_t idx, float dynamic_threshold, bool save)
 *                                   View index                                  
 *
 * @param idx_dynamic    index of the dynamic
-* @param Index    Set which view should be enabled if the dynamic event is true
+* @param index    Set which view should be enabled if the dynamic event is true
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/

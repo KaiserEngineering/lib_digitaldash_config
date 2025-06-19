@@ -53,7 +53,7 @@ void settings_setReadHandler(settings_read *readHandler);
 void load_settings(void);
 void write_eeprom(uint16_t bAdd, uint8_t bData);
 uint8_t get_eeprom_byte(uint16_t bAdd);
-bool config_to_json(char *buffer, size_t buffer_size);
+bool config_to_json(char *buffer, size_t buffer_size);bool json_to_config(const char *json_str);
 
 /********************************************************************************
 *                                  View enable                                  
@@ -341,7 +341,7 @@ DYNAMIC_COMPARISON get_dynamic_compare_from_string(const char *str);
 *                            Dynamic gauge threshold                            
 *
 * @param idx_dynamic    index of the dynamic
-* @param Threshold    Comparison value of the dynamic gauge
+* @param threshold    Comparison value of the dynamic gauge
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
@@ -354,7 +354,7 @@ bool set_dynamic_threshold(uint8_t idx_dynamic, float threshold, bool save);
 *                                   View index                                  
 *
 * @param idx_dynamic    index of the dynamic
-* @param Index    Set which view should be enabled if the dynamic event is true
+* @param index    Set which view should be enabled if the dynamic event is true
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
