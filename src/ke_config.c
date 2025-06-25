@@ -1329,10 +1329,10 @@ static void load_dynamic_index(uint8_t idx, uint8_t *dynamic_index_val);
 static void load_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid_val);
 static void load_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units_val);
 
-bool config_to_json(char *buffer, size_t buffer_size) {
+uint32_t config_to_json(char *buffer, size_t buffer_size) {
     cJSON *root = cJSON_CreateObject();
 
-    if (!root) return false;
+    if (!root) return 0;
 
     char str_buf[1024];
 
@@ -1391,9 +1391,17 @@ bool config_to_json(char *buffer, size_t buffer_size) {
     }
 
     // Print into user buffer
-    bool success = cJSON_PrintPreallocated(root, buffer, buffer_size, /*format*/ 1);
+    char *json = cJSON_PrintUnformatted(root);
+    uint32_t actual_len = 0;
+    if (json) {
+        size_t len = strlen(json);
+        if (len < buffer_size) {
+            memcpy(buffer, json, len + 1); // Copy including null terminator
+            actual_len = (uint32_t)len;
+        }
+    }
     cJSON_Delete(root);
-    return success;
+    return actual_len; // 0 means failure
 }
 
 bool json_to_config(const char *json_str) {
