@@ -1399,6 +1399,7 @@ uint32_t config_to_json(char *buffer, size_t buffer_size) {
             memcpy(buffer, json, len + 1); // Copy including null terminator
             actual_len = (uint32_t)len;
         }
+        free(json);
     }
     cJSON_Delete(root);
     return actual_len; // 0 means failure
