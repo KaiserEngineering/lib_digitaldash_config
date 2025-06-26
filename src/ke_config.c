@@ -1329,6 +1329,60 @@ static void load_dynamic_index(uint8_t idx, uint8_t *dynamic_index_val);
 static void load_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid_val);
 static void load_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units_val);
 
+uint32_t options_to_json(char *buffer, size_t buffer_size) {
+    cJSON *root = cJSON_CreateObject();
+
+    if (!root) return 0;
+
+    cJSON *list;
+
+    // Populate view_state option list
+    list = cJSON_CreateStringArray(view_state_string, VIEW_STATE_RESERVED);
+    cJSON_AddItemToObject(root, "view_state", list);
+
+    // Populate view_background option list
+    list = cJSON_CreateStringArray(view_background_string, VIEW_BACKGROUND_RESERVED);
+    cJSON_AddItemToObject(root, "view_background", list);
+
+    // Populate gauge_theme option list
+    list = cJSON_CreateStringArray(gauge_theme_string, GAUGE_THEME_RESERVED);
+    cJSON_AddItemToObject(root, "gauge_theme", list);
+
+    // Populate alert_state option list
+    list = cJSON_CreateStringArray(alert_state_string, ALERT_STATE_RESERVED);
+    cJSON_AddItemToObject(root, "alert_state", list);
+
+    // Populate alert_comparison option list
+    list = cJSON_CreateStringArray(alert_comparison_string, ALERT_COMPARISON_RESERVED);
+    cJSON_AddItemToObject(root, "alert_comparison", list);
+
+    // Populate dynamic_state option list
+    list = cJSON_CreateStringArray(dynamic_state_string, DYNAMIC_STATE_RESERVED);
+    cJSON_AddItemToObject(root, "dynamic_state", list);
+
+    // Populate dynamic_priority option list
+    list = cJSON_CreateStringArray(dynamic_priority_string, DYNAMIC_PRIORITY_RESERVED);
+    cJSON_AddItemToObject(root, "dynamic_priority", list);
+
+    // Populate dynamic_comparison option list
+    list = cJSON_CreateStringArray(dynamic_comparison_string, DYNAMIC_COMPARISON_RESERVED);
+    cJSON_AddItemToObject(root, "dynamic_comparison", list);
+
+    // Print into user buffer
+    char *json = cJSON_PrintUnformatted(root);
+    uint32_t actual_len = 0;
+    if (json) {
+        size_t len = strlen(json);
+        if (len < buffer_size) {
+            memcpy(buffer, json, len + 1); // Copy including null terminator
+            actual_len = (uint32_t)len;
+        }
+        free(json);
+    }
+    cJSON_Delete(root);
+    return actual_len; // 0 means failure
+}
+
 uint32_t config_to_json(char *buffer, size_t buffer_size) {
     cJSON *root = cJSON_CreateObject();
 

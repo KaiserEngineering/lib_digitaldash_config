@@ -35,6 +35,7 @@ extern "C"
 
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 #include "cJSON.h"
 #include "lib_pid.h"
 
@@ -53,7 +54,7 @@ void settings_setReadHandler(settings_read *readHandler);
 void load_settings(void);
 void write_eeprom(uint16_t bAdd, uint8_t bData);
 uint8_t get_eeprom_byte(uint16_t bAdd);
-uint32_t config_to_json(char *buffer, size_t buffer_size);bool json_to_config(const char *json_str);
+uint32_t options_to_json(char *buffer, size_t buffer_size);uint32_t config_to_json(char *buffer, size_t buffer_size);bool json_to_config(const char *json_str);
 
 /********************************************************************************
 *                                  View enable                                  
