@@ -29,7 +29,7 @@
 
 #define DEFAULT_VIEW_ENABLE VIEW_STATE_DISABLED
 #define DEFAULT_VIEW_NUM_GAUGES 0
-#define DEFAULT_VIEW_BACKGROUND VIEW_BACKGROUND_BLACK
+#define DEFAULT_VIEW_BACKGROUND VIEW_BACKGROUND_USER1
 #define DEFAULT_VIEW_GAUGE_THEME GAUGE_THEME_STOCK_ST
 #define DEFAULT_VIEW_GAUGE_PID 0
 #define DEFAULT_VIEW_GAUGE_UNITS PID_UNITS_RESERVED
@@ -1775,9 +1775,21 @@ bool set_view_num_gauges(uint8_t idx, uint8_t view_num_gauges, bool save)
 *
 ********************************************************************************/
 const char *view_background_string[] = {
-    "Black",
-    "Flare",
-    "User1"
+    "User1",
+    "User2",
+    "User3",
+    "User4",
+    "User5",
+    "User6",
+    "User7",
+    "User8",
+    "User9",
+    "User10",
+    "User11",
+    "User12",
+    "User13",
+    "User14",
+    "User15"
 };
 
 static void load_view_background(uint8_t idx, VIEW_BACKGROUND *view_background_val)
@@ -1842,9 +1854,21 @@ bool set_view_background(uint8_t idx, VIEW_BACKGROUND view_background, bool save
 
 VIEW_BACKGROUND get_view_background_from_string(const char *str)
 {
-    if(strcmp(str, "Black") == 0) return VIEW_BACKGROUND_BLACK;
-    if(strcmp(str, "Flare") == 0) return VIEW_BACKGROUND_FLARE;
     if(strcmp(str, "User1") == 0) return VIEW_BACKGROUND_USER1;
+    if(strcmp(str, "User2") == 0) return VIEW_BACKGROUND_USER2;
+    if(strcmp(str, "User3") == 0) return VIEW_BACKGROUND_USER3;
+    if(strcmp(str, "User4") == 0) return VIEW_BACKGROUND_USER4;
+    if(strcmp(str, "User5") == 0) return VIEW_BACKGROUND_USER5;
+    if(strcmp(str, "User6") == 0) return VIEW_BACKGROUND_USER6;
+    if(strcmp(str, "User7") == 0) return VIEW_BACKGROUND_USER7;
+    if(strcmp(str, "User8") == 0) return VIEW_BACKGROUND_USER8;
+    if(strcmp(str, "User9") == 0) return VIEW_BACKGROUND_USER9;
+    if(strcmp(str, "User10") == 0) return VIEW_BACKGROUND_USER10;
+    if(strcmp(str, "User11") == 0) return VIEW_BACKGROUND_USER11;
+    if(strcmp(str, "User12") == 0) return VIEW_BACKGROUND_USER12;
+    if(strcmp(str, "User13") == 0) return VIEW_BACKGROUND_USER13;
+    if(strcmp(str, "User14") == 0) return VIEW_BACKGROUND_USER14;
+    if(strcmp(str, "User15") == 0) return VIEW_BACKGROUND_USER15;
     return VIEW_BACKGROUND_RESERVED;
 }
 
