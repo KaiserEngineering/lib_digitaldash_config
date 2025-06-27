@@ -1329,7 +1329,7 @@ static void load_dynamic_index(uint8_t idx, uint8_t *dynamic_index_val);
 static void load_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid_val);
 static void load_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units_val);
 
-uint32_t options_to_json(char *buffer, size_t buffer_size) {
+uint32_t options_to_json(char *buffer, uint32_t buffer_size) {
     cJSON *root = cJSON_CreateObject();
 
     if (!root) return 0;
@@ -1383,7 +1383,7 @@ uint32_t options_to_json(char *buffer, size_t buffer_size) {
     return actual_len; // 0 means failure
 }
 
-uint32_t config_to_json(char *buffer, size_t buffer_size) {
+uint32_t config_to_json(char *buffer, uint32_t buffer_size) {
     cJSON *root = cJSON_CreateObject();
 
     if (!root) return 0;
