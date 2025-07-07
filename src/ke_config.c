@@ -1789,7 +1789,52 @@ const char *view_background_string[] = {
     "User12",
     "User13",
     "User14",
-    "User15"
+    "User15",
+    "User16",
+    "User17",
+    "User18",
+    "User19",
+    "User20",
+    "User21",
+    "User22",
+    "User23",
+    "User24",
+    "User25",
+    "User26",
+    "User27",
+    "User28",
+    "User29",
+    "User30",
+    "User31",
+    "User32",
+    "User33",
+    "User34",
+    "User35",
+    "User36",
+    "User37",
+    "User38",
+    "User39",
+    "User40",
+    "User41",
+    "User42",
+    "User43",
+    "User44",
+    "User45",
+    "User46",
+    "User47",
+    "User48",
+    "User49",
+    "User50",
+    "User51",
+    "User52",
+    "User53",
+    "User54",
+    "User55",
+    "User56",
+    "User57",
+    "User58",
+    "User59",
+    "User60"
 };
 
 static void load_view_background(uint8_t idx, VIEW_BACKGROUND *view_background_val)
@@ -1869,6 +1914,51 @@ VIEW_BACKGROUND get_view_background_from_string(const char *str)
     if(strcmp(str, "User13") == 0) return VIEW_BACKGROUND_USER13;
     if(strcmp(str, "User14") == 0) return VIEW_BACKGROUND_USER14;
     if(strcmp(str, "User15") == 0) return VIEW_BACKGROUND_USER15;
+    if(strcmp(str, "User16") == 0) return VIEW_BACKGROUND_USER16;
+    if(strcmp(str, "User17") == 0) return VIEW_BACKGROUND_USER17;
+    if(strcmp(str, "User18") == 0) return VIEW_BACKGROUND_USER18;
+    if(strcmp(str, "User19") == 0) return VIEW_BACKGROUND_USER19;
+    if(strcmp(str, "User20") == 0) return VIEW_BACKGROUND_USER20;
+    if(strcmp(str, "User21") == 0) return VIEW_BACKGROUND_USER21;
+    if(strcmp(str, "User22") == 0) return VIEW_BACKGROUND_USER22;
+    if(strcmp(str, "User23") == 0) return VIEW_BACKGROUND_USER23;
+    if(strcmp(str, "User24") == 0) return VIEW_BACKGROUND_USER24;
+    if(strcmp(str, "User25") == 0) return VIEW_BACKGROUND_USER25;
+    if(strcmp(str, "User26") == 0) return VIEW_BACKGROUND_USER26;
+    if(strcmp(str, "User27") == 0) return VIEW_BACKGROUND_USER27;
+    if(strcmp(str, "User28") == 0) return VIEW_BACKGROUND_USER28;
+    if(strcmp(str, "User29") == 0) return VIEW_BACKGROUND_USER29;
+    if(strcmp(str, "User30") == 0) return VIEW_BACKGROUND_USER30;
+    if(strcmp(str, "User31") == 0) return VIEW_BACKGROUND_USER31;
+    if(strcmp(str, "User32") == 0) return VIEW_BACKGROUND_USER32;
+    if(strcmp(str, "User33") == 0) return VIEW_BACKGROUND_USER33;
+    if(strcmp(str, "User34") == 0) return VIEW_BACKGROUND_USER34;
+    if(strcmp(str, "User35") == 0) return VIEW_BACKGROUND_USER35;
+    if(strcmp(str, "User36") == 0) return VIEW_BACKGROUND_USER36;
+    if(strcmp(str, "User37") == 0) return VIEW_BACKGROUND_USER37;
+    if(strcmp(str, "User38") == 0) return VIEW_BACKGROUND_USER38;
+    if(strcmp(str, "User39") == 0) return VIEW_BACKGROUND_USER39;
+    if(strcmp(str, "User40") == 0) return VIEW_BACKGROUND_USER40;
+    if(strcmp(str, "User41") == 0) return VIEW_BACKGROUND_USER41;
+    if(strcmp(str, "User42") == 0) return VIEW_BACKGROUND_USER42;
+    if(strcmp(str, "User43") == 0) return VIEW_BACKGROUND_USER43;
+    if(strcmp(str, "User44") == 0) return VIEW_BACKGROUND_USER44;
+    if(strcmp(str, "User45") == 0) return VIEW_BACKGROUND_USER45;
+    if(strcmp(str, "User46") == 0) return VIEW_BACKGROUND_USER46;
+    if(strcmp(str, "User47") == 0) return VIEW_BACKGROUND_USER47;
+    if(strcmp(str, "User48") == 0) return VIEW_BACKGROUND_USER48;
+    if(strcmp(str, "User49") == 0) return VIEW_BACKGROUND_USER49;
+    if(strcmp(str, "User50") == 0) return VIEW_BACKGROUND_USER50;
+    if(strcmp(str, "User51") == 0) return VIEW_BACKGROUND_USER51;
+    if(strcmp(str, "User52") == 0) return VIEW_BACKGROUND_USER52;
+    if(strcmp(str, "User53") == 0) return VIEW_BACKGROUND_USER53;
+    if(strcmp(str, "User54") == 0) return VIEW_BACKGROUND_USER54;
+    if(strcmp(str, "User55") == 0) return VIEW_BACKGROUND_USER55;
+    if(strcmp(str, "User56") == 0) return VIEW_BACKGROUND_USER56;
+    if(strcmp(str, "User57") == 0) return VIEW_BACKGROUND_USER57;
+    if(strcmp(str, "User58") == 0) return VIEW_BACKGROUND_USER58;
+    if(strcmp(str, "User59") == 0) return VIEW_BACKGROUND_USER59;
+    if(strcmp(str, "User60") == 0) return VIEW_BACKGROUND_USER60;
     return VIEW_BACKGROUND_RESERVED;
 }
 
