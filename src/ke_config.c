@@ -1192,99 +1192,125 @@ static const uint16_t map_alert_threshold_byte4[MAX_ALERTS] = {
 // EEPROM Memory Map - dynamic enable
 #define EEPROM_DYNAMIC_ENABLE1_BYTE1 (uint16_t)0x01B6
 #define EEPROM_DYNAMIC_ENABLE2_BYTE1 (uint16_t)0x01B7
+#define EEPROM_DYNAMIC_ENABLE3_BYTE1 (uint16_t)0x01B8
 static const uint16_t map_dynamic_enable_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_ENABLE1_BYTE1,
-    EEPROM_DYNAMIC_ENABLE2_BYTE1
+    EEPROM_DYNAMIC_ENABLE2_BYTE1,
+    EEPROM_DYNAMIC_ENABLE3_BYTE1
     };
 
 // EEPROM Memory Map - dynamic priority
-#define EEPROM_DYNAMIC_PRIORITY1_BYTE1 (uint16_t)0x01B8
-#define EEPROM_DYNAMIC_PRIORITY2_BYTE1 (uint16_t)0x01B9
+#define EEPROM_DYNAMIC_PRIORITY1_BYTE1 (uint16_t)0x01B9
+#define EEPROM_DYNAMIC_PRIORITY2_BYTE1 (uint16_t)0x01BA
+#define EEPROM_DYNAMIC_PRIORITY3_BYTE1 (uint16_t)0x01BB
 static const uint16_t map_dynamic_priority_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PRIORITY1_BYTE1,
-    EEPROM_DYNAMIC_PRIORITY2_BYTE1
+    EEPROM_DYNAMIC_PRIORITY2_BYTE1,
+    EEPROM_DYNAMIC_PRIORITY3_BYTE1
     };
 
 // EEPROM Memory Map - dynamic compare
-#define EEPROM_DYNAMIC_COMPARE1_BYTE1 (uint16_t)0x01BA
-#define EEPROM_DYNAMIC_COMPARE2_BYTE1 (uint16_t)0x01BB
+#define EEPROM_DYNAMIC_COMPARE1_BYTE1 (uint16_t)0x01BC
+#define EEPROM_DYNAMIC_COMPARE2_BYTE1 (uint16_t)0x01BD
+#define EEPROM_DYNAMIC_COMPARE3_BYTE1 (uint16_t)0x01BE
 static const uint16_t map_dynamic_compare_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_COMPARE1_BYTE1,
-    EEPROM_DYNAMIC_COMPARE2_BYTE1
+    EEPROM_DYNAMIC_COMPARE2_BYTE1,
+    EEPROM_DYNAMIC_COMPARE3_BYTE1
     };
 
 // EEPROM Memory Map - dynamic threshold
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE1 (uint16_t)0x01BC
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE2 (uint16_t)0x01BD
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE3 (uint16_t)0x01BE
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE4 (uint16_t)0x01BF
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE1 (uint16_t)0x01C0
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE2 (uint16_t)0x01C1
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE3 (uint16_t)0x01C2
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE4 (uint16_t)0x01C3
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE1 (uint16_t)0x01BF
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE2 (uint16_t)0x01C0
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE3 (uint16_t)0x01C1
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE4 (uint16_t)0x01C2
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE1 (uint16_t)0x01C3
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE2 (uint16_t)0x01C4
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE3 (uint16_t)0x01C5
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE4 (uint16_t)0x01C6
+#define EEPROM_DYNAMIC_THRESHOLD3_BYTE1 (uint16_t)0x01C7
+#define EEPROM_DYNAMIC_THRESHOLD3_BYTE2 (uint16_t)0x01C8
+#define EEPROM_DYNAMIC_THRESHOLD3_BYTE3 (uint16_t)0x01C9
+#define EEPROM_DYNAMIC_THRESHOLD3_BYTE4 (uint16_t)0x01CA
 static const uint16_t map_dynamic_threshold_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_THRESHOLD1_BYTE1,
-    EEPROM_DYNAMIC_THRESHOLD2_BYTE1
+    EEPROM_DYNAMIC_THRESHOLD2_BYTE1,
+    EEPROM_DYNAMIC_THRESHOLD3_BYTE1
     };
 
 static const uint16_t map_dynamic_threshold_byte2[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_THRESHOLD1_BYTE2,
-    EEPROM_DYNAMIC_THRESHOLD2_BYTE2
+    EEPROM_DYNAMIC_THRESHOLD2_BYTE2,
+    EEPROM_DYNAMIC_THRESHOLD3_BYTE2
     };
 
 static const uint16_t map_dynamic_threshold_byte3[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_THRESHOLD1_BYTE3,
-    EEPROM_DYNAMIC_THRESHOLD2_BYTE3
+    EEPROM_DYNAMIC_THRESHOLD2_BYTE3,
+    EEPROM_DYNAMIC_THRESHOLD3_BYTE3
     };
 
 static const uint16_t map_dynamic_threshold_byte4[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_THRESHOLD1_BYTE4,
-    EEPROM_DYNAMIC_THRESHOLD2_BYTE4
+    EEPROM_DYNAMIC_THRESHOLD2_BYTE4,
+    EEPROM_DYNAMIC_THRESHOLD3_BYTE4
     };
 
 // EEPROM Memory Map - dynamic index
-#define EEPROM_DYNAMIC_INDEX1_BYTE1 (uint16_t)0x01C4
-#define EEPROM_DYNAMIC_INDEX2_BYTE1 (uint16_t)0x01C5
+#define EEPROM_DYNAMIC_INDEX1_BYTE1 (uint16_t)0x01CB
+#define EEPROM_DYNAMIC_INDEX2_BYTE1 (uint16_t)0x01CC
+#define EEPROM_DYNAMIC_INDEX3_BYTE1 (uint16_t)0x01CD
 static const uint16_t map_dynamic_index_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_INDEX1_BYTE1,
-    EEPROM_DYNAMIC_INDEX2_BYTE1
+    EEPROM_DYNAMIC_INDEX2_BYTE1,
+    EEPROM_DYNAMIC_INDEX3_BYTE1
     };
 
 // EEPROM Memory Map - dynamic pid
-#define EEPROM_DYNAMIC_PID1_BYTE1 (uint16_t)0x01C6
-#define EEPROM_DYNAMIC_PID1_BYTE2 (uint16_t)0x01C7
-#define EEPROM_DYNAMIC_PID1_BYTE3 (uint16_t)0x01C8
-#define EEPROM_DYNAMIC_PID1_BYTE4 (uint16_t)0x01C9
-#define EEPROM_DYNAMIC_PID2_BYTE1 (uint16_t)0x01CA
-#define EEPROM_DYNAMIC_PID2_BYTE2 (uint16_t)0x01CB
-#define EEPROM_DYNAMIC_PID2_BYTE3 (uint16_t)0x01CC
-#define EEPROM_DYNAMIC_PID2_BYTE4 (uint16_t)0x01CD
+#define EEPROM_DYNAMIC_PID1_BYTE1 (uint16_t)0x01CE
+#define EEPROM_DYNAMIC_PID1_BYTE2 (uint16_t)0x01CF
+#define EEPROM_DYNAMIC_PID1_BYTE3 (uint16_t)0x01D0
+#define EEPROM_DYNAMIC_PID1_BYTE4 (uint16_t)0x01D1
+#define EEPROM_DYNAMIC_PID2_BYTE1 (uint16_t)0x01D2
+#define EEPROM_DYNAMIC_PID2_BYTE2 (uint16_t)0x01D3
+#define EEPROM_DYNAMIC_PID2_BYTE3 (uint16_t)0x01D4
+#define EEPROM_DYNAMIC_PID2_BYTE4 (uint16_t)0x01D5
+#define EEPROM_DYNAMIC_PID3_BYTE1 (uint16_t)0x01D6
+#define EEPROM_DYNAMIC_PID3_BYTE2 (uint16_t)0x01D7
+#define EEPROM_DYNAMIC_PID3_BYTE3 (uint16_t)0x01D8
+#define EEPROM_DYNAMIC_PID3_BYTE4 (uint16_t)0x01D9
 static const uint16_t map_dynamic_pid_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PID1_BYTE1,
-    EEPROM_DYNAMIC_PID2_BYTE1
+    EEPROM_DYNAMIC_PID2_BYTE1,
+    EEPROM_DYNAMIC_PID3_BYTE1
     };
 
 static const uint16_t map_dynamic_pid_byte2[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PID1_BYTE2,
-    EEPROM_DYNAMIC_PID2_BYTE2
+    EEPROM_DYNAMIC_PID2_BYTE2,
+    EEPROM_DYNAMIC_PID3_BYTE2
     };
 
 static const uint16_t map_dynamic_pid_byte3[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PID1_BYTE3,
-    EEPROM_DYNAMIC_PID2_BYTE3
+    EEPROM_DYNAMIC_PID2_BYTE3,
+    EEPROM_DYNAMIC_PID3_BYTE3
     };
 
 static const uint16_t map_dynamic_pid_byte4[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_PID1_BYTE4,
-    EEPROM_DYNAMIC_PID2_BYTE4
+    EEPROM_DYNAMIC_PID2_BYTE4,
+    EEPROM_DYNAMIC_PID3_BYTE4
     };
 
 // EEPROM Memory Map - dynamic units
-#define EEPROM_DYNAMIC_UNITS1_BYTE1 (uint16_t)0x01CE
-#define EEPROM_DYNAMIC_UNITS2_BYTE1 (uint16_t)0x01CF
+#define EEPROM_DYNAMIC_UNITS1_BYTE1 (uint16_t)0x01DA
+#define EEPROM_DYNAMIC_UNITS2_BYTE1 (uint16_t)0x01DB
+#define EEPROM_DYNAMIC_UNITS3_BYTE1 (uint16_t)0x01DC
 static const uint16_t map_dynamic_units_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_UNITS1_BYTE1,
-    EEPROM_DYNAMIC_UNITS2_BYTE1
+    EEPROM_DYNAMIC_UNITS2_BYTE1,
+    EEPROM_DYNAMIC_UNITS3_BYTE1
     };
 
 
@@ -1512,7 +1538,7 @@ bool json_to_config(const char *json_str) {
     return true;
 }
 
-static uint8_t cached_settings[464];
+static uint8_t cached_settings[477];
 
 static settings_write *write;
 static settings_read *read;
@@ -2628,10 +2654,10 @@ ALERT_COMPARISON get_alert_compare_from_string(const char *str)
 
 
 /********************************************************************************
-*                            Dynamic gauge threshold                            
+*                                Alert threshold                                
 *
 * @param idx_alert    index of the alert
-* @param threshold    Comparison value of the dynamic gauge
+* @param threshold    Comparison value of the alert
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
@@ -2673,21 +2699,21 @@ bool verify_alert_threshold(float alert_threshold)
 
 float get_alert_threshold(uint8_t idx)
 {
-    // Verify the Dynamic gauge threshold value is valid
+    // Verify the Alert threshold value is valid
     if (!verify_alert_threshold(settings_alert_threshold[idx]))
         return DEFAULT_ALERT_THRESHOLD;
 
     return settings_alert_threshold[idx];
 }
 
-// Set the Dynamic gauge threshold
+// Set the Alert threshold
 bool set_alert_threshold(uint8_t idx, float alert_threshold, bool save)
 {
-    // Verify the Dynamic gauge threshold value is valid
+    // Verify the Alert threshold value is valid
     if (!verify_alert_threshold(alert_threshold))
         return false;
 
-    // Check to see if the Dynamic gauge threshold EEPROM value needs to be
+    // Check to see if the Alert threshold EEPROM value needs to be
     // updated if immediate save is set
     if (save)
     {

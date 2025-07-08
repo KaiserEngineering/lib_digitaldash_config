@@ -49,7 +49,7 @@ void settings_setReadHandler(settings_read *readHandler);
 #define MAX_ALERTS 5
 #define ALERT_MESSAGE_LEN 64
 #define MAX_VIEWS 3
-#define MAX_DYNAMICS 2
+#define MAX_DYNAMICS 3
 
 void load_settings(void);
 void write_eeprom(uint16_t bAdd, uint8_t bData);
@@ -270,10 +270,10 @@ ALERT_COMPARISON get_alert_compare_from_string(const char *str);
 
 
 /********************************************************************************
-*                            Dynamic gauge threshold                            
+*                                Alert threshold                                
 *
 * @param idx_alert    index of the alert
-* @param threshold    Comparison value of the dynamic gauge
+* @param threshold    Comparison value of the alert
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
