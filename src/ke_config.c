@@ -2551,7 +2551,7 @@ bool set_alert_message(uint8_t idx, char* alert_message, bool save)
         // Reload the current setting saved in EEPROM
         load_alert_message(idx, settings_alert_message[idx]);
 
-        if (settings_alert_message[idx] != alert_message)
+        if (strncmp(settings_alert_message[idx], alert_message, ALERT_MESSAGE_LEN) != 0)
         {
             save_alert_message(idx, alert_message);
         }
