@@ -370,13 +370,13 @@ bool set_dynamic_threshold(uint8_t idx_dynamic, float threshold, bool save);
 *                                   View index                                  
 *
 * @param idx_dynamic    index of the dynamic
-* @param index    Set which view should be enabled if the dynamic event is true
+* @param view_index    Set which view should be enabled if the dynamic event is true
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-bool verify_dynamic_index(uint8_t index);
-uint8_t get_dynamic_index(uint8_t idx_dynamic);
-bool set_dynamic_index(uint8_t idx_dynamic, uint8_t index, bool save);
+bool verify_dynamic_view_index(uint8_t view_index);
+uint8_t get_dynamic_view_index(uint8_t idx_dynamic);
+bool set_dynamic_view_index(uint8_t idx_dynamic, uint8_t view_index, bool save);
 
 
 /********************************************************************************

@@ -43,7 +43,7 @@
 #define DEFAULT_DYNAMIC_PRIORITY DYNAMIC_PRIORITY_LOW
 #define DEFAULT_DYNAMIC_COMPARE DYNAMIC_COMPARISON_GREATER_THAN
 #define DEFAULT_DYNAMIC_THRESHOLD 0
-#define DEFAULT_DYNAMIC_INDEX 0
+#define DEFAULT_DYNAMIC_VIEW_INDEX 0
 #define DEFAULT_DYNAMIC_PID 0
 #define DEFAULT_DYNAMIC_UNITS PID_UNITS_RESERVED
 
@@ -63,7 +63,7 @@
 #define EE_SIZE_DYNAMIC_PRIORITY 1
 #define EE_SIZE_DYNAMIC_COMPARE 1
 #define EE_SIZE_DYNAMIC_THRESHOLD 4
-#define EE_SIZE_DYNAMIC_INDEX 1
+#define EE_SIZE_DYNAMIC_VIEW_INDEX 1
 #define EE_SIZE_DYNAMIC_PID 4
 #define EE_SIZE_DYNAMIC_UNITS 1
 
@@ -1256,14 +1256,14 @@ static const uint16_t map_dynamic_threshold_byte4[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_THRESHOLD3_BYTE4
     };
 
-// EEPROM Memory Map - dynamic index
-#define EEPROM_DYNAMIC_INDEX1_BYTE1 (uint16_t)0x01CB
-#define EEPROM_DYNAMIC_INDEX2_BYTE1 (uint16_t)0x01CC
-#define EEPROM_DYNAMIC_INDEX3_BYTE1 (uint16_t)0x01CD
-static const uint16_t map_dynamic_index_byte1[MAX_DYNAMICS] = {
-    EEPROM_DYNAMIC_INDEX1_BYTE1,
-    EEPROM_DYNAMIC_INDEX2_BYTE1,
-    EEPROM_DYNAMIC_INDEX3_BYTE1
+// EEPROM Memory Map - dynamic view_index
+#define EEPROM_DYNAMIC_VIEW_INDEX1_BYTE1 (uint16_t)0x01CB
+#define EEPROM_DYNAMIC_VIEW_INDEX2_BYTE1 (uint16_t)0x01CC
+#define EEPROM_DYNAMIC_VIEW_INDEX3_BYTE1 (uint16_t)0x01CD
+static const uint16_t map_dynamic_view_index_byte1[MAX_DYNAMICS] = {
+    EEPROM_DYNAMIC_VIEW_INDEX1_BYTE1,
+    EEPROM_DYNAMIC_VIEW_INDEX2_BYTE1,
+    EEPROM_DYNAMIC_VIEW_INDEX3_BYTE1
     };
 
 // EEPROM Memory Map - dynamic pid
@@ -1330,7 +1330,7 @@ static DYNAMIC_STATE settings_dynamic_enable[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_EN
 static DYNAMIC_PRIORITY settings_dynamic_priority[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_PRIORITY};
 static DYNAMIC_COMPARISON settings_dynamic_compare[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_COMPARE};
 static float settings_dynamic_threshold[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_THRESHOLD};
-static uint8_t settings_dynamic_index[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_INDEX};
+static uint8_t settings_dynamic_view_index[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_VIEW_INDEX};
 static uint32_t settings_dynamic_pid[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_PID};
 static PID_UNITS settings_dynamic_units[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_UNITS};
 
@@ -1351,7 +1351,7 @@ static void load_dynamic_enable(uint8_t idx, DYNAMIC_STATE *dynamic_enable_val);
 static void load_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY *dynamic_priority_val);
 static void load_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON *dynamic_compare_val);
 static void load_dynamic_threshold(uint8_t idx, float *dynamic_threshold_val);
-static void load_dynamic_index(uint8_t idx, uint8_t *dynamic_index_val);
+static void load_dynamic_view_index(uint8_t idx, uint8_t *dynamic_view_index_val);
 static void load_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid_val);
 static void load_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units_val);
 
@@ -1462,7 +1462,7 @@ uint32_t config_to_json(char *buffer, uint32_t buffer_size) {
         cJSON_AddStringToObject(dynamic, "priority", dynamic_priority_string[get_dynamic_priority(i)]);
         cJSON_AddStringToObject(dynamic, "compare", dynamic_comparison_string[get_dynamic_compare(i)]);
         cJSON_AddNumberToObject(dynamic, "threshold", get_dynamic_threshold(i));
-        cJSON_AddNumberToObject(dynamic, "index", get_dynamic_index(i));
+        cJSON_AddNumberToObject(dynamic, "view_index", get_dynamic_view_index(i));
         get_pid_desc(get_dynamic_pid(i), str_buf);
         cJSON_AddStringToObject(dynamic, "pid", str_buf);
         get_unit_desc(get_dynamic_units(i), str_buf);
@@ -1528,7 +1528,7 @@ bool json_to_config(const char *json_str) {
         set_dynamic_priority(i, get_dynamic_priority_from_string(cJSON_GetObjectItem(dynamic, "priority")->valuestring), true);
         set_dynamic_compare(i, get_dynamic_compare_from_string(cJSON_GetObjectItem(dynamic, "compare")->valuestring), true);
         set_dynamic_threshold(i, cJSON_GetObjectItem(dynamic, "threshold")->valuedouble, true);
-        set_dynamic_index(i, cJSON_GetObjectItem(dynamic, "index")->valueint, true);
+        set_dynamic_view_index(i, cJSON_GetObjectItem(dynamic, "view_index")->valueint, true);
         set_dynamic_pid(i, get_pid_by_string(cJSON_GetObjectItem(dynamic, "pid")->valuestring), true);
         set_dynamic_units(i, get_unit_by_string(cJSON_GetObjectItem(dynamic, "units")->valuestring), true);
     }
@@ -1627,7 +1627,7 @@ void load_settings(void)
         load_dynamic_threshold(idx, &settings_dynamic_threshold[idx]);
 
     for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
-        load_dynamic_index(idx, &settings_dynamic_index[idx]);
+        load_dynamic_view_index(idx, &settings_dynamic_view_index[idx]);
 
     for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
         load_dynamic_pid(idx, &settings_dynamic_pid[idx]);
@@ -3071,51 +3071,51 @@ bool set_dynamic_threshold(uint8_t idx, float dynamic_threshold, bool save)
 *                                   View index                                  
 *
 * @param idx_dynamic    index of the dynamic
-* @param index    Set which view should be enabled if the dynamic event is true
+* @param view_index    Set which view should be enabled if the dynamic event is true
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static void load_dynamic_index(uint8_t idx, uint8_t *dynamic_index_val)
+static void load_dynamic_view_index(uint8_t idx, uint8_t *dynamic_view_index_val)
 {
-    uint8_t bytes[EE_SIZE_DYNAMIC_INDEX];
+    uint8_t bytes[EE_SIZE_DYNAMIC_VIEW_INDEX];
 
-    bytes[0] = read_eeprom(map_dynamic_index_byte1[idx]);
+    bytes[0] = read_eeprom(map_dynamic_view_index_byte1[idx]);
 
-    memcpy(dynamic_index_val, bytes, EE_SIZE_DYNAMIC_INDEX);
+    memcpy(dynamic_view_index_val, bytes, EE_SIZE_DYNAMIC_VIEW_INDEX);
 }
 
-static void save_dynamic_index(uint8_t idx, uint8_t *dynamic_index)
+static void save_dynamic_view_index(uint8_t idx, uint8_t *dynamic_view_index)
 {
-    uint8_t bytes[EE_SIZE_DYNAMIC_INDEX];
+    uint8_t bytes[EE_SIZE_DYNAMIC_VIEW_INDEX];
 
-    memcpy(bytes, dynamic_index, EE_SIZE_DYNAMIC_INDEX);
+    memcpy(bytes, dynamic_view_index, EE_SIZE_DYNAMIC_VIEW_INDEX);
 
-    write_eeprom(map_dynamic_index_byte1[idx], bytes[0]);
+    write_eeprom(map_dynamic_view_index_byte1[idx], bytes[0]);
 }
 
-bool verify_dynamic_index(uint8_t dynamic_index)
+bool verify_dynamic_view_index(uint8_t dynamic_view_index)
 {
-    if (dynamic_index > MAX_VIEWS)
+    if (dynamic_view_index > MAX_VIEWS)
         return 0;
 
     else
         return 1;
 }
 
-uint8_t get_dynamic_index(uint8_t idx)
+uint8_t get_dynamic_view_index(uint8_t idx)
 {
     // Verify the View index value is valid
-    if (!verify_dynamic_index(settings_dynamic_index[idx]))
-        return DEFAULT_DYNAMIC_INDEX;
+    if (!verify_dynamic_view_index(settings_dynamic_view_index[idx]))
+        return DEFAULT_DYNAMIC_VIEW_INDEX;
 
-    return settings_dynamic_index[idx];
+    return settings_dynamic_view_index[idx];
 }
 
 // Set the View index
-bool set_dynamic_index(uint8_t idx, uint8_t dynamic_index, bool save)
+bool set_dynamic_view_index(uint8_t idx, uint8_t dynamic_view_index, bool save)
 {
     // Verify the View index value is valid
-    if (!verify_dynamic_index(dynamic_index))
+    if (!verify_dynamic_view_index(dynamic_view_index))
         return false;
 
     // Check to see if the View index EEPROM value needs to be
@@ -3123,15 +3123,15 @@ bool set_dynamic_index(uint8_t idx, uint8_t dynamic_index, bool save)
     if (save)
     {
         // Reload the current setting saved in EEPROM
-        load_dynamic_index(idx, &settings_dynamic_index[idx]);
+        load_dynamic_view_index(idx, &settings_dynamic_view_index[idx]);
 
-        if (settings_dynamic_index[idx] != dynamic_index)
+        if (settings_dynamic_view_index[idx] != dynamic_view_index)
         {
-            save_dynamic_index(idx, &dynamic_index);
+            save_dynamic_view_index(idx, &dynamic_view_index);
         }
     }
 
-    settings_dynamic_index[idx] = dynamic_index;
+    settings_dynamic_view_index[idx] = dynamic_view_index;
 
     return 1;
 }
