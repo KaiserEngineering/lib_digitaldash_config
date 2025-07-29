@@ -1911,6 +1911,7 @@ VIEW_BACKGROUND get_view_background_from_string(const char *str)
 ********************************************************************************/
 const char *gauge_theme_string[] = {
     "Stock ST",
+    "Stock RS",
     "Grumpy Cat",
     "Linear",
     "Radial"
@@ -1979,6 +1980,7 @@ bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME view_
 GAUGE_THEME get_view_gauge_theme_from_string(const char *str)
 {
     if(strcmp(str, "Stock ST") == 0) return GAUGE_THEME_STOCK_ST;
+    if(strcmp(str, "Stock RS") == 0) return GAUGE_THEME_STOCK_RS;
     if(strcmp(str, "Grumpy Cat") == 0) return GAUGE_THEME_GRUMPY_CAT;
     if(strcmp(str, "Linear") == 0) return GAUGE_THEME_LINEAR;
     if(strcmp(str, "Radial") == 0) return GAUGE_THEME_RADIAL;

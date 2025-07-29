@@ -141,6 +141,7 @@ VIEW_BACKGROUND get_view_background_from_string(const char *str);
 typedef enum
 {
     GAUGE_THEME_STOCK_ST,
+    GAUGE_THEME_STOCK_RS,
     GAUGE_THEME_GRUMPY_CAT,
     GAUGE_THEME_LINEAR,
     GAUGE_THEME_RADIAL,
