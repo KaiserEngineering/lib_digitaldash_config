@@ -1914,7 +1914,8 @@ const char *gauge_theme_string[] = {
     "Stock RS",
     "Grumpy Cat",
     "Linear",
-    "Radial"
+    "Radial",
+    "Digital"
 };
 
 static void load_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME *view_gauge_theme_val)
@@ -1984,6 +1985,7 @@ GAUGE_THEME get_view_gauge_theme_from_string(const char *str)
     if(strcmp(str, "Grumpy Cat") == 0) return GAUGE_THEME_GRUMPY_CAT;
     if(strcmp(str, "Linear") == 0) return GAUGE_THEME_LINEAR;
     if(strcmp(str, "Radial") == 0) return GAUGE_THEME_RADIAL;
+    if(strcmp(str, "Digital") == 0) return GAUGE_THEME_DIGITAL;
     return GAUGE_THEME_RESERVED;
 }
 
