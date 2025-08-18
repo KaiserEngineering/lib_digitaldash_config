@@ -50,6 +50,7 @@ void settings_setReadHandler(settings_read *readHandler);
 #define ALERT_MESSAGE_LEN 64
 #define MAX_VIEWS 3
 #define MAX_DYNAMICS 3
+#define MAX_GENERALS 1
 
 void load_settings(void);
 void write_eeprom(uint16_t bAdd, uint8_t bData);
@@ -405,6 +406,19 @@ bool set_dynamic_pid(uint8_t idx_dynamic, uint32_t pid, bool save);
 bool verify_dynamic_units(PID_UNITS units);
 PID_UNITS get_dynamic_units(uint8_t idx_dynamic);
 bool set_dynamic_units(uint8_t idx_dynamic, PID_UNITS units, bool save);
+
+
+/********************************************************************************
+*                                 EEPROM Version                                
+*
+* @param idx_general    index of the general
+* @param EE_Version    EEPROM Version
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+bool verify_general_ee_version(uint8_t ee_version);
+uint8_t get_general_ee_version(uint8_t idx_general);
+bool set_general_ee_version(uint8_t idx_general, uint8_t ee_version, bool save);
 
 #ifdef __cplusplus
 }

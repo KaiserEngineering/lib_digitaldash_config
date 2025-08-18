@@ -46,6 +46,7 @@
 #define DEFAULT_DYNAMIC_VIEW_INDEX 0
 #define DEFAULT_DYNAMIC_PID 0
 #define DEFAULT_DYNAMIC_UNITS PID_UNITS_RESERVED
+#define DEFAULT_GENERAL_EE_VERSION 255
 
 #define EE_SIZE_VIEW_ENABLE 1
 #define EE_SIZE_VIEW_NUM_GAUGES 1
@@ -66,6 +67,7 @@
 #define EE_SIZE_DYNAMIC_VIEW_INDEX 1
 #define EE_SIZE_DYNAMIC_PID 4
 #define EE_SIZE_DYNAMIC_UNITS 1
+#define EE_SIZE_GENERAL_EE_VERSION 1
 
 // EEPROM Memory Map - view enable
 #define EEPROM_VIEW_ENABLE1_BYTE1 (uint16_t)0x0000
@@ -1313,6 +1315,12 @@ static const uint16_t map_dynamic_units_byte1[MAX_DYNAMICS] = {
     EEPROM_DYNAMIC_UNITS3_BYTE1
     };
 
+// EEPROM Memory Map - general EE_Version
+#define EEPROM_GENERAL_EE_VERSION1_BYTE1 (uint16_t)0x01DD
+static const uint16_t map_general_ee_version_byte1[MAX_GENERALS] = {
+    EEPROM_GENERAL_EE_VERSION1_BYTE1
+    };
+
 
 static VIEW_STATE settings_view_enable[MAX_VIEWS] = {DEFAULT_VIEW_ENABLE};
 static uint8_t settings_view_num_gauges[MAX_GAUGES_PER_VIEW] = {DEFAULT_VIEW_NUM_GAUGES};
@@ -1333,6 +1341,7 @@ static float settings_dynamic_threshold[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_THRESHO
 static uint8_t settings_dynamic_view_index[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_VIEW_INDEX};
 static uint32_t settings_dynamic_pid[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_PID};
 static PID_UNITS settings_dynamic_units[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_UNITS};
+static uint8_t settings_general_ee_version[MAX_GENERALS] = {DEFAULT_GENERAL_EE_VERSION};
 
 
 static void load_view_enable(uint8_t idx, VIEW_STATE *view_enable_val);
@@ -1354,6 +1363,7 @@ static void load_dynamic_threshold(uint8_t idx, float *dynamic_threshold_val);
 static void load_dynamic_view_index(uint8_t idx, uint8_t *dynamic_view_index_val);
 static void load_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid_val);
 static void load_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units_val);
+static void load_general_ee_version(uint8_t idx, uint8_t *general_ee_version_val);
 
 uint32_t options_to_json(char *buffer, uint32_t buffer_size) {
     cJSON *root = cJSON_CreateObject();
@@ -1470,6 +1480,14 @@ uint32_t config_to_json(char *buffer, uint32_t buffer_size) {
         cJSON_AddItemToArray(dynamics, dynamic);
     }
 
+    // Serialize general
+    cJSON *generals = cJSON_AddArrayToObject(root, "general");
+    for(int i = 0; i < MAX_GENERALS; i++) {
+        cJSON *general = cJSON_CreateObject();
+        cJSON_AddNumberToObject(general, "EE_Version", get_general_ee_version(i));
+        cJSON_AddItemToArray(generals, general);
+    }
+
     // Print into user buffer
     char *json = cJSON_PrintUnformatted(root);
     uint32_t actual_len = 0;
@@ -1533,12 +1551,19 @@ bool json_to_config(const char *json_str) {
         set_dynamic_units(i, get_unit_by_string(cJSON_GetObjectItem(dynamic, "units")->valuestring), true);
     }
 
+    // Get general
+    cJSON *generals = cJSON_GetObjectItem(root, "general");
+    for(int i = 0; (i < MAX_GENERALS) && (i < cJSON_GetArraySize(generals)); i++) {
+        cJSON *general = cJSON_GetArrayItem(generals, i);
+        set_general_ee_version(i, cJSON_GetObjectItem(general, "EE_Version")->valueint, true);
+    }
+
     // Print into user buffer
     cJSON_Delete(root);
     return true;
 }
 
-static uint8_t cached_settings[477];
+static uint8_t cached_settings[478];
 
 static settings_write *write;
 static settings_read *read;
@@ -1634,6 +1659,9 @@ void load_settings(void)
 
     for( uint8_t idx = 0; idx < MAX_DYNAMICS; idx++ )
         load_dynamic_units(idx, &settings_dynamic_units[idx]);
+
+    for( uint8_t idx = 0; idx < MAX_GENERALS; idx++ )
+        load_general_ee_version(idx, &settings_general_ee_version[idx]);
 
 }
 
@@ -3288,6 +3316,72 @@ bool set_dynamic_units(uint8_t idx, PID_UNITS dynamic_units, bool save)
     }
 
     settings_dynamic_units[idx] = dynamic_units;
+
+    return 1;
+}
+
+
+/********************************************************************************
+*                                 EEPROM Version                                
+*
+* @param idx_general    index of the general
+* @param EE_Version    EEPROM Version
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+static void load_general_ee_version(uint8_t idx, uint8_t *general_ee_version_val)
+{
+    uint8_t bytes[EE_SIZE_GENERAL_EE_VERSION];
+
+    bytes[0] = read_eeprom(map_general_ee_version_byte1[idx]);
+
+    memcpy(general_ee_version_val, bytes, EE_SIZE_GENERAL_EE_VERSION);
+}
+
+static void save_general_ee_version(uint8_t idx, uint8_t *general_ee_version)
+{
+    uint8_t bytes[EE_SIZE_GENERAL_EE_VERSION];
+
+    memcpy(bytes, general_ee_version, EE_SIZE_GENERAL_EE_VERSION);
+
+    write_eeprom(map_general_ee_version_byte1[idx], bytes[0]);
+}
+
+bool verify_general_ee_version(uint8_t general_ee_version)
+{
+    return 1;
+}
+
+uint8_t get_general_ee_version(uint8_t idx)
+{
+    // Verify the EEPROM Version value is valid
+    if (!verify_general_ee_version(settings_general_ee_version[idx]))
+        return DEFAULT_GENERAL_EE_VERSION;
+
+    return settings_general_ee_version[idx];
+}
+
+// Set the EEPROM Version
+bool set_general_ee_version(uint8_t idx, uint8_t general_ee_version, bool save)
+{
+    // Verify the EEPROM Version value is valid
+    if (!verify_general_ee_version(general_ee_version))
+        return false;
+
+    // Check to see if the EEPROM Version EEPROM value needs to be
+    // updated if immediate save is set
+    if (save)
+    {
+        // Reload the current setting saved in EEPROM
+        load_general_ee_version(idx, &settings_general_ee_version[idx]);
+
+        if (settings_general_ee_version[idx] != general_ee_version)
+        {
+            save_general_ee_version(idx, &general_ee_version);
+        }
+    }
+
+    settings_general_ee_version[idx] = general_ee_version;
 
     return 1;
 }
