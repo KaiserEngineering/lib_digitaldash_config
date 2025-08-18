@@ -131,6 +131,41 @@ VIEW_BACKGROUND get_view_background_from_string(const char *str);
 
 
 /********************************************************************************
+*                                Background Color                               
+*
+* @param idx_view    index of the view
+* @param background_color    Set the background color
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+bool verify_view_background_color(uint32_t background_color);
+uint32_t get_view_background_color(uint8_t idx_view);
+bool set_view_background_color(uint8_t idx_view, uint32_t background_color, bool save);
+
+
+/********************************************************************************
+*                                Background Type                                
+*
+* @param idx_view    index of the view
+* @param background_type    Set if the background is an image or color
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+typedef enum
+{
+    VIEW_BACKGROUND_TYPE_COLOR,
+    VIEW_BACKGROUND_TYPE_IMAGE,
+    VIEW_BACKGROUND_TYPE_RESERVED
+} VIEW_BACKGROUND_TYPE;
+
+extern const char *view_background_type_string[];
+bool verify_view_background_type(VIEW_BACKGROUND_TYPE background_type);
+VIEW_BACKGROUND_TYPE get_view_background_type(uint8_t idx_view);
+bool set_view_background_type(uint8_t idx_view, VIEW_BACKGROUND_TYPE background_type, bool save);
+VIEW_BACKGROUND_TYPE get_view_background_type_from_string(const char *str);
+
+
+/********************************************************************************
 *                          Theme assigned to the gauge                          
 *
 * @param idx_view    index of the view
@@ -419,6 +454,19 @@ bool set_dynamic_units(uint8_t idx_dynamic, PID_UNITS units, bool save);
 bool verify_general_ee_version(uint8_t ee_version);
 uint8_t get_general_ee_version(uint8_t idx_general);
 bool set_general_ee_version(uint8_t idx_general, uint8_t ee_version, bool save);
+
+
+/********************************************************************************
+*                             Splash Screen Duration                            
+*
+* @param idx_general    index of the general
+* @param splash    Set how long the splash screen should stay on
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+bool verify_general_splash(uint16_t splash);
+uint16_t get_general_splash(uint8_t idx_general);
+bool set_general_splash(uint8_t idx_general, uint16_t splash, bool save);
 
 #ifdef __cplusplus
 }
