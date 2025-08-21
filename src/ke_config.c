@@ -1587,124 +1587,136 @@ bool json_to_config(const char *json_str) {
 
     // Get view
     cJSON *views = cJSON_GetObjectItem(root, "view");
-    for(int i = 0; (i < MAX_VIEWS) && (i < cJSON_GetArraySize(views)); i++) {
-        cJSON *view = cJSON_GetArrayItem(views, i);
+    if(views && cJSON_IsArray(views)) {
+        for(int i = 0; (i < MAX_VIEWS) && (i < cJSON_GetArraySize(views)); i++) {
+            cJSON *view = cJSON_GetArrayItem(views, i);
 
-        cJSON *view_enable = cJSON_GetObjectItem(view, "enable");
-        if(cJSON_IsString(view_enable))
-            set_view_enable(i, get_view_enable_from_string(view_enable->valuestring), true);
+            cJSON *view_enable = cJSON_GetObjectItem(view, "enable");
+            if(cJSON_IsString(view_enable))
+                set_view_enable(i, get_view_enable_from_string(view_enable->valuestring), true);
 
-        cJSON *view_num_gauges = cJSON_GetObjectItem(view, "num_gauges");
-        if(cJSON_IsNumber(view_num_gauges))
-            set_view_num_gauges(i, view_num_gauges->valueint, true);
+            cJSON *view_num_gauges = cJSON_GetObjectItem(view, "num_gauges");
+            if(cJSON_IsNumber(view_num_gauges))
+                set_view_num_gauges(i, view_num_gauges->valueint, true);
 
-        cJSON *view_background = cJSON_GetObjectItem(view, "background");
-        if(cJSON_IsString(view_background))
-            set_view_background(i, get_view_background_from_string(view_background->valuestring), true);
+            cJSON *view_background = cJSON_GetObjectItem(view, "background");
+            if(cJSON_IsString(view_background))
+                set_view_background(i, get_view_background_from_string(view_background->valuestring), true);
 
-        cJSON *view_background_color = cJSON_GetObjectItem(view, "background_color");
-        if(cJSON_IsNumber(view_background_color))
-            set_view_background_color(i, view_background_color->valueint, true);
+            cJSON *view_background_color = cJSON_GetObjectItem(view, "background_color");
+            if(cJSON_IsNumber(view_background_color))
+                set_view_background_color(i, view_background_color->valueint, true);
 
-        cJSON *view_background_type = cJSON_GetObjectItem(view, "background_type");
-        if(cJSON_IsString(view_background_type))
-            set_view_background_type(i, get_view_background_type_from_string(view_background_type->valuestring), true);
+            cJSON *view_background_type = cJSON_GetObjectItem(view, "background_type");
+            if(cJSON_IsString(view_background_type))
+                set_view_background_type(i, get_view_background_type_from_string(view_background_type->valuestring), true);
 
-        // Get gauge within view
-        cJSON *view_gauges = cJSON_GetObjectItem(view, "gauge");
-        for(int j = 0; j < MAX_GAUGES_PER_VIEW; j++) {
-            cJSON *view_gauge = cJSON_GetArrayItem(view_gauges, j);
+            // Get gauge within view
+            cJSON *view_gauges = cJSON_GetObjectItem(view, "gauge");
+            if(view_gauges && cJSON_IsArray(view_gauges)) {
+                for(int j = 0; j < MAX_GAUGES_PER_VIEW; j++) {
+                    cJSON *view_gauge = cJSON_GetArrayItem(view_gauges, j);
+                    if(view_gauge) {
 
-            cJSON *view_gauge_theme = cJSON_GetObjectItem(view_gauge, "theme");
-            if(cJSON_IsString(view_gauge_theme))
-                set_view_gauge_theme(i, j, get_view_gauge_theme_from_string(view_gauge_theme->valuestring), true);
+                        cJSON *view_gauge_theme = cJSON_GetObjectItem(view_gauge, "theme");
+                        if(cJSON_IsString(view_gauge_theme))
+                            set_view_gauge_theme(i, j, get_view_gauge_theme_from_string(view_gauge_theme->valuestring), true);
 
-            cJSON *view_gauge_pid = cJSON_GetObjectItem(view_gauge, "pid");
-            if(cJSON_IsString(view_gauge_pid))
-                set_view_gauge_pid(i, j, get_pid_by_string(view_gauge_pid->valuestring), true);
+                        cJSON *view_gauge_pid = cJSON_GetObjectItem(view_gauge, "pid");
+                        if(cJSON_IsString(view_gauge_pid))
+                            set_view_gauge_pid(i, j, get_pid_by_string(view_gauge_pid->valuestring), true);
 
-            cJSON *view_gauge_units = cJSON_GetObjectItem(view_gauge, "units");
-            if(cJSON_IsString(view_gauge_units))
-                set_view_gauge_units(i, j, get_unit_by_string(view_gauge_units->valuestring), true);
+                        cJSON *view_gauge_units = cJSON_GetObjectItem(view_gauge, "units");
+                        if(cJSON_IsString(view_gauge_units))
+                            set_view_gauge_units(i, j, get_unit_by_string(view_gauge_units->valuestring), true);
+                    }
+                }
+            }
         }
     }
 
     // Get alert
     cJSON *alerts = cJSON_GetObjectItem(root, "alert");
-    for(int i = 0; (i < MAX_ALERTS) && (i < cJSON_GetArraySize(alerts)); i++) {
-        cJSON *alert = cJSON_GetArrayItem(alerts, i);
+    if(alerts && cJSON_IsArray(alerts)) {
+        for(int i = 0; (i < MAX_ALERTS) && (i < cJSON_GetArraySize(alerts)); i++) {
+            cJSON *alert = cJSON_GetArrayItem(alerts, i);
 
-        cJSON *alert_enable = cJSON_GetObjectItem(alert, "enable");
-        if(cJSON_IsString(alert_enable))
-            set_alert_enable(i, get_alert_enable_from_string(alert_enable->valuestring), true);
+            cJSON *alert_enable = cJSON_GetObjectItem(alert, "enable");
+            if(cJSON_IsString(alert_enable))
+                set_alert_enable(i, get_alert_enable_from_string(alert_enable->valuestring), true);
 
-        cJSON *alert_pid = cJSON_GetObjectItem(alert, "pid");
-        if(cJSON_IsString(alert_pid))
-            set_alert_pid(i, get_pid_by_string(alert_pid->valuestring), true);
+            cJSON *alert_pid = cJSON_GetObjectItem(alert, "pid");
+            if(cJSON_IsString(alert_pid))
+                set_alert_pid(i, get_pid_by_string(alert_pid->valuestring), true);
 
-        cJSON *alert_units = cJSON_GetObjectItem(alert, "units");
-        if(cJSON_IsString(alert_units))
-            set_alert_units(i, get_unit_by_string(alert_units->valuestring), true);
+            cJSON *alert_units = cJSON_GetObjectItem(alert, "units");
+            if(cJSON_IsString(alert_units))
+                set_alert_units(i, get_unit_by_string(alert_units->valuestring), true);
 
-        cJSON *alert_message = cJSON_GetObjectItem(alert, "message");
-        if(cJSON_IsString(alert_message))
-            set_alert_message(i, alert_message->valuestring, true);
+            cJSON *alert_message = cJSON_GetObjectItem(alert, "message");
+            if(cJSON_IsString(alert_message))
+                set_alert_message(i, alert_message->valuestring, true);
 
-        cJSON *alert_compare = cJSON_GetObjectItem(alert, "compare");
-        if(cJSON_IsString(alert_compare))
-            set_alert_compare(i, get_alert_compare_from_string(alert_compare->valuestring), true);
+            cJSON *alert_compare = cJSON_GetObjectItem(alert, "compare");
+            if(cJSON_IsString(alert_compare))
+                set_alert_compare(i, get_alert_compare_from_string(alert_compare->valuestring), true);
 
-        cJSON *alert_threshold = cJSON_GetObjectItem(alert, "threshold");
-        if(cJSON_IsNumber(alert_threshold))
-            set_alert_threshold(i, alert_threshold->valuedouble, true);
+            cJSON *alert_threshold = cJSON_GetObjectItem(alert, "threshold");
+            if(cJSON_IsNumber(alert_threshold))
+                set_alert_threshold(i, alert_threshold->valuedouble, true);
+        }
     }
 
     // Get dynamic
     cJSON *dynamics = cJSON_GetObjectItem(root, "dynamic");
-    for(int i = 0; (i < MAX_DYNAMICS) && (i < cJSON_GetArraySize(dynamics)); i++) {
-        cJSON *dynamic = cJSON_GetArrayItem(dynamics, i);
+    if(dynamics && cJSON_IsArray(dynamics)) {
+        for(int i = 0; (i < MAX_DYNAMICS) && (i < cJSON_GetArraySize(dynamics)); i++) {
+            cJSON *dynamic = cJSON_GetArrayItem(dynamics, i);
 
-        cJSON *dynamic_enable = cJSON_GetObjectItem(dynamic, "enable");
-        if(cJSON_IsString(dynamic_enable))
-            set_dynamic_enable(i, get_dynamic_enable_from_string(dynamic_enable->valuestring), true);
+            cJSON *dynamic_enable = cJSON_GetObjectItem(dynamic, "enable");
+            if(cJSON_IsString(dynamic_enable))
+                set_dynamic_enable(i, get_dynamic_enable_from_string(dynamic_enable->valuestring), true);
 
-        cJSON *dynamic_priority = cJSON_GetObjectItem(dynamic, "priority");
-        if(cJSON_IsString(dynamic_priority))
-            set_dynamic_priority(i, get_dynamic_priority_from_string(dynamic_priority->valuestring), true);
+            cJSON *dynamic_priority = cJSON_GetObjectItem(dynamic, "priority");
+            if(cJSON_IsString(dynamic_priority))
+                set_dynamic_priority(i, get_dynamic_priority_from_string(dynamic_priority->valuestring), true);
 
-        cJSON *dynamic_compare = cJSON_GetObjectItem(dynamic, "compare");
-        if(cJSON_IsString(dynamic_compare))
-            set_dynamic_compare(i, get_dynamic_compare_from_string(dynamic_compare->valuestring), true);
+            cJSON *dynamic_compare = cJSON_GetObjectItem(dynamic, "compare");
+            if(cJSON_IsString(dynamic_compare))
+                set_dynamic_compare(i, get_dynamic_compare_from_string(dynamic_compare->valuestring), true);
 
-        cJSON *dynamic_threshold = cJSON_GetObjectItem(dynamic, "threshold");
-        if(cJSON_IsNumber(dynamic_threshold))
-            set_dynamic_threshold(i, dynamic_threshold->valuedouble, true);
+            cJSON *dynamic_threshold = cJSON_GetObjectItem(dynamic, "threshold");
+            if(cJSON_IsNumber(dynamic_threshold))
+                set_dynamic_threshold(i, dynamic_threshold->valuedouble, true);
 
-        cJSON *dynamic_view_index = cJSON_GetObjectItem(dynamic, "view_index");
-        if(cJSON_IsNumber(dynamic_view_index))
-            set_dynamic_view_index(i, dynamic_view_index->valueint, true);
+            cJSON *dynamic_view_index = cJSON_GetObjectItem(dynamic, "view_index");
+            if(cJSON_IsNumber(dynamic_view_index))
+                set_dynamic_view_index(i, dynamic_view_index->valueint, true);
 
-        cJSON *dynamic_pid = cJSON_GetObjectItem(dynamic, "pid");
-        if(cJSON_IsString(dynamic_pid))
-            set_dynamic_pid(i, get_pid_by_string(dynamic_pid->valuestring), true);
+            cJSON *dynamic_pid = cJSON_GetObjectItem(dynamic, "pid");
+            if(cJSON_IsString(dynamic_pid))
+                set_dynamic_pid(i, get_pid_by_string(dynamic_pid->valuestring), true);
 
-        cJSON *dynamic_units = cJSON_GetObjectItem(dynamic, "units");
-        if(cJSON_IsString(dynamic_units))
-            set_dynamic_units(i, get_unit_by_string(dynamic_units->valuestring), true);
+            cJSON *dynamic_units = cJSON_GetObjectItem(dynamic, "units");
+            if(cJSON_IsString(dynamic_units))
+                set_dynamic_units(i, get_unit_by_string(dynamic_units->valuestring), true);
+        }
     }
 
     // Get general
     cJSON *generals = cJSON_GetObjectItem(root, "general");
-    for(int i = 0; (i < MAX_GENERALS) && (i < cJSON_GetArraySize(generals)); i++) {
-        cJSON *general = cJSON_GetArrayItem(generals, i);
+    if(generals && cJSON_IsArray(generals)) {
+        for(int i = 0; (i < MAX_GENERALS) && (i < cJSON_GetArraySize(generals)); i++) {
+            cJSON *general = cJSON_GetArrayItem(generals, i);
 
-        cJSON *general_ee_version = cJSON_GetObjectItem(general, "EE_Version");
-        if(cJSON_IsNumber(general_ee_version))
-            set_general_ee_version(i, general_ee_version->valueint, true);
+            cJSON *general_ee_version = cJSON_GetObjectItem(general, "EE_Version");
+            if(cJSON_IsNumber(general_ee_version))
+                set_general_ee_version(i, general_ee_version->valueint, true);
 
-        cJSON *general_splash = cJSON_GetObjectItem(general, "splash");
-        if(cJSON_IsNumber(general_splash))
-            set_general_splash(i, general_splash->valueint, true);
+            cJSON *general_splash = cJSON_GetObjectItem(general, "splash");
+            if(cJSON_IsNumber(general_splash))
+                set_general_splash(i, general_splash->valueint, true);
+        }
     }
 
     // Print into user buffer
