@@ -2008,12 +2008,7 @@ const char *view_background_string[] = {
     "User7",
     "User8",
     "User9",
-    "User10",
-    "User11",
-    "User12",
-    "User13",
-    "User14",
-    "User15"
+    "User10"
 };
 
 static void load_view_background(uint8_t idx, VIEW_BACKGROUND *view_background_val)
@@ -2088,11 +2083,6 @@ VIEW_BACKGROUND get_view_background_from_string(const char *str)
     if(strcmp(str, "User8") == 0) return VIEW_BACKGROUND_USER8;
     if(strcmp(str, "User9") == 0) return VIEW_BACKGROUND_USER9;
     if(strcmp(str, "User10") == 0) return VIEW_BACKGROUND_USER10;
-    if(strcmp(str, "User11") == 0) return VIEW_BACKGROUND_USER11;
-    if(strcmp(str, "User12") == 0) return VIEW_BACKGROUND_USER12;
-    if(strcmp(str, "User13") == 0) return VIEW_BACKGROUND_USER13;
-    if(strcmp(str, "User14") == 0) return VIEW_BACKGROUND_USER14;
-    if(strcmp(str, "User15") == 0) return VIEW_BACKGROUND_USER15;
     return VIEW_BACKGROUND_RESERVED;
 }
 
