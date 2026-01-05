@@ -464,6 +464,28 @@ bool verify_general_splash(uint16_t splash);
 uint16_t get_general_splash(uint8_t idx_general);
 bool set_general_splash(uint8_t idx_general, uint16_t splash, bool save);
 
+
+/********************************************************************************
+*                                  CAN Bus mode                                 
+*
+* @param idx_general    index of the general
+* @param can_bus_mode    Configure the CAN bus operation mode (Normal Mode for full communication, Listen Only for monitoring)
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+typedef enum
+{
+    CAN_BUS_MODE_NORMAL_MODE,
+    CAN_BUS_MODE_LISTEN_ONLY,
+    CAN_BUS_MODE_RESERVED
+} CAN_BUS_MODE;
+
+extern const char *can_bus_mode_string[];
+bool verify_general_can_bus_mode(CAN_BUS_MODE can_bus_mode);
+CAN_BUS_MODE get_general_can_bus_mode(uint8_t idx_general);
+bool set_general_can_bus_mode(uint8_t idx_general, CAN_BUS_MODE can_bus_mode, bool save);
+CAN_BUS_MODE get_general_can_bus_mode_from_string(const char *str);
+
 #ifdef __cplusplus
 }
 #endif

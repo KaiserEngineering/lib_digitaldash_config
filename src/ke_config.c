@@ -50,6 +50,7 @@
 #define DEFAULT_DYNAMIC_UNITS PID_UNITS_RESERVED
 #define DEFAULT_GENERAL_EE_VERSION 255
 #define DEFAULT_GENERAL_SPLASH 5
+#define DEFAULT_GENERAL_CAN_BUS_MODE CAN_BUS_MODE_NORMAL_MODE
 
 #define EE_SIZE_VIEW_ENABLE 1
 #define EE_SIZE_VIEW_NUM_GAUGES 1
@@ -74,6 +75,7 @@
 #define EE_SIZE_DYNAMIC_UNITS 1
 #define EE_SIZE_GENERAL_EE_VERSION 1
 #define EE_SIZE_GENERAL_SPLASH 2
+#define EE_SIZE_GENERAL_CAN_BUS_MODE 1
 
 // EEPROM Memory Map - view enable
 #define EEPROM_VIEW_ENABLE1_BYTE1 (uint16_t)0x0000
@@ -1385,6 +1387,12 @@ static const uint16_t map_general_splash_byte2[MAX_GENERALS] = {
     EEPROM_GENERAL_SPLASH1_BYTE2
     };
 
+// EEPROM Memory Map - general can_bus_mode
+#define EEPROM_GENERAL_CAN_BUS_MODE1_BYTE1 (uint16_t)0x01EF
+static const uint16_t map_general_can_bus_mode_byte1[MAX_GENERALS] = {
+    EEPROM_GENERAL_CAN_BUS_MODE1_BYTE1
+    };
+
 
 static VIEW_STATE settings_view_enable[MAX_VIEWS] = {DEFAULT_VIEW_ENABLE};
 static uint8_t settings_view_num_gauges[MAX_GAUGES_PER_VIEW] = {DEFAULT_VIEW_NUM_GAUGES};
@@ -1409,6 +1417,7 @@ static uint32_t settings_dynamic_pid[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_PID};
 static PID_UNITS settings_dynamic_units[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_UNITS};
 static uint8_t settings_general_ee_version[MAX_GENERALS] = {DEFAULT_GENERAL_EE_VERSION};
 static uint16_t settings_general_splash[MAX_GENERALS] = {DEFAULT_GENERAL_SPLASH};
+static CAN_BUS_MODE settings_general_can_bus_mode[MAX_GENERALS] = {DEFAULT_GENERAL_CAN_BUS_MODE};
 
 
 static void load_view_enable(uint8_t idx, VIEW_STATE *view_enable_val);
@@ -1434,6 +1443,7 @@ static void load_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid_val);
 static void load_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units_val);
 static void load_general_ee_version(uint8_t idx, uint8_t *general_ee_version_val);
 static void load_general_splash(uint8_t idx, uint16_t *general_splash_val);
+static void load_general_can_bus_mode(uint8_t idx, CAN_BUS_MODE *general_can_bus_mode_val);
 
 uint32_t options_to_json(char *buffer, uint32_t buffer_size) {
     cJSON *root = cJSON_CreateObject();
@@ -1477,6 +1487,10 @@ uint32_t options_to_json(char *buffer, uint32_t buffer_size) {
     // Populate dynamic_comparison option list
     list = cJSON_CreateStringArray(dynamic_comparison_string, DYNAMIC_COMPARISON_RESERVED);
     cJSON_AddItemToObject(root, "dynamic_comparison", list);
+
+    // Populate can_bus_mode option list
+    list = cJSON_CreateStringArray(can_bus_mode_string, CAN_BUS_MODE_RESERVED);
+    cJSON_AddItemToObject(root, "can_bus_mode", list);
 
     // Print into user buffer
     char *json = cJSON_PrintUnformatted(root);
@@ -1562,6 +1576,7 @@ uint32_t config_to_json(char *buffer, uint32_t buffer_size) {
         cJSON *general = cJSON_CreateObject();
         cJSON_AddNumberToObject(general, "EE_Version", get_general_ee_version(i));
         cJSON_AddNumberToObject(general, "splash", get_general_splash(i));
+        cJSON_AddStringToObject(general, "can_bus_mode", can_bus_mode_string[get_general_can_bus_mode(i)]);
         cJSON_AddItemToArray(generals, general);
     }
 
@@ -1716,6 +1731,10 @@ bool json_to_config(const char *json_str) {
             cJSON *general_splash = cJSON_GetObjectItem(general, "splash");
             if(cJSON_IsNumber(general_splash))
                 set_general_splash(i, general_splash->valueint, true);
+
+            cJSON *general_can_bus_mode = cJSON_GetObjectItem(general, "can_bus_mode");
+            if(cJSON_IsString(general_can_bus_mode))
+                set_general_can_bus_mode(i, get_general_can_bus_mode_from_string(general_can_bus_mode->valuestring), true);
         }
     }
 
@@ -1724,7 +1743,7 @@ bool json_to_config(const char *json_str) {
     return true;
 }
 
-static uint8_t cached_settings[495];
+static uint8_t cached_settings[496];
 
 static settings_write *write;
 static settings_read *read;
@@ -1832,6 +1851,9 @@ void load_settings(void)
 
     for( uint8_t idx = 0; idx < MAX_GENERALS; idx++ )
         load_general_splash(idx, &settings_general_splash[idx]);
+
+    for( uint8_t idx = 0; idx < MAX_GENERALS; idx++ )
+        load_general_can_bus_mode(idx, &settings_general_can_bus_mode[idx]);
 
 }
 
@@ -3777,3 +3799,85 @@ bool set_general_splash(uint8_t idx, uint16_t general_splash, bool save)
 
     return 1;
 }
+
+
+/********************************************************************************
+*                                  CAN Bus mode                                 
+*
+* @param idx_general    index of the general
+* @param can_bus_mode    Configure the CAN bus operation mode (Normal Mode for full communication, Listen Only for monitoring)
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+const char *can_bus_mode_string[] = {
+    "Normal Mode",
+    "Listen Only"
+};
+
+static void load_general_can_bus_mode(uint8_t idx, CAN_BUS_MODE *general_can_bus_mode_val)
+{
+    uint8_t bytes[EE_SIZE_GENERAL_CAN_BUS_MODE];
+
+    bytes[0] = read_eeprom(map_general_can_bus_mode_byte1[idx]);
+
+    memcpy(general_can_bus_mode_val, bytes, EE_SIZE_GENERAL_CAN_BUS_MODE);
+}
+
+static void save_general_can_bus_mode(uint8_t idx, CAN_BUS_MODE *general_can_bus_mode)
+{
+    uint8_t bytes[EE_SIZE_GENERAL_CAN_BUS_MODE];
+
+    memcpy(bytes, general_can_bus_mode, EE_SIZE_GENERAL_CAN_BUS_MODE);
+
+    write_eeprom(map_general_can_bus_mode_byte1[idx], bytes[0]);
+}
+
+bool verify_general_can_bus_mode(CAN_BUS_MODE general_can_bus_mode)
+{
+    if (general_can_bus_mode >= CAN_BUS_MODE_RESERVED)
+        return 0;
+    else
+        return 1;
+}
+
+CAN_BUS_MODE get_general_can_bus_mode(uint8_t idx)
+{
+    // Verify the CAN Bus mode value is valid
+    if (!verify_general_can_bus_mode(settings_general_can_bus_mode[idx]))
+        return DEFAULT_GENERAL_CAN_BUS_MODE;
+
+    return settings_general_can_bus_mode[idx];
+}
+
+// Set the CAN Bus mode
+bool set_general_can_bus_mode(uint8_t idx, CAN_BUS_MODE general_can_bus_mode, bool save)
+{
+    // Verify the CAN Bus mode value is valid
+    if (!verify_general_can_bus_mode(general_can_bus_mode))
+        return false;
+
+    // Check to see if the CAN Bus mode EEPROM value needs to be
+    // updated if immediate save is set
+    if (save)
+    {
+        // Reload the current setting saved in EEPROM
+        load_general_can_bus_mode(idx, &settings_general_can_bus_mode[idx]);
+
+        if (settings_general_can_bus_mode[idx] != general_can_bus_mode)
+        {
+            save_general_can_bus_mode(idx, &general_can_bus_mode);
+        }
+    }
+
+    settings_general_can_bus_mode[idx] = general_can_bus_mode;
+
+    return 1;
+}
+
+CAN_BUS_MODE get_general_can_bus_mode_from_string(const char *str)
+{
+    if(strcmp(str, "Normal Mode") == 0) return CAN_BUS_MODE_NORMAL_MODE;
+    if(strcmp(str, "Listen Only") == 0) return CAN_BUS_MODE_LISTEN_ONLY;
+    return CAN_BUS_MODE_RESERVED;
+}
+
