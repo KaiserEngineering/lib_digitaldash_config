@@ -1,7 +1,7 @@
 /**
  ******************************************************************************
  *
- * Copyright (c) 2025 KaiserEngineering, LLC
+ * Copyright (c) 2026 KaiserEngineering, LLC
  * Author Matthew Kaiser
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -2835,6 +2835,8 @@ static void save_alert_message(uint8_t idx, char *alert_message)
 
     memcpy(bytes, alert_message, EE_SIZE_ALERT_MESSAGE);
 
+    bytes[EE_SIZE_ALERT_MESSAGE - 1] = '\0';
+
     write_eeprom(map_alert_message_byte1[idx], bytes[63]);
     write_eeprom(map_alert_message_byte2[idx], bytes[62]);
     write_eeprom(map_alert_message_byte3[idx], bytes[61]);
@@ -2909,6 +2911,7 @@ bool verify_alert_message(char* alert_message)
 void get_alert_message(uint8_t idx, char* alert_message)
 {
     memcpy(alert_message, settings_alert_message[idx], ALERT_MESSAGE_LEN);
+    alert_message[ALERT_MESSAGE_LEN - 1] = '\0';
 }
 
 // Set the Alert message
