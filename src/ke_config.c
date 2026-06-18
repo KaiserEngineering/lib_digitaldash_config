@@ -26,6 +26,7 @@
  */
 
 #include "ke_config.h"
+#include "cjson_shared.h"
 
 #define DEFAULT_VIEW_ENABLE VIEW_STATE_DISABLED
 #define DEFAULT_VIEW_NUM_GAUGES 0
@@ -1446,9 +1447,15 @@ static void load_general_splash(uint8_t idx, uint16_t *general_splash_val);
 static void load_general_can_bus_mode(uint8_t idx, CAN_BUS_MODE *general_can_bus_mode_val);
 
 uint32_t options_to_json(char *buffer, uint32_t buffer_size) {
+    if ((buffer == NULL) || (buffer_size == 0U) || !cjson_shared_acquire())
+        return 0;
+
     cJSON *root = cJSON_CreateObject();
 
-    if (!root) return 0;
+    if (!root) {
+        cjson_shared_release();
+        return 0;
+    }
 
     cJSON *list;
 
@@ -1492,25 +1499,27 @@ uint32_t options_to_json(char *buffer, uint32_t buffer_size) {
     list = cJSON_CreateStringArray(can_bus_mode_string, CAN_BUS_MODE_RESERVED);
     cJSON_AddItemToObject(root, "can_bus_mode", list);
 
-    // Print into user buffer
-    char *json = cJSON_PrintUnformatted(root);
     uint32_t actual_len = 0;
-    if (json) {
-        size_t len = strlen(json);
-        if (len < buffer_size) {
-            memcpy(buffer, json, len + 1); // Copy including null terminator
-            actual_len = (uint32_t)len;
-        }
-        free(json);
+
+    if (cJSON_PrintPreallocated(root, buffer, (int)buffer_size, false)) {
+        actual_len = (uint32_t)strlen(buffer);
     }
+
     cJSON_Delete(root);
+    cjson_shared_release();
     return actual_len; // 0 means failure
 }
 
 uint32_t config_to_json(char *buffer, uint32_t buffer_size) {
+    if ((buffer == NULL) || (buffer_size == 0U) || !cjson_shared_acquire())
+        return 0;
+
     cJSON *root = cJSON_CreateObject();
 
-    if (!root) return 0;
+    if (!root) {
+        cjson_shared_release();
+        return 0;
+    }
 
     char str_buf[1024];
 
@@ -1580,25 +1589,27 @@ uint32_t config_to_json(char *buffer, uint32_t buffer_size) {
         cJSON_AddItemToArray(generals, general);
     }
 
-    // Print into user buffer
-    char *json = cJSON_PrintUnformatted(root);
     uint32_t actual_len = 0;
-    if (json) {
-        size_t len = strlen(json);
-        if (len < buffer_size) {
-            memcpy(buffer, json, len + 1); // Copy including null terminator
-            actual_len = (uint32_t)len;
-        }
-        free(json);
+
+    if (cJSON_PrintPreallocated(root, buffer, (int)buffer_size, false)) {
+        actual_len = (uint32_t)strlen(buffer);
     }
+
     cJSON_Delete(root);
+    cjson_shared_release();
     return actual_len; // 0 means failure
 }
 
 bool json_to_config(const char *json_str) {
+    if ((json_str == NULL) || !cjson_shared_acquire())
+        return false;
+
     cJSON *root = cJSON_Parse(json_str);
 
-    if (!root) return false;
+    if (!root) {
+        cjson_shared_release();
+        return false;
+    }
 
     // Get view
     cJSON *views = cJSON_GetObjectItem(root, "view");
@@ -1740,6 +1751,7 @@ bool json_to_config(const char *json_str) {
 
     // Print into user buffer
     cJSON_Delete(root);
+    cjson_shared_release();
     return true;
 }
 
