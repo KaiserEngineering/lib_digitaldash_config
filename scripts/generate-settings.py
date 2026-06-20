@@ -1,4 +1,5 @@
 import json
+import io
 from datetime import date
 from pathlib import Path
 
@@ -42,9 +43,9 @@ print("max_dynamics: " + str(max_dynamics))
 max_generals = config["config"]["max_generals"]
 print("max_generals: " + str(max_generals))
 
-# Create the c file
-config_c = (module_dir / "src" / "ke_config.c").open("w", newline="\n")
-config_h = (module_dir / "inc" / "ke_config.h").open("w", newline="\n")
+# Generate in memory so an exception cannot leave partially-written C files.
+config_c = io.StringIO()
+config_h = io.StringIO()
 
 config_c.write( code_header + "\n\n" )
 config_h.write( code_header + "\n\n" )
@@ -76,6 +77,7 @@ config_h.write(f"#define MAX_GENERALS {max_generals}")
 
 config_c.write( "#include \"ke_config.h\"\n" )
 config_c.write( "#include \"cjson_shared.h\"\n\n" )
+config_c.write( "#include <math.h>\n\n" )
 
 def get_eeprom_size(cmd: dict) -> int:
     size = cmd.get("EEBytes")
@@ -103,7 +105,73 @@ def get_total_eeprom_size() -> int:
                     total += get_eeprom_size(cmd) * count
     return total
 
+def validate_config() -> None:
+    allowed_types = {"number", "slider", "list", "string"}
+    fixed_sizes = {"uint8_t": 1, "uint16_t": 2, "uint32_t": 4, "float": 4}
+
+    for struct_entry in config["config"]["struct_list"]:
+        for parent_struct, sub_structs in struct_entry.items():
+            for struct_name in [parent_struct, *sub_structs]:
+                if struct_name not in config:
+                    raise ValueError(f"missing settings section: {struct_name}")
+
+                for cmd in config[struct_name]:
+                    label = f"{struct_name}.{cmd.get('cmd', '<unnamed>')}"
+                    setting_type = cmd.get("type")
+                    if setting_type not in allowed_types:
+                        raise ValueError(f"{label}: unsupported type {setting_type!r}")
+
+                    ee_size = get_eeprom_size(cmd)
+                    if ee_size <= 0:
+                        raise ValueError(f"{label}: EEBytes must resolve to a positive integer")
+
+                    expected_size = fixed_sizes.get(cmd.get("dataType"))
+                    if setting_type != "string" and expected_size and ee_size != expected_size:
+                        raise ValueError(
+                            f"{label}: EEBytes is {ee_size}, expected {expected_size} "
+                            f"for {cmd['dataType']}"
+                        )
+
+                    if cmd.get("index"):
+                        counts = cmd.get("count")
+                        counts = counts if isinstance(counts, list) else [counts]
+                        if not counts or any(
+                            count not in config["config"] or config["config"][count] <= 0
+                            for count in counts
+                        ):
+                            raise ValueError(f"{label}: invalid count reference")
+                        if setting_type == "string" and len(counts) != 1:
+                            raise ValueError(f"{label}: two-dimensional strings are not supported")
+                    else:
+                        raise ValueError(f"{label}: non-indexed settings are not supported")
+
+                    if setting_type in ("number", "slider"):
+                        if "min" not in cmd or "max" not in cmd:
+                            raise ValueError(f"{label}: numeric settings require min and max")
+                        if isinstance(cmd["min"], (int, float)) and isinstance(cmd["max"], (int, float)):
+                            if cmd["min"] > cmd["max"]:
+                                raise ValueError(f"{label}: min exceeds max")
+                            default = cmd.get("default")
+                            if isinstance(default, (int, float)):
+                                upper_ok = default < cmd["max"] if cmd.get("maxExclusive") else default <= cmd["max"]
+                                if default < cmd["min"] or not upper_ok:
+                                    raise ValueError(f"{label}: default is outside its valid range")
+
+                    elif setting_type == "list":
+                        if not cmd.get("options") or cmd.get("default") not in cmd["options"]:
+                            raise ValueError(f"{label}: list default must be one of its options")
+                        if not cmd.get("limit"):
+                            raise ValueError(f"{label}: list settings require a limit enum")
+
+                    elif setting_type == "string":
+                        default = cmd.get("default", "")
+                        if not (isinstance(default, str) and len(default) >= 2 and default[0] == '"' and default[-1] == '"'):
+                            raise ValueError(f"{label}: string default must be a C string literal")
+                        if len(default[1:-1]) >= ee_size:
+                            raise ValueError(f"{label}: string default does not fit in EEBytes")
+
 settings_byte_count = get_total_eeprom_size()
+validate_config()
 
 eeprom_device = config["config"]["eeprom_device"]
 eeprom_capacity_kbit = config["config"]["eeprom_capacity_kbit"]
@@ -192,11 +260,12 @@ def write_default_define(file, prefix, cmd, depth):
 
     define_name = f"DEFAULT_{prefix.upper()}_{cmd['cmd'].upper()}"
 
-    default = str(cmd["default"])
-    if default.isnumeric():
+    raw_default = cmd["default"]
+    default = str(raw_default)
+    if cmd["type"] == "string":
         value = default
-    elif cmd["type"] == "string":
-        value = "0"
+    elif isinstance(raw_default, (int, float)):
+        value = default
     else:
         data_type = cmd["dataType"].replace(" ", "_").upper()
         default_value = default.replace(" ", "_").upper()
@@ -277,32 +346,46 @@ def write_verify_source( file, prefix, cmd, depth ):
     file.write( "bool verify_" + prefix + "_" + cmd["cmd"].lower() + "(" + cmd["dataType"] + pointer + " " + input + ")\n" )
     file.write( "{\n" )
     if cmd["type"] == "number" or cmd["type"] == "slider":
-      # Only check for less than 0 if the datatype is an integer
-      if( not((cmd["dataType"].find("uint") >= 0) and ( cmd["min"] == 0 )) ):
-          file.write("    if (" + input + " < " +  str(cmd["min"]).upper() + ")\n" )
-          file.write("        return 0;\n\n" )
+      minimum = str(cmd["min"]).upper()
+      maximum = str(cmd["max"]).upper()
 
-      if( not((cmd["max"] == 255) and (cmd["dataType"] == "uint8_t")) ):
-          file.write("    if (" + input + " > " +  str(cmd["max"]).upper() + ")\n" )
-          file.write("        return 0;\n\n" )
-          file.write("    else\n" )
-          file.write("        return 1;" )
-      else:
-          file.write("    return 1;" )
+      if cmd["dataType"] == "float":
+          file.write("    if (!isfinite(" + input + "))\n")
+          file.write("        return false;\n\n")
+
+      lower_check_omitted = (
+          ("uint" in cmd["dataType"] or cmd["dataType"] == "PID_UNITS")
+          and cmd["min"] == 0
+      )
+      if not lower_check_omitted:
+          file.write("    if (" + input + " < " + minimum + ")\n")
+          file.write("        return false;\n\n")
+
+      type_maximums = {"uint8_t": 255, "uint16_t": 65535, "uint32_t": 4294967295}
+      full_type_range = (
+          not cmd.get("maxExclusive", False)
+          and type_maximums.get(cmd["dataType"]) == cmd["max"]
+      )
+      if not full_type_range:
+          comparison = ">=" if cmd.get("maxExclusive", False) else ">"
+          file.write("    if (" + input + " " + comparison + " " + maximum + ")\n")
+          file.write("        return false;\n\n")
+      if lower_check_omitted and full_type_range:
+          file.write("    (void)" + input + ";\n\n")
+      file.write("    return true;")
 
     elif cmd["type"] == "list":
         file.write("    if (" + input + " >= " + cmd["dataType"] + "_" + cmd["limit"].replace(" ", "_").upper() + ")\n" )
-        file.write("        return 0;\n" )
-
-        file.write("    else\n" )
-        file.write("        return 1;" )
+        file.write("        return false;\n\n" )
+        file.write("    return true;" )
 
     elif cmd["type"] == "pointer":
-        file.write("    if (" + input + " != " +  str(cmd["limit"]) + ")\n" )
-        file.write("        return 1;" )
+        file.write("    return " + input + " != " +  str(cmd["limit"]) + ";" )
 
     elif cmd["type"] == "string":
-        file.write("    return 1; // TODO - String checking" )
+        size = "EE_SIZE_" + prefix.upper() + "_" + cmd["cmd"].upper()
+        file.write("    return (" + input + " != NULL) &&\n")
+        file.write("           (memchr(" + input + ", '\\0', " + size + ") != NULL);" )
        
 
     file.write("\n}\n\n")
@@ -311,7 +394,7 @@ def write_get_source(file, prefix, cmd, depth):
     if( cmd["type"] == "string" ):
       if( cmd["index"] ):
         if( depth == 2 ):
-            input = "uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1]
+            input = "uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1] + ", " + cmd["dataType"] + "* " + prefix + "_" + cmd["cmd"].lower()
             index = "[idx_" + prefix.lower().split('_')[0] + "][idx_" + prefix.lower().split('_')[1] + "]"
         else:
             input = "uint8_t idx, " + cmd["dataType"] + "* " + prefix + "_" + cmd["cmd"].lower()
@@ -323,8 +406,22 @@ def write_get_source(file, prefix, cmd, depth):
       output = "settings_" + prefix + "_" + cmd["cmd"].lower() + index
 
       file.write("void get_" + prefix + "_" + cmd["cmd"].lower() + "(" + input + ")\n{\n")
-      file.write("    memcpy(" + prefix + "_" + cmd["cmd"].lower() + ", " + output + ", " + cmd["EEBytes"].upper() + ");\n")
-      file.write("    " + prefix + "_" + cmd["cmd"].lower() + "[" + cmd["EEBytes"].upper() + " - 1] = '\\0';\n")
+      output_arg = prefix + "_" + cmd["cmd"].lower()
+      file.write("    if (" + output_arg + " == NULL)\n")
+      file.write("        return;\n\n")
+      if cmd["index"]:
+        if depth == 2:
+          first, second = prefix.lower().split('_')[:2]
+          bounds = f"(idx_{first} >= {cmd['count'][0].upper()}) || (idx_{second} >= {cmd['count'][1].upper()})"
+        else:
+          bounds = f"idx >= {cmd['count'].upper()}"
+        file.write("    if (" + bounds + ")\n")
+        file.write("    {\n")
+        file.write("        " + output_arg + "[0] = '\\0';\n")
+        file.write("        return;\n")
+        file.write("    }\n\n")
+      file.write("    memcpy(" + prefix + "_" + cmd["cmd"].lower() + ", " + output + ", " + str(cmd["EEBytes"]).upper() + ");\n")
+      file.write("    " + prefix + "_" + cmd["cmd"].lower() + "[" + str(cmd["EEBytes"]).upper() + " - 1] = '\\0';\n")
 
       file.write("}\n\n")
     else:
@@ -343,6 +440,15 @@ def write_get_source(file, prefix, cmd, depth):
 
       output = "settings_" + prefix + "_" + cmd["cmd"].lower() + index
 
+      if cmd["index"]:
+        if depth == 2:
+          first, second = prefix.lower().split('_')[:2]
+          bounds = f"(idx_{first} >= {cmd['count'][0].upper()}) || (idx_{second} >= {cmd['count'][1].upper()})"
+        else:
+          bounds = f"idx >= {cmd['count'].upper()}"
+        file.write("    if (" + bounds + ")\n")
+        file.write("        return DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + ";\n\n")
+
       file.write("    // Verify the " + cmd["name"] + " value is valid\n")
       file.write("    if (!verify_" + prefix + "_" + cmd["cmd"].lower() + "(" + output + "))\n")
       file.write("        return DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + ";\n\n" )
@@ -357,6 +463,7 @@ def write_string_compare_declare(file, prefix, cmd, depth):
 def write_string_compare(file, prefix, cmd, depth):
       if( cmd["type"] == "list" ):
         file.write( "\n" + cmd["dataType"].upper() + " get_" + prefix + "_" + cmd["cmd"].lower() + "_from_string(const char *str)\n{\n")
+        file.write("    if (str == NULL) return " + cmd["dataType"].upper() + "_RESERVED;\n")
         for enum in cmd["options"]:
           file.write("    if(strcmp(str, \"" + enum + "\") == 0) return " + cmd["dataType"] + "_" + enum.replace(" ", "_").upper() + ";\n")
 
@@ -389,9 +496,23 @@ def write_set_source(file, prefix, cmd, depth):
     file.write("// Set the " + cmd["name"] + "\n")
     file.write("bool set_" + prefix.lower() + "_" + cmd["cmd"].lower() + "(" + input + ", bool save)\n{\n")
 
+    if cmd["index"]:
+      if depth == 2:
+        first, second = prefix.lower().split('_')[:2]
+        bounds = f"(idx_{first} >= {cmd['count'][0].upper()}) || (idx_{second} >= {cmd['count'][1].upper()})"
+      else:
+        bounds = f"idx >= {cmd['count'].upper()}"
+      file.write("    if (" + bounds + ")\n")
+      file.write("        return false;\n\n")
+
     file.write("    // Verify the " + cmd["name"] + " value is valid\n")
     file.write("    if (!verify_" + prefix.lower() + "_" + cmd["cmd"].lower() + "(" + prefix.lower() + "_" + cmd["cmd"].lower() + "))\n")
     file.write("        return false;\n\n")
+
+    if cmd["type"] == "string":
+      size = "EE_SIZE_" + prefix.upper() + "_" + cmd["cmd"].upper()
+      file.write("    " + cmd["dataType"] + " normalized[" + size + "] = {0};\n")
+      file.write("    memcpy(normalized, " + prefix.lower() + "_" + cmd["cmd"].lower() + ", strlen(" + prefix.lower() + "_" + cmd["cmd"].lower() + "));\n\n")
     
     file.write("    // Check to see if the " + cmd["name"] + " EEPROM value needs to be\n")
     file.write("    // updated if immediate save is set\n")
@@ -399,19 +520,19 @@ def write_set_source(file, prefix, cmd, depth):
     file.write("        // Reload the current setting saved in EEPROM\n")
     if( cmd["type"] == "string" ):
       file.write("        load_" + prefix + "_" + cmd["cmd"].lower() + "(" + index + ", " + output + ");\n\n")
-      file.write("        if (strncmp(settings_" + prefix + "_" + cmd["cmd"].lower() + var + ", " + prefix.lower() + "_" + cmd["cmd"].lower() + ", " + cmd["EEBytes"].upper() + ") != 0)\n        {\n")
+      file.write("        if (memcmp(settings_" + prefix + "_" + cmd["cmd"].lower() + var + ", normalized, " + str(cmd["EEBytes"]).upper() + ") != 0)\n        {\n")
     else:
       file.write("        load_" + prefix + "_" + cmd["cmd"].lower() + "(" + index + ", &" + output + ");\n\n")
       file.write("        if (settings_" + prefix + "_" + cmd["cmd"].lower() + var + " != " + prefix.lower() + "_" + cmd["cmd"].lower() + ")\n        {\n")
     if( cmd["type"] == "string" ):
-      file.write("            save_" + prefix + "_" + cmd["cmd"].lower() + "(" + index + ", " + prefix.lower() + "_" + cmd["cmd"].lower() + ");\n")
+      file.write("            save_" + prefix + "_" + cmd["cmd"].lower() + "(" + index + ", normalized);\n")
     else:
       file.write("            save_" + prefix + "_" + cmd["cmd"].lower() + "(" + index + ", &" + prefix.lower() + "_" + cmd["cmd"].lower() + ");\n")
     file.write("        }\n")
     file.write("    }\n\n")
 
     if( cmd["type"] == "string" ):
-      file.write("    memcpy(" + output + ", " + prefix.lower() + "_" + cmd["cmd"].lower() + ", " + cmd["EEBytes"].upper() + ");\n\n")
+      file.write("    memcpy(" + output + ", normalized, " + str(cmd["EEBytes"]).upper() + ");\n\n")
     else:
       file.write("    " + output + " = " + prefix.lower() + "_" + cmd["cmd"].lower() + ";\n\n")
     file.write("    return 1;\n" )
@@ -421,7 +542,7 @@ def write_get_declare( file, prefix, cmd, depth ):
     if( cmd["type"] == "string" ):
       if( cmd["index"] ):
         if( depth == 2 ):
-            input = "uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1]
+            input = "uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1] + ", " + cmd["dataType"] + "* " + prefix + "_" + cmd["cmd"].lower()
         else:
             input = "uint8_t idx, " + cmd["dataType"] + "* " + prefix + "_" + cmd["cmd"].lower()
       else:
@@ -531,7 +652,7 @@ def write_memory_organization( file, prefix, cmd, depth ):
 def write_variables( file, prefix, cmd, depth ):
       append = ""
       if( cmd["type"] == "string"):
-          append = "[" + cmd["EEBytes"].upper() + "]"
+          append = "[" + str(cmd["EEBytes"]).upper() + "]"
       if( cmd["index"] ):
         if( depth == 2 ):
           file.write( "static " + cmd["dataType"] + " settings_" +  prefix + "_" + cmd["cmd"].lower() +  "[" + cmd["count"][0].upper() + "]" + append + "[" + cmd["count"][1].upper() + "] = {DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + "};\n" )
@@ -564,6 +685,32 @@ def write_load_setting( file, prefix, cmd, depth ):
       variable1 = "idx"
       file.write("    for( uint8_t " + variable1 + " = 0; " + variable1 + " < " + cmd["count"].upper() + "; " + variable1 +"++ )\n")
       file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "(idx, " + addr + "settings_" + prefix + "_" + cmd["cmd"].lower() +  "[" + variable1 + "]);\n\n")
+
+def write_normalize_loaded_setting(file, prefix, cmd, depth):
+    setting = "settings_" + prefix.lower() + "_" + cmd["cmd"].lower()
+    verify = "verify_" + prefix.lower() + "_" + cmd["cmd"].lower()
+    default = "DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper()
+
+    if depth == 2:
+        first, second = prefix.lower().split('_')[:2]
+        file.write(f"    for (uint8_t idx_{first} = 0; idx_{first} < {cmd['count'][0].upper()}; idx_{first}++)\n")
+        file.write(f"        for (uint8_t idx_{second} = 0; idx_{second} < {cmd['count'][1].upper()}; idx_{second}++)\n")
+        value = f"{setting}[idx_{first}][idx_{second}]"
+        indentation = "            "
+    else:
+        file.write(f"    for (uint8_t idx = 0; idx < {cmd['count'].upper()}; idx++)\n")
+        value = f"{setting}[idx]"
+        indentation = "        "
+
+    file.write(f"{indentation}if (!{verify}({value}))\n")
+    file.write(f"{indentation}{{\n")
+    if cmd["type"] == "string":
+        size = "EE_SIZE_" + prefix.upper() + "_" + cmd["cmd"].upper()
+        file.write(f"{indentation}    memset({value}, 0, {size});\n")
+        file.write(f"{indentation}    strncpy({value}, {default}, {size} - 1U);\n")
+    else:
+        file.write(f"{indentation}    {value} = {default};\n")
+    file.write(f"{indentation}}}\n\n")
    
 
 def write_load_source( file, prefix, cmd, depth ):
@@ -615,7 +762,7 @@ def write_save_source( file, prefix, cmd, depth ):
         file.write( "    uint8_t bytes[EE_SIZE_" + prefix.upper() + "_" + cmd["cmd"].upper() + "];\n\n" )
         file.write("    memcpy(bytes, " + prefix.lower() + "_" + cmd["cmd"].lower() + ", EE_SIZE_" + prefix.upper() + "_" + cmd["cmd"].upper() + ");\n\n")
         if( cmd["type"] == "string" ):
-            file.write("    bytes[EE_SIZE_ALERT_MESSAGE - 1] = '\\0';\n\n")
+            file.write("    bytes[EE_SIZE_" + prefix.upper() + "_" + cmd["cmd"].upper() + " - 1] = '\\0';\n\n")
         #file.write("    if (" + eeprom_status_check + ")\n    {\n");
         byte_count = 1
         while byte_count <= get_eeprom_size(cmd):
@@ -695,7 +842,7 @@ def write_json_get_entry(cmd, struct, config_c, indentation, depth):
     
     config_c.write(f'\n{indent}cJSON *{struct}_{cmd_name} = cJSON_GetObjectItem({struct}, "{cmd["cmd"]}");\n')
     config_c.write(f'{indent}if({cjson_check}({struct}_{cmd_name}))\n')
-    config_c.write(f'{indent}    set_{struct}_{cmd_name}{index_args}, {value_expr}, true);\n')
+    config_c.write(f'{indent}    success = set_{struct}_{cmd_name}{index_args}, {value_expr}, true) && success;\n')
 
 
 def process_struct( prefix, cmd, depth ):
@@ -889,6 +1036,7 @@ config_c.write("    if (!root) {\n")
 config_c.write("        cjson_shared_release();\n")
 config_c.write("        return false;\n")
 config_c.write("    }\n")
+config_c.write("\n    bool success = true;\n")
 
 for struct_entry in config["config"]["struct_list"]:
     for parent_struct, sub_structs in struct_entry.items():
@@ -921,7 +1069,7 @@ for struct_entry in config["config"]["struct_list"]:
 config_c.write("\n    // Print into user buffer\n")
 config_c.write("    cJSON_Delete(root);\n")
 config_c.write("    cjson_shared_release();\n")
-config_c.write("    return true;\n")
+config_c.write("    return success;\n")
 config_c.write("}\n\n")
 
 
@@ -932,15 +1080,10 @@ config_c.write("static settings_read *read;\n\n")
 config_c.write("void settings_setWriteHandler(settings_write *writeHandler) { write = writeHandler; }\n")
 config_c.write("void settings_setReadHandler(settings_read *readHandler) { read = readHandler; }\n\n")
 
-config_c.write("// Converts an EEPROM address to a linear array index\n")
-config_c.write("static uint16_t eeprom_address_to_linear_index(uint16_t address) {\n")
-config_c.write("    uint16_t page = address >> 5;\n")
-config_c.write("    uint16_t offset = address & 0x1F; // Mask lower 5 bits (0-31)\n")
-config_c.write("    return (page * 32) + offset;\n\n")
-config_c.write("}\n\n")
-
 config_c.write("uint8_t read_eeprom(uint16_t bAdd)\n")
 config_c.write("{\n")
+config_c.write("\tif ((read == NULL) || (bAdd >= EE_SIZE_SETTINGS))\n")
+config_c.write("\t\treturn 0xFF;\n\n")
 config_c.write("	uint8_t byte = 0xFF;\n")
 config_c.write("	byte = read(bAdd); // Read from the EEPROM\n")
 config_c.write("	cached_settings[bAdd] = byte; // cache the data\n")
@@ -949,12 +1092,16 @@ config_c.write("}\n\n")
 
 config_c.write("void write_eeprom(uint16_t bAdd, uint8_t bData)\n")
 config_c.write("{\n")
+config_c.write("\tif ((write == NULL) || (bAdd >= EE_SIZE_SETTINGS))\n")
+config_c.write("\t\treturn;\n\n")
 config_c.write("	write(bAdd, bData); // Write to the EEPROM\n")
 config_c.write("	cached_settings[bAdd] = bData; // cache the data\n")
 config_c.write("}\n\n")
 
 config_c.write("uint8_t get_eeprom_byte(uint16_t bAdd)\n")
 config_c.write("{\n")
+config_c.write("\tif (bAdd >= EE_SIZE_SETTINGS)\n")
+config_c.write("\t\treturn 0xFF;\n\n")
 config_c.write("	return cached_settings[bAdd];\n")
 config_c.write("}\n\n")
 
@@ -987,6 +1134,18 @@ for struct_entry in config["config"]["struct_list"]:
                 for cmd in config[sub_struct]:
                     write_load_setting(config_c, f"{parent_struct}_{sub_struct}", cmd, 2)
 
+config_c.write("    // Normalize every value immediately after reading raw EEPROM bytes.\n")
+for struct_entry in config["config"]["struct_list"]:
+    for parent_struct, sub_structs in struct_entry.items():
+        for cmd in config[parent_struct]:
+            write_normalize_loaded_setting(config_c, parent_struct, cmd, 1)
+
+        for sub_struct in sub_structs:
+            for cmd in config[sub_struct]:
+                write_normalize_loaded_setting(
+                    config_c, f"{parent_struct}_{sub_struct}", cmd, 2
+                )
+
 config_c.write("}\n")
 
 config_c.write("\n\n")
@@ -1010,8 +1169,8 @@ config_h.write("}\n")
 config_h.write("#endif\n\n")
 config_h.write("#endif /* KE_CONFIG_H */")
 
-config_c.close()
-config_h.close()
+(module_dir / "src" / "ke_config.c").write_text(config_c.getvalue(), newline="\n")
+(module_dir / "inc" / "ke_config.h").write_text(config_h.getvalue(), newline="\n")
 
 write_stats_readme()
 

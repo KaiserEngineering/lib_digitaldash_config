@@ -35,6 +35,8 @@
 #include "ke_config.h"
 #include "cjson_shared.h"
 
+#include <math.h>
+
 #define DEFAULT_VIEW_ENABLE VIEW_STATE_DISABLED
 #define DEFAULT_VIEW_NUM_GAUGES 0
 #define DEFAULT_VIEW_BACKGROUND VIEW_BACKGROUND_USER1
@@ -46,7 +48,7 @@
 #define DEFAULT_ALERT_ENABLE ALERT_STATE_DISABLED
 #define DEFAULT_ALERT_PID 0
 #define DEFAULT_ALERT_UNITS PID_UNITS_RESERVED
-#define DEFAULT_ALERT_MESSAGE 0
+#define DEFAULT_ALERT_MESSAGE "This is an alert"
 #define DEFAULT_ALERT_COMPARE ALERT_COMPARISON_GREATER_THAN
 #define DEFAULT_ALERT_THRESHOLD 0
 #define DEFAULT_DYNAMIC_ENABLE DYNAMIC_STATE_DISABLED
@@ -100,7 +102,7 @@ static const uint16_t map_view_enable_byte1[MAX_VIEWS] = {
 #define EEPROM_VIEW_NUM_GAUGES1_BYTE1 (uint16_t)0x0003
 #define EEPROM_VIEW_NUM_GAUGES2_BYTE1 (uint16_t)0x0004
 #define EEPROM_VIEW_NUM_GAUGES3_BYTE1 (uint16_t)0x0005
-static const uint16_t map_view_num_gauges_byte1[MAX_GAUGES_PER_VIEW] = {
+static const uint16_t map_view_num_gauges_byte1[MAX_VIEWS] = {
     EEPROM_VIEW_NUM_GAUGES1_BYTE1,
     EEPROM_VIEW_NUM_GAUGES2_BYTE1,
     EEPROM_VIEW_NUM_GAUGES3_BYTE1
@@ -1404,7 +1406,7 @@ static const uint16_t map_general_can_bus_mode_byte1[MAX_GENERALS] = {
 
 
 static VIEW_STATE settings_view_enable[MAX_VIEWS] = {DEFAULT_VIEW_ENABLE};
-static uint8_t settings_view_num_gauges[MAX_GAUGES_PER_VIEW] = {DEFAULT_VIEW_NUM_GAUGES};
+static uint8_t settings_view_num_gauges[MAX_VIEWS] = {DEFAULT_VIEW_NUM_GAUGES};
 static VIEW_BACKGROUND settings_view_background[MAX_VIEWS] = {DEFAULT_VIEW_BACKGROUND};
 static uint32_t settings_view_background_color[MAX_VIEWS] = {DEFAULT_VIEW_BACKGROUND_COLOR};
 static VIEW_BACKGROUND_TYPE settings_view_background_type[MAX_VIEWS] = {DEFAULT_VIEW_BACKGROUND_TYPE};
@@ -1619,6 +1621,8 @@ bool json_to_config(const char *json_str) {
         return false;
     }
 
+    bool success = true;
+
     // Get view
     cJSON *views = cJSON_GetObjectItem(root, "view");
     if(views && cJSON_IsArray(views)) {
@@ -1627,23 +1631,23 @@ bool json_to_config(const char *json_str) {
 
             cJSON *view_enable = cJSON_GetObjectItem(view, "enable");
             if(cJSON_IsString(view_enable))
-                set_view_enable(i, get_view_enable_from_string(view_enable->valuestring), true);
+                success = set_view_enable(i, get_view_enable_from_string(view_enable->valuestring), true) && success;
 
             cJSON *view_num_gauges = cJSON_GetObjectItem(view, "num_gauges");
             if(cJSON_IsNumber(view_num_gauges))
-                set_view_num_gauges(i, view_num_gauges->valueint, true);
+                success = set_view_num_gauges(i, view_num_gauges->valueint, true) && success;
 
             cJSON *view_background = cJSON_GetObjectItem(view, "background");
             if(cJSON_IsString(view_background))
-                set_view_background(i, get_view_background_from_string(view_background->valuestring), true);
+                success = set_view_background(i, get_view_background_from_string(view_background->valuestring), true) && success;
 
             cJSON *view_background_color = cJSON_GetObjectItem(view, "background_color");
             if(cJSON_IsNumber(view_background_color))
-                set_view_background_color(i, view_background_color->valueint, true);
+                success = set_view_background_color(i, view_background_color->valueint, true) && success;
 
             cJSON *view_background_type = cJSON_GetObjectItem(view, "background_type");
             if(cJSON_IsString(view_background_type))
-                set_view_background_type(i, get_view_background_type_from_string(view_background_type->valuestring), true);
+                success = set_view_background_type(i, get_view_background_type_from_string(view_background_type->valuestring), true) && success;
 
             // Get gauge within view
             cJSON *view_gauges = cJSON_GetObjectItem(view, "gauge");
@@ -1654,15 +1658,15 @@ bool json_to_config(const char *json_str) {
 
                         cJSON *view_gauge_theme = cJSON_GetObjectItem(view_gauge, "theme");
                         if(cJSON_IsString(view_gauge_theme))
-                            set_view_gauge_theme(i, j, get_view_gauge_theme_from_string(view_gauge_theme->valuestring), true);
+                            success = set_view_gauge_theme(i, j, get_view_gauge_theme_from_string(view_gauge_theme->valuestring), true) && success;
 
                         cJSON *view_gauge_pid = cJSON_GetObjectItem(view_gauge, "pid");
                         if(cJSON_IsString(view_gauge_pid))
-                            set_view_gauge_pid(i, j, get_pid_by_string(view_gauge_pid->valuestring), true);
+                            success = set_view_gauge_pid(i, j, get_pid_by_string(view_gauge_pid->valuestring), true) && success;
 
                         cJSON *view_gauge_units = cJSON_GetObjectItem(view_gauge, "units");
                         if(cJSON_IsString(view_gauge_units))
-                            set_view_gauge_units(i, j, get_unit_by_string(view_gauge_units->valuestring), true);
+                            success = set_view_gauge_units(i, j, get_unit_by_string(view_gauge_units->valuestring), true) && success;
                     }
                 }
             }
@@ -1677,27 +1681,27 @@ bool json_to_config(const char *json_str) {
 
             cJSON *alert_enable = cJSON_GetObjectItem(alert, "enable");
             if(cJSON_IsString(alert_enable))
-                set_alert_enable(i, get_alert_enable_from_string(alert_enable->valuestring), true);
+                success = set_alert_enable(i, get_alert_enable_from_string(alert_enable->valuestring), true) && success;
 
             cJSON *alert_pid = cJSON_GetObjectItem(alert, "pid");
             if(cJSON_IsString(alert_pid))
-                set_alert_pid(i, get_pid_by_string(alert_pid->valuestring), true);
+                success = set_alert_pid(i, get_pid_by_string(alert_pid->valuestring), true) && success;
 
             cJSON *alert_units = cJSON_GetObjectItem(alert, "units");
             if(cJSON_IsString(alert_units))
-                set_alert_units(i, get_unit_by_string(alert_units->valuestring), true);
+                success = set_alert_units(i, get_unit_by_string(alert_units->valuestring), true) && success;
 
             cJSON *alert_message = cJSON_GetObjectItem(alert, "message");
             if(cJSON_IsString(alert_message))
-                set_alert_message(i, alert_message->valuestring, true);
+                success = set_alert_message(i, alert_message->valuestring, true) && success;
 
             cJSON *alert_compare = cJSON_GetObjectItem(alert, "compare");
             if(cJSON_IsString(alert_compare))
-                set_alert_compare(i, get_alert_compare_from_string(alert_compare->valuestring), true);
+                success = set_alert_compare(i, get_alert_compare_from_string(alert_compare->valuestring), true) && success;
 
             cJSON *alert_threshold = cJSON_GetObjectItem(alert, "threshold");
             if(cJSON_IsNumber(alert_threshold))
-                set_alert_threshold(i, alert_threshold->valuedouble, true);
+                success = set_alert_threshold(i, alert_threshold->valuedouble, true) && success;
         }
     }
 
@@ -1709,31 +1713,31 @@ bool json_to_config(const char *json_str) {
 
             cJSON *dynamic_enable = cJSON_GetObjectItem(dynamic, "enable");
             if(cJSON_IsString(dynamic_enable))
-                set_dynamic_enable(i, get_dynamic_enable_from_string(dynamic_enable->valuestring), true);
+                success = set_dynamic_enable(i, get_dynamic_enable_from_string(dynamic_enable->valuestring), true) && success;
 
             cJSON *dynamic_priority = cJSON_GetObjectItem(dynamic, "priority");
             if(cJSON_IsString(dynamic_priority))
-                set_dynamic_priority(i, get_dynamic_priority_from_string(dynamic_priority->valuestring), true);
+                success = set_dynamic_priority(i, get_dynamic_priority_from_string(dynamic_priority->valuestring), true) && success;
 
             cJSON *dynamic_compare = cJSON_GetObjectItem(dynamic, "compare");
             if(cJSON_IsString(dynamic_compare))
-                set_dynamic_compare(i, get_dynamic_compare_from_string(dynamic_compare->valuestring), true);
+                success = set_dynamic_compare(i, get_dynamic_compare_from_string(dynamic_compare->valuestring), true) && success;
 
             cJSON *dynamic_threshold = cJSON_GetObjectItem(dynamic, "threshold");
             if(cJSON_IsNumber(dynamic_threshold))
-                set_dynamic_threshold(i, dynamic_threshold->valuedouble, true);
+                success = set_dynamic_threshold(i, dynamic_threshold->valuedouble, true) && success;
 
             cJSON *dynamic_view_index = cJSON_GetObjectItem(dynamic, "view_index");
             if(cJSON_IsNumber(dynamic_view_index))
-                set_dynamic_view_index(i, dynamic_view_index->valueint, true);
+                success = set_dynamic_view_index(i, dynamic_view_index->valueint, true) && success;
 
             cJSON *dynamic_pid = cJSON_GetObjectItem(dynamic, "pid");
             if(cJSON_IsString(dynamic_pid))
-                set_dynamic_pid(i, get_pid_by_string(dynamic_pid->valuestring), true);
+                success = set_dynamic_pid(i, get_pid_by_string(dynamic_pid->valuestring), true) && success;
 
             cJSON *dynamic_units = cJSON_GetObjectItem(dynamic, "units");
             if(cJSON_IsString(dynamic_units))
-                set_dynamic_units(i, get_unit_by_string(dynamic_units->valuestring), true);
+                success = set_dynamic_units(i, get_unit_by_string(dynamic_units->valuestring), true) && success;
         }
     }
 
@@ -1745,22 +1749,22 @@ bool json_to_config(const char *json_str) {
 
             cJSON *general_ee_version = cJSON_GetObjectItem(general, "EE_Version");
             if(cJSON_IsNumber(general_ee_version))
-                set_general_ee_version(i, general_ee_version->valueint, true);
+                success = set_general_ee_version(i, general_ee_version->valueint, true) && success;
 
             cJSON *general_splash = cJSON_GetObjectItem(general, "splash");
             if(cJSON_IsNumber(general_splash))
-                set_general_splash(i, general_splash->valueint, true);
+                success = set_general_splash(i, general_splash->valueint, true) && success;
 
             cJSON *general_can_bus_mode = cJSON_GetObjectItem(general, "can_bus_mode");
             if(cJSON_IsString(general_can_bus_mode))
-                set_general_can_bus_mode(i, get_general_can_bus_mode_from_string(general_can_bus_mode->valuestring), true);
+                success = set_general_can_bus_mode(i, get_general_can_bus_mode_from_string(general_can_bus_mode->valuestring), true) && success;
         }
     }
 
     // Print into user buffer
     cJSON_Delete(root);
     cjson_shared_release();
-    return true;
+    return success;
 }
 
 static uint8_t cached_settings[EE_SIZE_SETTINGS];
@@ -1771,16 +1775,11 @@ static settings_read *read;
 void settings_setWriteHandler(settings_write *writeHandler) { write = writeHandler; }
 void settings_setReadHandler(settings_read *readHandler) { read = readHandler; }
 
-// Converts an EEPROM address to a linear array index
-static uint16_t eeprom_address_to_linear_index(uint16_t address) {
-    uint16_t page = address >> 5;
-    uint16_t offset = address & 0x1F; // Mask lower 5 bits (0-31)
-    return (page * 32) + offset;
-
-}
-
 uint8_t read_eeprom(uint16_t bAdd)
 {
+	if ((read == NULL) || (bAdd >= EE_SIZE_SETTINGS))
+		return 0xFF;
+
 	uint8_t byte = 0xFF;
 	byte = read(bAdd); // Read from the EEPROM
 	cached_settings[bAdd] = byte; // cache the data
@@ -1789,12 +1788,18 @@ uint8_t read_eeprom(uint16_t bAdd)
 
 void write_eeprom(uint16_t bAdd, uint8_t bData)
 {
+	if ((write == NULL) || (bAdd >= EE_SIZE_SETTINGS))
+		return;
+
 	write(bAdd, bData); // Write to the EEPROM
 	cached_settings[bAdd] = bData; // cache the data
 }
 
 uint8_t get_eeprom_byte(uint16_t bAdd)
 {
+	if (bAdd >= EE_SIZE_SETTINGS)
+		return 0xFF;
+
 	return cached_settings[bAdd];
 }
 
@@ -1811,7 +1816,7 @@ void load_settings(void)
     for( uint8_t idx = 0; idx < MAX_VIEWS; idx++ )
         load_view_enable(idx, &settings_view_enable[idx]);
 
-    for( uint8_t idx = 0; idx < MAX_GAUGES_PER_VIEW; idx++ )
+    for( uint8_t idx = 0; idx < MAX_VIEWS; idx++ )
         load_view_num_gauges(idx, &settings_view_num_gauges[idx]);
 
     for( uint8_t idx = 0; idx < MAX_VIEWS; idx++ )
@@ -1883,6 +1888,155 @@ void load_settings(void)
     for( uint8_t idx = 0; idx < MAX_GENERALS; idx++ )
         load_general_can_bus_mode(idx, &settings_general_can_bus_mode[idx]);
 
+    // Normalize every value immediately after reading raw EEPROM bytes.
+    for (uint8_t idx = 0; idx < MAX_VIEWS; idx++)
+        if (!verify_view_enable(settings_view_enable[idx]))
+        {
+            settings_view_enable[idx] = DEFAULT_VIEW_ENABLE;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_VIEWS; idx++)
+        if (!verify_view_num_gauges(settings_view_num_gauges[idx]))
+        {
+            settings_view_num_gauges[idx] = DEFAULT_VIEW_NUM_GAUGES;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_VIEWS; idx++)
+        if (!verify_view_background(settings_view_background[idx]))
+        {
+            settings_view_background[idx] = DEFAULT_VIEW_BACKGROUND;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_VIEWS; idx++)
+        if (!verify_view_background_color(settings_view_background_color[idx]))
+        {
+            settings_view_background_color[idx] = DEFAULT_VIEW_BACKGROUND_COLOR;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_VIEWS; idx++)
+        if (!verify_view_background_type(settings_view_background_type[idx]))
+        {
+            settings_view_background_type[idx] = DEFAULT_VIEW_BACKGROUND_TYPE;
+        }
+
+    for (uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++)
+        for (uint8_t idx_gauge = 0; idx_gauge < MAX_GAUGES_PER_VIEW; idx_gauge++)
+            if (!verify_view_gauge_theme(settings_view_gauge_theme[idx_view][idx_gauge]))
+            {
+                settings_view_gauge_theme[idx_view][idx_gauge] = DEFAULT_VIEW_GAUGE_THEME;
+            }
+
+    for (uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++)
+        for (uint8_t idx_gauge = 0; idx_gauge < MAX_GAUGES_PER_VIEW; idx_gauge++)
+            if (!verify_view_gauge_pid(settings_view_gauge_pid[idx_view][idx_gauge]))
+            {
+                settings_view_gauge_pid[idx_view][idx_gauge] = DEFAULT_VIEW_GAUGE_PID;
+            }
+
+    for (uint8_t idx_view = 0; idx_view < MAX_VIEWS; idx_view++)
+        for (uint8_t idx_gauge = 0; idx_gauge < MAX_GAUGES_PER_VIEW; idx_gauge++)
+            if (!verify_view_gauge_units(settings_view_gauge_units[idx_view][idx_gauge]))
+            {
+                settings_view_gauge_units[idx_view][idx_gauge] = DEFAULT_VIEW_GAUGE_UNITS;
+            }
+
+    for (uint8_t idx = 0; idx < MAX_ALERTS; idx++)
+        if (!verify_alert_enable(settings_alert_enable[idx]))
+        {
+            settings_alert_enable[idx] = DEFAULT_ALERT_ENABLE;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_ALERTS; idx++)
+        if (!verify_alert_pid(settings_alert_pid[idx]))
+        {
+            settings_alert_pid[idx] = DEFAULT_ALERT_PID;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_ALERTS; idx++)
+        if (!verify_alert_units(settings_alert_units[idx]))
+        {
+            settings_alert_units[idx] = DEFAULT_ALERT_UNITS;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_ALERTS; idx++)
+        if (!verify_alert_message(settings_alert_message[idx]))
+        {
+            memset(settings_alert_message[idx], 0, EE_SIZE_ALERT_MESSAGE);
+            strncpy(settings_alert_message[idx], DEFAULT_ALERT_MESSAGE, EE_SIZE_ALERT_MESSAGE - 1U);
+        }
+
+    for (uint8_t idx = 0; idx < MAX_ALERTS; idx++)
+        if (!verify_alert_compare(settings_alert_compare[idx]))
+        {
+            settings_alert_compare[idx] = DEFAULT_ALERT_COMPARE;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_ALERTS; idx++)
+        if (!verify_alert_threshold(settings_alert_threshold[idx]))
+        {
+            settings_alert_threshold[idx] = DEFAULT_ALERT_THRESHOLD;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_DYNAMICS; idx++)
+        if (!verify_dynamic_enable(settings_dynamic_enable[idx]))
+        {
+            settings_dynamic_enable[idx] = DEFAULT_DYNAMIC_ENABLE;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_DYNAMICS; idx++)
+        if (!verify_dynamic_priority(settings_dynamic_priority[idx]))
+        {
+            settings_dynamic_priority[idx] = DEFAULT_DYNAMIC_PRIORITY;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_DYNAMICS; idx++)
+        if (!verify_dynamic_compare(settings_dynamic_compare[idx]))
+        {
+            settings_dynamic_compare[idx] = DEFAULT_DYNAMIC_COMPARE;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_DYNAMICS; idx++)
+        if (!verify_dynamic_threshold(settings_dynamic_threshold[idx]))
+        {
+            settings_dynamic_threshold[idx] = DEFAULT_DYNAMIC_THRESHOLD;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_DYNAMICS; idx++)
+        if (!verify_dynamic_view_index(settings_dynamic_view_index[idx]))
+        {
+            settings_dynamic_view_index[idx] = DEFAULT_DYNAMIC_VIEW_INDEX;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_DYNAMICS; idx++)
+        if (!verify_dynamic_pid(settings_dynamic_pid[idx]))
+        {
+            settings_dynamic_pid[idx] = DEFAULT_DYNAMIC_PID;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_DYNAMICS; idx++)
+        if (!verify_dynamic_units(settings_dynamic_units[idx]))
+        {
+            settings_dynamic_units[idx] = DEFAULT_DYNAMIC_UNITS;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_GENERALS; idx++)
+        if (!verify_general_ee_version(settings_general_ee_version[idx]))
+        {
+            settings_general_ee_version[idx] = DEFAULT_GENERAL_EE_VERSION;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_GENERALS; idx++)
+        if (!verify_general_splash(settings_general_splash[idx]))
+        {
+            settings_general_splash[idx] = DEFAULT_GENERAL_SPLASH;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_GENERALS; idx++)
+        if (!verify_general_can_bus_mode(settings_general_can_bus_mode[idx]))
+        {
+            settings_general_can_bus_mode[idx] = DEFAULT_GENERAL_CAN_BUS_MODE;
+        }
+
 }
 
 
@@ -1922,13 +2076,16 @@ static void save_view_enable(uint8_t idx, VIEW_STATE *view_enable)
 bool verify_view_enable(VIEW_STATE view_enable)
 {
     if (view_enable >= VIEW_STATE_RESERVED)
-        return 0;
-    else
-        return 1;
+        return false;
+
+    return true;
 }
 
 VIEW_STATE get_view_enable(uint8_t idx)
 {
+    if (idx >= MAX_VIEWS)
+        return DEFAULT_VIEW_ENABLE;
+
     // Verify the View enable value is valid
     if (!verify_view_enable(settings_view_enable[idx]))
         return DEFAULT_VIEW_ENABLE;
@@ -1939,6 +2096,9 @@ VIEW_STATE get_view_enable(uint8_t idx)
 // Set the View enable
 bool set_view_enable(uint8_t idx, VIEW_STATE view_enable, bool save)
 {
+    if (idx >= MAX_VIEWS)
+        return false;
+
     // Verify the View enable value is valid
     if (!verify_view_enable(view_enable))
         return false;
@@ -1963,6 +2123,7 @@ bool set_view_enable(uint8_t idx, VIEW_STATE view_enable, bool save)
 
 VIEW_STATE get_view_enable_from_string(const char *str)
 {
+    if (str == NULL) return VIEW_STATE_RESERVED;
     if(strcmp(str, "Disabled") == 0) return VIEW_STATE_DISABLED;
     if(strcmp(str, "Enabled") == 0) return VIEW_STATE_ENABLED;
     return VIEW_STATE_RESERVED;
@@ -1999,14 +2160,16 @@ static void save_view_num_gauges(uint8_t idx, uint8_t *view_num_gauges)
 bool verify_view_num_gauges(uint8_t view_num_gauges)
 {
     if (view_num_gauges > MAX_GAUGES_PER_VIEW)
-        return 0;
+        return false;
 
-    else
-        return 1;
+    return true;
 }
 
 uint8_t get_view_num_gauges(uint8_t idx)
 {
+    if (idx >= MAX_VIEWS)
+        return DEFAULT_VIEW_NUM_GAUGES;
+
     // Verify the Number of gauges value is valid
     if (!verify_view_num_gauges(settings_view_num_gauges[idx]))
         return DEFAULT_VIEW_NUM_GAUGES;
@@ -2017,6 +2180,9 @@ uint8_t get_view_num_gauges(uint8_t idx)
 // Set the Number of gauges
 bool set_view_num_gauges(uint8_t idx, uint8_t view_num_gauges, bool save)
 {
+    if (idx >= MAX_VIEWS)
+        return false;
+
     // Verify the Number of gauges value is valid
     if (!verify_view_num_gauges(view_num_gauges))
         return false;
@@ -2082,13 +2248,16 @@ static void save_view_background(uint8_t idx, VIEW_BACKGROUND *view_background)
 bool verify_view_background(VIEW_BACKGROUND view_background)
 {
     if (view_background >= VIEW_BACKGROUND_RESERVED)
-        return 0;
-    else
-        return 1;
+        return false;
+
+    return true;
 }
 
 VIEW_BACKGROUND get_view_background(uint8_t idx)
 {
+    if (idx >= MAX_VIEWS)
+        return DEFAULT_VIEW_BACKGROUND;
+
     // Verify the Background value is valid
     if (!verify_view_background(settings_view_background[idx]))
         return DEFAULT_VIEW_BACKGROUND;
@@ -2099,6 +2268,9 @@ VIEW_BACKGROUND get_view_background(uint8_t idx)
 // Set the Background
 bool set_view_background(uint8_t idx, VIEW_BACKGROUND view_background, bool save)
 {
+    if (idx >= MAX_VIEWS)
+        return false;
+
     // Verify the Background value is valid
     if (!verify_view_background(view_background))
         return false;
@@ -2123,6 +2295,7 @@ bool set_view_background(uint8_t idx, VIEW_BACKGROUND view_background, bool save
 
 VIEW_BACKGROUND get_view_background_from_string(const char *str)
 {
+    if (str == NULL) return VIEW_BACKGROUND_RESERVED;
     if(strcmp(str, "User1") == 0) return VIEW_BACKGROUND_USER1;
     if(strcmp(str, "User2") == 0) return VIEW_BACKGROUND_USER2;
     if(strcmp(str, "User3") == 0) return VIEW_BACKGROUND_USER3;
@@ -2173,14 +2346,16 @@ static void save_view_background_color(uint8_t idx, uint32_t *view_background_co
 bool verify_view_background_color(uint32_t view_background_color)
 {
     if (view_background_color > 16777215)
-        return 0;
+        return false;
 
-    else
-        return 1;
+    return true;
 }
 
 uint32_t get_view_background_color(uint8_t idx)
 {
+    if (idx >= MAX_VIEWS)
+        return DEFAULT_VIEW_BACKGROUND_COLOR;
+
     // Verify the Background Color value is valid
     if (!verify_view_background_color(settings_view_background_color[idx]))
         return DEFAULT_VIEW_BACKGROUND_COLOR;
@@ -2191,6 +2366,9 @@ uint32_t get_view_background_color(uint8_t idx)
 // Set the Background Color
 bool set_view_background_color(uint8_t idx, uint32_t view_background_color, bool save)
 {
+    if (idx >= MAX_VIEWS)
+        return false;
+
     // Verify the Background Color value is valid
     if (!verify_view_background_color(view_background_color))
         return false;
@@ -2248,13 +2426,16 @@ static void save_view_background_type(uint8_t idx, VIEW_BACKGROUND_TYPE *view_ba
 bool verify_view_background_type(VIEW_BACKGROUND_TYPE view_background_type)
 {
     if (view_background_type >= VIEW_BACKGROUND_TYPE_RESERVED)
-        return 0;
-    else
-        return 1;
+        return false;
+
+    return true;
 }
 
 VIEW_BACKGROUND_TYPE get_view_background_type(uint8_t idx)
 {
+    if (idx >= MAX_VIEWS)
+        return DEFAULT_VIEW_BACKGROUND_TYPE;
+
     // Verify the Background Type value is valid
     if (!verify_view_background_type(settings_view_background_type[idx]))
         return DEFAULT_VIEW_BACKGROUND_TYPE;
@@ -2265,6 +2446,9 @@ VIEW_BACKGROUND_TYPE get_view_background_type(uint8_t idx)
 // Set the Background Type
 bool set_view_background_type(uint8_t idx, VIEW_BACKGROUND_TYPE view_background_type, bool save)
 {
+    if (idx >= MAX_VIEWS)
+        return false;
+
     // Verify the Background Type value is valid
     if (!verify_view_background_type(view_background_type))
         return false;
@@ -2289,6 +2473,7 @@ bool set_view_background_type(uint8_t idx, VIEW_BACKGROUND_TYPE view_background_
 
 VIEW_BACKGROUND_TYPE get_view_background_type_from_string(const char *str)
 {
+    if (str == NULL) return VIEW_BACKGROUND_TYPE_RESERVED;
     if(strcmp(str, "Color") == 0) return VIEW_BACKGROUND_TYPE_COLOR;
     if(strcmp(str, "Image") == 0) return VIEW_BACKGROUND_TYPE_IMAGE;
     return VIEW_BACKGROUND_TYPE_RESERVED;
@@ -2336,13 +2521,16 @@ static void save_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THE
 bool verify_view_gauge_theme(GAUGE_THEME view_gauge_theme)
 {
     if (view_gauge_theme >= GAUGE_THEME_RESERVED)
-        return 0;
-    else
-        return 1;
+        return false;
+
+    return true;
 }
 
 GAUGE_THEME get_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge)
 {
+    if ((idx_view >= MAX_VIEWS) || (idx_gauge >= MAX_GAUGES_PER_VIEW))
+        return DEFAULT_VIEW_GAUGE_THEME;
+
     // Verify the Theme assigned to the gauge value is valid
     if (!verify_view_gauge_theme(settings_view_gauge_theme[idx_view][idx_gauge]))
         return DEFAULT_VIEW_GAUGE_THEME;
@@ -2353,6 +2541,9 @@ GAUGE_THEME get_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge)
 // Set the Theme assigned to the gauge
 bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME view_gauge_theme, bool save)
 {
+    if ((idx_view >= MAX_VIEWS) || (idx_gauge >= MAX_GAUGES_PER_VIEW))
+        return false;
+
     // Verify the Theme assigned to the gauge value is valid
     if (!verify_view_gauge_theme(view_gauge_theme))
         return false;
@@ -2377,6 +2568,7 @@ bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME view_
 
 GAUGE_THEME get_view_gauge_theme_from_string(const char *str)
 {
+    if (str == NULL) return GAUGE_THEME_RESERVED;
     if(strcmp(str, "Stock ST") == 0) return GAUGE_THEME_STOCK_ST;
     if(strcmp(str, "Stock RS") == 0) return GAUGE_THEME_STOCK_RS;
     if(strcmp(str, "Grumpy Cat") == 0) return GAUGE_THEME_GRUMPY_CAT;
@@ -2424,18 +2616,17 @@ static void save_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t *v
 
 bool verify_view_gauge_pid(uint32_t view_gauge_pid)
 {
-    if (view_gauge_pid < 1)
-        return 0;
-
     if (view_gauge_pid > 16777215)
-        return 0;
+        return false;
 
-    else
-        return 1;
+    return true;
 }
 
 uint32_t get_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge)
 {
+    if ((idx_view >= MAX_VIEWS) || (idx_gauge >= MAX_GAUGES_PER_VIEW))
+        return DEFAULT_VIEW_GAUGE_PID;
+
     // Verify the PID assigned to the gauge value is valid
     if (!verify_view_gauge_pid(settings_view_gauge_pid[idx_view][idx_gauge]))
         return DEFAULT_VIEW_GAUGE_PID;
@@ -2446,6 +2637,9 @@ uint32_t get_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge)
 // Set the PID assigned to the gauge
 bool set_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t view_gauge_pid, bool save)
 {
+    if ((idx_view >= MAX_VIEWS) || (idx_gauge >= MAX_GAUGES_PER_VIEW))
+        return false;
+
     // Verify the PID assigned to the gauge value is valid
     if (!verify_view_gauge_pid(view_gauge_pid))
         return false;
@@ -2498,18 +2692,17 @@ static void save_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS
 
 bool verify_view_gauge_units(PID_UNITS view_gauge_units)
 {
-    if (view_gauge_units < 1)
-        return 0;
+    if (view_gauge_units > PID_UNITS_NONE)
+        return false;
 
-    if (view_gauge_units > 255)
-        return 0;
-
-    else
-        return 1;
+    return true;
 }
 
 PID_UNITS get_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge)
 {
+    if ((idx_view >= MAX_VIEWS) || (idx_gauge >= MAX_GAUGES_PER_VIEW))
+        return DEFAULT_VIEW_GAUGE_UNITS;
+
     // Verify the PID units assigned to the gauge value is valid
     if (!verify_view_gauge_units(settings_view_gauge_units[idx_view][idx_gauge]))
         return DEFAULT_VIEW_GAUGE_UNITS;
@@ -2520,6 +2713,9 @@ PID_UNITS get_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge)
 // Set the PID units assigned to the gauge
 bool set_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge, PID_UNITS view_gauge_units, bool save)
 {
+    if ((idx_view >= MAX_VIEWS) || (idx_gauge >= MAX_GAUGES_PER_VIEW))
+        return false;
+
     // Verify the PID units assigned to the gauge value is valid
     if (!verify_view_gauge_units(view_gauge_units))
         return false;
@@ -2577,13 +2773,16 @@ static void save_alert_enable(uint8_t idx, ALERT_STATE *alert_enable)
 bool verify_alert_enable(ALERT_STATE alert_enable)
 {
     if (alert_enable >= ALERT_STATE_RESERVED)
-        return 0;
-    else
-        return 1;
+        return false;
+
+    return true;
 }
 
 ALERT_STATE get_alert_enable(uint8_t idx)
 {
+    if (idx >= MAX_ALERTS)
+        return DEFAULT_ALERT_ENABLE;
+
     // Verify the Alert enable value is valid
     if (!verify_alert_enable(settings_alert_enable[idx]))
         return DEFAULT_ALERT_ENABLE;
@@ -2594,6 +2793,9 @@ ALERT_STATE get_alert_enable(uint8_t idx)
 // Set the Alert enable
 bool set_alert_enable(uint8_t idx, ALERT_STATE alert_enable, bool save)
 {
+    if (idx >= MAX_ALERTS)
+        return false;
+
     // Verify the Alert enable value is valid
     if (!verify_alert_enable(alert_enable))
         return false;
@@ -2618,6 +2820,7 @@ bool set_alert_enable(uint8_t idx, ALERT_STATE alert_enable, bool save)
 
 ALERT_STATE get_alert_enable_from_string(const char *str)
 {
+    if (str == NULL) return ALERT_STATE_RESERVED;
     if(strcmp(str, "Disabled") == 0) return ALERT_STATE_DISABLED;
     if(strcmp(str, "Enabled") == 0) return ALERT_STATE_ENABLED;
     return ALERT_STATE_RESERVED;
@@ -2659,18 +2862,17 @@ static void save_alert_pid(uint8_t idx, uint32_t *alert_pid)
 
 bool verify_alert_pid(uint32_t alert_pid)
 {
-    if (alert_pid < 1)
-        return 0;
-
     if (alert_pid > 16777215)
-        return 0;
+        return false;
 
-    else
-        return 1;
+    return true;
 }
 
 uint32_t get_alert_pid(uint8_t idx)
 {
+    if (idx >= MAX_ALERTS)
+        return DEFAULT_ALERT_PID;
+
     // Verify the PID assigned to the alert value is valid
     if (!verify_alert_pid(settings_alert_pid[idx]))
         return DEFAULT_ALERT_PID;
@@ -2681,6 +2883,9 @@ uint32_t get_alert_pid(uint8_t idx)
 // Set the PID assigned to the alert
 bool set_alert_pid(uint8_t idx, uint32_t alert_pid, bool save)
 {
+    if (idx >= MAX_ALERTS)
+        return false;
+
     // Verify the PID assigned to the alert value is valid
     if (!verify_alert_pid(alert_pid))
         return false;
@@ -2732,18 +2937,17 @@ static void save_alert_units(uint8_t idx, PID_UNITS *alert_units)
 
 bool verify_alert_units(PID_UNITS alert_units)
 {
-    if (alert_units < 1)
-        return 0;
+    if (alert_units > PID_UNITS_NONE)
+        return false;
 
-    if (alert_units > 255)
-        return 0;
-
-    else
-        return 1;
+    return true;
 }
 
 PID_UNITS get_alert_units(uint8_t idx)
 {
+    if (idx >= MAX_ALERTS)
+        return DEFAULT_ALERT_UNITS;
+
     // Verify the PID units assigned to the alert value is valid
     if (!verify_alert_units(settings_alert_units[idx]))
         return DEFAULT_ALERT_UNITS;
@@ -2754,6 +2958,9 @@ PID_UNITS get_alert_units(uint8_t idx)
 // Set the PID units assigned to the alert
 bool set_alert_units(uint8_t idx, PID_UNITS alert_units, bool save)
 {
+    if (idx >= MAX_ALERTS)
+        return false;
+
     // Verify the PID units assigned to the alert value is valid
     if (!verify_alert_units(alert_units))
         return false;
@@ -2933,11 +3140,21 @@ static void save_alert_message(uint8_t idx, char *alert_message)
 
 bool verify_alert_message(char* alert_message)
 {
-    return 1; // TODO - String checking
+    return (alert_message != NULL) &&
+           (memchr(alert_message, '\0', EE_SIZE_ALERT_MESSAGE) != NULL);
 }
 
 void get_alert_message(uint8_t idx, char* alert_message)
 {
+    if (alert_message == NULL)
+        return;
+
+    if (idx >= MAX_ALERTS)
+    {
+        alert_message[0] = '\0';
+        return;
+    }
+
     memcpy(alert_message, settings_alert_message[idx], ALERT_MESSAGE_LEN);
     alert_message[ALERT_MESSAGE_LEN - 1] = '\0';
 }
@@ -2945,9 +3162,15 @@ void get_alert_message(uint8_t idx, char* alert_message)
 // Set the Alert message
 bool set_alert_message(uint8_t idx, char* alert_message, bool save)
 {
+    if (idx >= MAX_ALERTS)
+        return false;
+
     // Verify the Alert message value is valid
     if (!verify_alert_message(alert_message))
         return false;
+
+    char normalized[EE_SIZE_ALERT_MESSAGE] = {0};
+    memcpy(normalized, alert_message, strlen(alert_message));
 
     // Check to see if the Alert message EEPROM value needs to be
     // updated if immediate save is set
@@ -2956,13 +3179,13 @@ bool set_alert_message(uint8_t idx, char* alert_message, bool save)
         // Reload the current setting saved in EEPROM
         load_alert_message(idx, settings_alert_message[idx]);
 
-        if (strncmp(settings_alert_message[idx], alert_message, ALERT_MESSAGE_LEN) != 0)
+        if (memcmp(settings_alert_message[idx], normalized, ALERT_MESSAGE_LEN) != 0)
         {
-            save_alert_message(idx, alert_message);
+            save_alert_message(idx, normalized);
         }
     }
 
-    memcpy(settings_alert_message[idx], alert_message, ALERT_MESSAGE_LEN);
+    memcpy(settings_alert_message[idx], normalized, ALERT_MESSAGE_LEN);
 
     return 1;
 }
@@ -3006,13 +3229,16 @@ static void save_alert_compare(uint8_t idx, ALERT_COMPARISON *alert_compare)
 bool verify_alert_compare(ALERT_COMPARISON alert_compare)
 {
     if (alert_compare >= ALERT_COMPARISON_RESERVED)
-        return 0;
-    else
-        return 1;
+        return false;
+
+    return true;
 }
 
 ALERT_COMPARISON get_alert_compare(uint8_t idx)
 {
+    if (idx >= MAX_ALERTS)
+        return DEFAULT_ALERT_COMPARE;
+
     // Verify the Comparison type value is valid
     if (!verify_alert_compare(settings_alert_compare[idx]))
         return DEFAULT_ALERT_COMPARE;
@@ -3023,6 +3249,9 @@ ALERT_COMPARISON get_alert_compare(uint8_t idx)
 // Set the Comparison type
 bool set_alert_compare(uint8_t idx, ALERT_COMPARISON alert_compare, bool save)
 {
+    if (idx >= MAX_ALERTS)
+        return false;
+
     // Verify the Comparison type value is valid
     if (!verify_alert_compare(alert_compare))
         return false;
@@ -3047,6 +3276,7 @@ bool set_alert_compare(uint8_t idx, ALERT_COMPARISON alert_compare, bool save)
 
 ALERT_COMPARISON get_alert_compare_from_string(const char *str)
 {
+    if (str == NULL) return ALERT_COMPARISON_RESERVED;
     if(strcmp(str, "Less Than") == 0) return ALERT_COMPARISON_LESS_THAN;
     if(strcmp(str, "Less Than Or Equal To") == 0) return ALERT_COMPARISON_LESS_THAN_OR_EQUAL_TO;
     if(strcmp(str, "Greater Than") == 0) return ALERT_COMPARISON_GREATER_THAN;
@@ -3092,18 +3322,23 @@ static void save_alert_threshold(uint8_t idx, float *alert_threshold)
 
 bool verify_alert_threshold(float alert_threshold)
 {
+    if (!isfinite(alert_threshold))
+        return false;
+
     if (alert_threshold < -100000)
-        return 0;
+        return false;
 
     if (alert_threshold > 100000)
-        return 0;
+        return false;
 
-    else
-        return 1;
+    return true;
 }
 
 float get_alert_threshold(uint8_t idx)
 {
+    if (idx >= MAX_ALERTS)
+        return DEFAULT_ALERT_THRESHOLD;
+
     // Verify the Alert threshold value is valid
     if (!verify_alert_threshold(settings_alert_threshold[idx]))
         return DEFAULT_ALERT_THRESHOLD;
@@ -3114,6 +3349,9 @@ float get_alert_threshold(uint8_t idx)
 // Set the Alert threshold
 bool set_alert_threshold(uint8_t idx, float alert_threshold, bool save)
 {
+    if (idx >= MAX_ALERTS)
+        return false;
+
     // Verify the Alert threshold value is valid
     if (!verify_alert_threshold(alert_threshold))
         return false;
@@ -3171,13 +3409,16 @@ static void save_dynamic_enable(uint8_t idx, DYNAMIC_STATE *dynamic_enable)
 bool verify_dynamic_enable(DYNAMIC_STATE dynamic_enable)
 {
     if (dynamic_enable >= DYNAMIC_STATE_RESERVED)
-        return 0;
-    else
-        return 1;
+        return false;
+
+    return true;
 }
 
 DYNAMIC_STATE get_dynamic_enable(uint8_t idx)
 {
+    if (idx >= MAX_DYNAMICS)
+        return DEFAULT_DYNAMIC_ENABLE;
+
     // Verify the Dynamic enable value is valid
     if (!verify_dynamic_enable(settings_dynamic_enable[idx]))
         return DEFAULT_DYNAMIC_ENABLE;
@@ -3188,6 +3429,9 @@ DYNAMIC_STATE get_dynamic_enable(uint8_t idx)
 // Set the Dynamic enable
 bool set_dynamic_enable(uint8_t idx, DYNAMIC_STATE dynamic_enable, bool save)
 {
+    if (idx >= MAX_DYNAMICS)
+        return false;
+
     // Verify the Dynamic enable value is valid
     if (!verify_dynamic_enable(dynamic_enable))
         return false;
@@ -3212,6 +3456,7 @@ bool set_dynamic_enable(uint8_t idx, DYNAMIC_STATE dynamic_enable, bool save)
 
 DYNAMIC_STATE get_dynamic_enable_from_string(const char *str)
 {
+    if (str == NULL) return DYNAMIC_STATE_RESERVED;
     if(strcmp(str, "Disabled") == 0) return DYNAMIC_STATE_DISABLED;
     if(strcmp(str, "Enabled") == 0) return DYNAMIC_STATE_ENABLED;
     return DYNAMIC_STATE_RESERVED;
@@ -3254,13 +3499,16 @@ static void save_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY *dynamic_priorit
 bool verify_dynamic_priority(DYNAMIC_PRIORITY dynamic_priority)
 {
     if (dynamic_priority >= DYNAMIC_PRIORITY_RESERVED)
-        return 0;
-    else
-        return 1;
+        return false;
+
+    return true;
 }
 
 DYNAMIC_PRIORITY get_dynamic_priority(uint8_t idx)
 {
+    if (idx >= MAX_DYNAMICS)
+        return DEFAULT_DYNAMIC_PRIORITY;
+
     // Verify the Priority value is valid
     if (!verify_dynamic_priority(settings_dynamic_priority[idx]))
         return DEFAULT_DYNAMIC_PRIORITY;
@@ -3271,6 +3519,9 @@ DYNAMIC_PRIORITY get_dynamic_priority(uint8_t idx)
 // Set the Priority
 bool set_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY dynamic_priority, bool save)
 {
+    if (idx >= MAX_DYNAMICS)
+        return false;
+
     // Verify the Priority value is valid
     if (!verify_dynamic_priority(dynamic_priority))
         return false;
@@ -3295,6 +3546,7 @@ bool set_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY dynamic_priority, bool s
 
 DYNAMIC_PRIORITY get_dynamic_priority_from_string(const char *str)
 {
+    if (str == NULL) return DYNAMIC_PRIORITY_RESERVED;
     if(strcmp(str, "Low") == 0) return DYNAMIC_PRIORITY_LOW;
     if(strcmp(str, "Medium") == 0) return DYNAMIC_PRIORITY_MEDIUM;
     if(strcmp(str, "High") == 0) return DYNAMIC_PRIORITY_HIGH;
@@ -3341,13 +3593,16 @@ static void save_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON *dynamic_compar
 bool verify_dynamic_compare(DYNAMIC_COMPARISON dynamic_compare)
 {
     if (dynamic_compare >= DYNAMIC_COMPARISON_RESERVED)
-        return 0;
-    else
-        return 1;
+        return false;
+
+    return true;
 }
 
 DYNAMIC_COMPARISON get_dynamic_compare(uint8_t idx)
 {
+    if (idx >= MAX_DYNAMICS)
+        return DEFAULT_DYNAMIC_COMPARE;
+
     // Verify the Comparison type value is valid
     if (!verify_dynamic_compare(settings_dynamic_compare[idx]))
         return DEFAULT_DYNAMIC_COMPARE;
@@ -3358,6 +3613,9 @@ DYNAMIC_COMPARISON get_dynamic_compare(uint8_t idx)
 // Set the Comparison type
 bool set_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON dynamic_compare, bool save)
 {
+    if (idx >= MAX_DYNAMICS)
+        return false;
+
     // Verify the Comparison type value is valid
     if (!verify_dynamic_compare(dynamic_compare))
         return false;
@@ -3382,6 +3640,7 @@ bool set_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON dynamic_compare, bool s
 
 DYNAMIC_COMPARISON get_dynamic_compare_from_string(const char *str)
 {
+    if (str == NULL) return DYNAMIC_COMPARISON_RESERVED;
     if(strcmp(str, "Less Than") == 0) return DYNAMIC_COMPARISON_LESS_THAN;
     if(strcmp(str, "Less Than Or Equal To") == 0) return DYNAMIC_COMPARISON_LESS_THAN_OR_EQUAL_TO;
     if(strcmp(str, "Greater Than") == 0) return DYNAMIC_COMPARISON_GREATER_THAN;
@@ -3427,18 +3686,23 @@ static void save_dynamic_threshold(uint8_t idx, float *dynamic_threshold)
 
 bool verify_dynamic_threshold(float dynamic_threshold)
 {
+    if (!isfinite(dynamic_threshold))
+        return false;
+
     if (dynamic_threshold < -100000)
-        return 0;
+        return false;
 
     if (dynamic_threshold > 100000)
-        return 0;
+        return false;
 
-    else
-        return 1;
+    return true;
 }
 
 float get_dynamic_threshold(uint8_t idx)
 {
+    if (idx >= MAX_DYNAMICS)
+        return DEFAULT_DYNAMIC_THRESHOLD;
+
     // Verify the Dynamic gauge threshold value is valid
     if (!verify_dynamic_threshold(settings_dynamic_threshold[idx]))
         return DEFAULT_DYNAMIC_THRESHOLD;
@@ -3449,6 +3713,9 @@ float get_dynamic_threshold(uint8_t idx)
 // Set the Dynamic gauge threshold
 bool set_dynamic_threshold(uint8_t idx, float dynamic_threshold, bool save)
 {
+    if (idx >= MAX_DYNAMICS)
+        return false;
+
     // Verify the Dynamic gauge threshold value is valid
     if (!verify_dynamic_threshold(dynamic_threshold))
         return false;
@@ -3500,15 +3767,17 @@ static void save_dynamic_view_index(uint8_t idx, uint8_t *dynamic_view_index)
 
 bool verify_dynamic_view_index(uint8_t dynamic_view_index)
 {
-    if (dynamic_view_index > MAX_VIEWS)
-        return 0;
+    if (dynamic_view_index >= MAX_VIEWS)
+        return false;
 
-    else
-        return 1;
+    return true;
 }
 
 uint8_t get_dynamic_view_index(uint8_t idx)
 {
+    if (idx >= MAX_DYNAMICS)
+        return DEFAULT_DYNAMIC_VIEW_INDEX;
+
     // Verify the View index value is valid
     if (!verify_dynamic_view_index(settings_dynamic_view_index[idx]))
         return DEFAULT_DYNAMIC_VIEW_INDEX;
@@ -3519,6 +3788,9 @@ uint8_t get_dynamic_view_index(uint8_t idx)
 // Set the View index
 bool set_dynamic_view_index(uint8_t idx, uint8_t dynamic_view_index, bool save)
 {
+    if (idx >= MAX_DYNAMICS)
+        return false;
+
     // Verify the View index value is valid
     if (!verify_dynamic_view_index(dynamic_view_index))
         return false;
@@ -3576,18 +3848,17 @@ static void save_dynamic_pid(uint8_t idx, uint32_t *dynamic_pid)
 
 bool verify_dynamic_pid(uint32_t dynamic_pid)
 {
-    if (dynamic_pid < 1)
-        return 0;
-
     if (dynamic_pid > 16777215)
-        return 0;
+        return false;
 
-    else
-        return 1;
+    return true;
 }
 
 uint32_t get_dynamic_pid(uint8_t idx)
 {
+    if (idx >= MAX_DYNAMICS)
+        return DEFAULT_DYNAMIC_PID;
+
     // Verify the PID assigned to the dynamic gauge value is valid
     if (!verify_dynamic_pid(settings_dynamic_pid[idx]))
         return DEFAULT_DYNAMIC_PID;
@@ -3598,6 +3869,9 @@ uint32_t get_dynamic_pid(uint8_t idx)
 // Set the PID assigned to the dynamic gauge
 bool set_dynamic_pid(uint8_t idx, uint32_t dynamic_pid, bool save)
 {
+    if (idx >= MAX_DYNAMICS)
+        return false;
+
     // Verify the PID assigned to the dynamic gauge value is valid
     if (!verify_dynamic_pid(dynamic_pid))
         return false;
@@ -3649,18 +3923,17 @@ static void save_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units)
 
 bool verify_dynamic_units(PID_UNITS dynamic_units)
 {
-    if (dynamic_units < 1)
-        return 0;
-
     if (dynamic_units > 255)
-        return 0;
+        return false;
 
-    else
-        return 1;
+    return true;
 }
 
 PID_UNITS get_dynamic_units(uint8_t idx)
 {
+    if (idx >= MAX_DYNAMICS)
+        return DEFAULT_DYNAMIC_UNITS;
+
     // Verify the PID units assigned to the dynamic value is valid
     if (!verify_dynamic_units(settings_dynamic_units[idx]))
         return DEFAULT_DYNAMIC_UNITS;
@@ -3671,6 +3944,9 @@ PID_UNITS get_dynamic_units(uint8_t idx)
 // Set the PID units assigned to the dynamic
 bool set_dynamic_units(uint8_t idx, PID_UNITS dynamic_units, bool save)
 {
+    if (idx >= MAX_DYNAMICS)
+        return false;
+
     // Verify the PID units assigned to the dynamic value is valid
     if (!verify_dynamic_units(dynamic_units))
         return false;
@@ -3722,11 +3998,16 @@ static void save_general_ee_version(uint8_t idx, uint8_t *general_ee_version)
 
 bool verify_general_ee_version(uint8_t general_ee_version)
 {
-    return 1;
+    (void)general_ee_version;
+
+    return true;
 }
 
 uint8_t get_general_ee_version(uint8_t idx)
 {
+    if (idx >= MAX_GENERALS)
+        return DEFAULT_GENERAL_EE_VERSION;
+
     // Verify the EEPROM Version value is valid
     if (!verify_general_ee_version(settings_general_ee_version[idx]))
         return DEFAULT_GENERAL_EE_VERSION;
@@ -3737,6 +4018,9 @@ uint8_t get_general_ee_version(uint8_t idx)
 // Set the EEPROM Version
 bool set_general_ee_version(uint8_t idx, uint8_t general_ee_version, bool save)
 {
+    if (idx >= MAX_GENERALS)
+        return false;
+
     // Verify the EEPROM Version value is valid
     if (!verify_general_ee_version(general_ee_version))
         return false;
@@ -3790,15 +4074,16 @@ static void save_general_splash(uint8_t idx, uint16_t *general_splash)
 
 bool verify_general_splash(uint16_t general_splash)
 {
-    if (general_splash > 65535)
-        return 0;
+    (void)general_splash;
 
-    else
-        return 1;
+    return true;
 }
 
 uint16_t get_general_splash(uint8_t idx)
 {
+    if (idx >= MAX_GENERALS)
+        return DEFAULT_GENERAL_SPLASH;
+
     // Verify the Splash Screen Duration value is valid
     if (!verify_general_splash(settings_general_splash[idx]))
         return DEFAULT_GENERAL_SPLASH;
@@ -3809,6 +4094,9 @@ uint16_t get_general_splash(uint8_t idx)
 // Set the Splash Screen Duration
 bool set_general_splash(uint8_t idx, uint16_t general_splash, bool save)
 {
+    if (idx >= MAX_GENERALS)
+        return false;
+
     // Verify the Splash Screen Duration value is valid
     if (!verify_general_splash(general_splash))
         return false;
@@ -3866,13 +4154,16 @@ static void save_general_can_bus_mode(uint8_t idx, CAN_BUS_MODE *general_can_bus
 bool verify_general_can_bus_mode(CAN_BUS_MODE general_can_bus_mode)
 {
     if (general_can_bus_mode >= CAN_BUS_MODE_RESERVED)
-        return 0;
-    else
-        return 1;
+        return false;
+
+    return true;
 }
 
 CAN_BUS_MODE get_general_can_bus_mode(uint8_t idx)
 {
+    if (idx >= MAX_GENERALS)
+        return DEFAULT_GENERAL_CAN_BUS_MODE;
+
     // Verify the CAN Bus mode value is valid
     if (!verify_general_can_bus_mode(settings_general_can_bus_mode[idx]))
         return DEFAULT_GENERAL_CAN_BUS_MODE;
@@ -3883,6 +4174,9 @@ CAN_BUS_MODE get_general_can_bus_mode(uint8_t idx)
 // Set the CAN Bus mode
 bool set_general_can_bus_mode(uint8_t idx, CAN_BUS_MODE general_can_bus_mode, bool save)
 {
+    if (idx >= MAX_GENERALS)
+        return false;
+
     // Verify the CAN Bus mode value is valid
     if (!verify_general_can_bus_mode(general_can_bus_mode))
         return false;
@@ -3907,6 +4201,7 @@ bool set_general_can_bus_mode(uint8_t idx, CAN_BUS_MODE general_can_bus_mode, bo
 
 CAN_BUS_MODE get_general_can_bus_mode_from_string(const char *str)
 {
+    if (str == NULL) return CAN_BUS_MODE_RESERVED;
     if(strcmp(str, "Normal Mode") == 0) return CAN_BUS_MODE_NORMAL_MODE;
     if(strcmp(str, "Listen Only") == 0) return CAN_BUS_MODE_LISTEN_ONLY;
     return CAN_BUS_MODE_RESERVED;
