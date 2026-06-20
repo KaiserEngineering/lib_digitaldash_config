@@ -7,7 +7,6 @@
         "max_alerts": 5,
         "max_dynamics": 3,
         "max_generals": 1,
-        "settings_region_size": 508,
         "eeprom_device": "24CW1280T-I/OT",
         "eeprom_capacity_kbit": 128,
         "i2c_clock_hz": 100000,
