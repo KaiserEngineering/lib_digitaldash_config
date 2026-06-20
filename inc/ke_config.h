@@ -53,6 +53,7 @@ void settings_setReadHandler(settings_read *readHandler);
 #define MAX_GENERALS 1
 
 void load_settings(void);
+void settings_erase_eeprom(void);
 void write_eeprom(uint16_t bAdd, uint8_t bData);
 uint8_t get_eeprom_byte(uint16_t bAdd);
 uint32_t options_to_json(char *buffer, uint32_t buffer_size);

@@ -77,6 +77,7 @@
 #define EE_SIZE_GENERAL_EE_VERSION 1
 #define EE_SIZE_GENERAL_SPLASH 2
 #define EE_SIZE_GENERAL_CAN_BUS_MODE 1
+#define EE_SIZE_SETTINGS 508U
 
 // EEPROM Memory Map - view enable
 #define EEPROM_VIEW_ENABLE1_BYTE1 (uint16_t)0x0000
@@ -1755,7 +1756,7 @@ bool json_to_config(const char *json_str) {
     return true;
 }
 
-static uint8_t cached_settings[496];
+static uint8_t cached_settings[EE_SIZE_SETTINGS];
 
 static settings_write *write;
 static settings_read *read;
@@ -1788,6 +1789,14 @@ void write_eeprom(uint16_t bAdd, uint8_t bData)
 uint8_t get_eeprom_byte(uint16_t bAdd)
 {
 	return cached_settings[bAdd];
+}
+
+void settings_erase_eeprom(void)
+{
+	for (uint16_t address = 0; address < EE_SIZE_SETTINGS; address++)
+	{
+		write_eeprom(address, 0xFF);
+	}
 }
 
 void load_settings(void)
