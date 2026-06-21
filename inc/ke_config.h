@@ -494,6 +494,51 @@ CAN_BUS_MODE get_general_can_bus_mode(uint8_t idx_general);
 bool set_general_can_bus_mode(uint8_t idx_general, CAN_BUS_MODE can_bus_mode, bool save);
 CAN_BUS_MODE get_general_can_bus_mode_from_string(const char *str);
 
+
+/********************************************************************************
+*                            OBD-II Detected Message                            
+*
+* @param idx_general    index of the general
+* @param obdii_message    Configure if the system should display a message when an OBD-II device is detected (indicating communication is paused)
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+typedef enum
+{
+    OBDII_MESSAGE_POPUP_MESSAGE,
+    OBDII_MESSAGE_NO_MESSAGE,
+    OBDII_MESSAGE_RESERVED
+} OBDII_MESSAGE;
+
+extern const char *obdii_message_string[];
+bool verify_general_obdii_message(OBDII_MESSAGE obdii_message);
+OBDII_MESSAGE get_general_obdii_message(uint8_t idx_general);
+bool set_general_obdii_message(uint8_t idx_general, OBDII_MESSAGE obdii_message, bool save);
+OBDII_MESSAGE get_general_obdii_message_from_string(const char *str);
+
+
+/********************************************************************************
+*                             OBD-II Pause Duration                             
+*
+* @param idx_general    index of the general
+* @param obdii_pause    Configure the duration for which the system should pause communication when an OBD-II device is detected
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+typedef enum
+{
+    OBDII_PAUSE_10_SECONDS,
+    OBDII_PAUSE_30_SECONDS,
+    OBDII_PAUSE_UNTIL_POWER_CYCLE,
+    OBDII_PAUSE_RESERVED
+} OBDII_PAUSE;
+
+extern const char *obdii_pause_string[];
+bool verify_general_obdii_pause(OBDII_PAUSE obdii_pause);
+OBDII_PAUSE get_general_obdii_pause(uint8_t idx_general);
+bool set_general_obdii_pause(uint8_t idx_general, OBDII_PAUSE obdii_pause, bool save);
+OBDII_PAUSE get_general_obdii_pause_from_string(const char *str);
+
 #ifdef __cplusplus
 }
 #endif

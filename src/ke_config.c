@@ -61,6 +61,8 @@
 #define DEFAULT_GENERAL_EE_VERSION 255
 #define DEFAULT_GENERAL_SPLASH 5
 #define DEFAULT_GENERAL_CAN_BUS_MODE CAN_BUS_MODE_NORMAL_MODE
+#define DEFAULT_GENERAL_OBDII_MESSAGE OBDII_MESSAGE_POPUP_MESSAGE
+#define DEFAULT_GENERAL_OBDII_PAUSE OBDII_PAUSE_10_SECONDS
 
 #define EE_SIZE_VIEW_ENABLE 1
 #define EE_SIZE_VIEW_NUM_GAUGES 1
@@ -86,7 +88,9 @@
 #define EE_SIZE_GENERAL_EE_VERSION 1
 #define EE_SIZE_GENERAL_SPLASH 2
 #define EE_SIZE_GENERAL_CAN_BUS_MODE 1
-#define EE_SIZE_SETTINGS 496U
+#define EE_SIZE_GENERAL_OBDII_MESSAGE 1
+#define EE_SIZE_GENERAL_OBDII_PAUSE 1
+#define EE_SIZE_SETTINGS 498U
 
 // EEPROM Memory Map - view enable
 #define EEPROM_VIEW_ENABLE1_BYTE1 (uint16_t)0x0000
@@ -1404,6 +1408,18 @@ static const uint16_t map_general_can_bus_mode_byte1[MAX_GENERALS] = {
     EEPROM_GENERAL_CAN_BUS_MODE1_BYTE1
     };
 
+// EEPROM Memory Map - general obdii_message
+#define EEPROM_GENERAL_OBDII_MESSAGE1_BYTE1 (uint16_t)0x01F0
+static const uint16_t map_general_obdii_message_byte1[MAX_GENERALS] = {
+    EEPROM_GENERAL_OBDII_MESSAGE1_BYTE1
+    };
+
+// EEPROM Memory Map - general obdii_pause
+#define EEPROM_GENERAL_OBDII_PAUSE1_BYTE1 (uint16_t)0x01F1
+static const uint16_t map_general_obdii_pause_byte1[MAX_GENERALS] = {
+    EEPROM_GENERAL_OBDII_PAUSE1_BYTE1
+    };
+
 
 static VIEW_STATE settings_view_enable[MAX_VIEWS] = {DEFAULT_VIEW_ENABLE};
 static uint8_t settings_view_num_gauges[MAX_VIEWS] = {DEFAULT_VIEW_NUM_GAUGES};
@@ -1429,6 +1445,8 @@ static PID_UNITS settings_dynamic_units[MAX_DYNAMICS] = {DEFAULT_DYNAMIC_UNITS};
 static uint8_t settings_general_ee_version[MAX_GENERALS] = {DEFAULT_GENERAL_EE_VERSION};
 static uint16_t settings_general_splash[MAX_GENERALS] = {DEFAULT_GENERAL_SPLASH};
 static CAN_BUS_MODE settings_general_can_bus_mode[MAX_GENERALS] = {DEFAULT_GENERAL_CAN_BUS_MODE};
+static OBDII_MESSAGE settings_general_obdii_message[MAX_GENERALS] = {DEFAULT_GENERAL_OBDII_MESSAGE};
+static OBDII_PAUSE settings_general_obdii_pause[MAX_GENERALS] = {DEFAULT_GENERAL_OBDII_PAUSE};
 
 
 static void load_view_enable(uint8_t idx, VIEW_STATE *view_enable_val);
@@ -1455,6 +1473,8 @@ static void load_dynamic_units(uint8_t idx, PID_UNITS *dynamic_units_val);
 static void load_general_ee_version(uint8_t idx, uint8_t *general_ee_version_val);
 static void load_general_splash(uint8_t idx, uint16_t *general_splash_val);
 static void load_general_can_bus_mode(uint8_t idx, CAN_BUS_MODE *general_can_bus_mode_val);
+static void load_general_obdii_message(uint8_t idx, OBDII_MESSAGE *general_obdii_message_val);
+static void load_general_obdii_pause(uint8_t idx, OBDII_PAUSE *general_obdii_pause_val);
 
 uint32_t options_to_json(char *buffer, uint32_t buffer_size) {
     if ((buffer == NULL) || (buffer_size == 0U) || !cjson_shared_acquire())
@@ -1508,6 +1528,14 @@ uint32_t options_to_json(char *buffer, uint32_t buffer_size) {
     // Populate can_bus_mode option list
     list = cJSON_CreateStringArray(can_bus_mode_string, CAN_BUS_MODE_RESERVED);
     cJSON_AddItemToObject(root, "can_bus_mode", list);
+
+    // Populate obdii_message option list
+    list = cJSON_CreateStringArray(obdii_message_string, OBDII_MESSAGE_RESERVED);
+    cJSON_AddItemToObject(root, "obdii_message", list);
+
+    // Populate obdii_pause option list
+    list = cJSON_CreateStringArray(obdii_pause_string, OBDII_PAUSE_RESERVED);
+    cJSON_AddItemToObject(root, "obdii_pause", list);
 
     uint32_t actual_len = 0;
 
@@ -1596,6 +1624,8 @@ uint32_t config_to_json(char *buffer, uint32_t buffer_size) {
         cJSON_AddNumberToObject(general, "EE_Version", get_general_ee_version(i));
         cJSON_AddNumberToObject(general, "splash", get_general_splash(i));
         cJSON_AddStringToObject(general, "can_bus_mode", can_bus_mode_string[get_general_can_bus_mode(i)]);
+        cJSON_AddStringToObject(general, "obdii_message", obdii_message_string[get_general_obdii_message(i)]);
+        cJSON_AddStringToObject(general, "obdii_pause", obdii_pause_string[get_general_obdii_pause(i)]);
         cJSON_AddItemToArray(generals, general);
     }
 
@@ -1758,6 +1788,14 @@ bool json_to_config(const char *json_str) {
             cJSON *general_can_bus_mode = cJSON_GetObjectItem(general, "can_bus_mode");
             if(cJSON_IsString(general_can_bus_mode))
                 success = set_general_can_bus_mode(i, get_general_can_bus_mode_from_string(general_can_bus_mode->valuestring), true) && success;
+
+            cJSON *general_obdii_message = cJSON_GetObjectItem(general, "obdii_message");
+            if(cJSON_IsString(general_obdii_message))
+                success = set_general_obdii_message(i, get_general_obdii_message_from_string(general_obdii_message->valuestring), true) && success;
+
+            cJSON *general_obdii_pause = cJSON_GetObjectItem(general, "obdii_pause");
+            if(cJSON_IsString(general_obdii_pause))
+                success = set_general_obdii_pause(i, get_general_obdii_pause_from_string(general_obdii_pause->valuestring), true) && success;
         }
     }
 
@@ -1887,6 +1925,12 @@ void load_settings(void)
 
     for( uint8_t idx = 0; idx < MAX_GENERALS; idx++ )
         load_general_can_bus_mode(idx, &settings_general_can_bus_mode[idx]);
+
+    for( uint8_t idx = 0; idx < MAX_GENERALS; idx++ )
+        load_general_obdii_message(idx, &settings_general_obdii_message[idx]);
+
+    for( uint8_t idx = 0; idx < MAX_GENERALS; idx++ )
+        load_general_obdii_pause(idx, &settings_general_obdii_pause[idx]);
 
     // Normalize every value immediately after reading raw EEPROM bytes.
     for (uint8_t idx = 0; idx < MAX_VIEWS; idx++)
@@ -2035,6 +2079,18 @@ void load_settings(void)
         if (!verify_general_can_bus_mode(settings_general_can_bus_mode[idx]))
         {
             settings_general_can_bus_mode[idx] = DEFAULT_GENERAL_CAN_BUS_MODE;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_GENERALS; idx++)
+        if (!verify_general_obdii_message(settings_general_obdii_message[idx]))
+        {
+            settings_general_obdii_message[idx] = DEFAULT_GENERAL_OBDII_MESSAGE;
+        }
+
+    for (uint8_t idx = 0; idx < MAX_GENERALS; idx++)
+        if (!verify_general_obdii_pause(settings_general_obdii_pause[idx]))
+        {
+            settings_general_obdii_pause[idx] = DEFAULT_GENERAL_OBDII_PAUSE;
         }
 
 }
@@ -4205,5 +4261,185 @@ CAN_BUS_MODE get_general_can_bus_mode_from_string(const char *str)
     if(strcmp(str, "Normal Mode") == 0) return CAN_BUS_MODE_NORMAL_MODE;
     if(strcmp(str, "Listen Only") == 0) return CAN_BUS_MODE_LISTEN_ONLY;
     return CAN_BUS_MODE_RESERVED;
+}
+
+
+
+/********************************************************************************
+*                            OBD-II Detected Message                            
+*
+* @param idx_general    index of the general
+* @param obdii_message    Configure if the system should display a message when an OBD-II device is detected (indicating communication is paused)
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+const char *obdii_message_string[] = {
+    "Popup Message",
+    "No Message"
+};
+
+static void load_general_obdii_message(uint8_t idx, OBDII_MESSAGE *general_obdii_message_val)
+{
+    uint8_t bytes[EE_SIZE_GENERAL_OBDII_MESSAGE];
+
+    bytes[0] = read_eeprom(map_general_obdii_message_byte1[idx]);
+
+    memcpy(general_obdii_message_val, bytes, EE_SIZE_GENERAL_OBDII_MESSAGE);
+}
+
+static void save_general_obdii_message(uint8_t idx, OBDII_MESSAGE *general_obdii_message)
+{
+    uint8_t bytes[EE_SIZE_GENERAL_OBDII_MESSAGE];
+
+    memcpy(bytes, general_obdii_message, EE_SIZE_GENERAL_OBDII_MESSAGE);
+
+    write_eeprom(map_general_obdii_message_byte1[idx], bytes[0]);
+}
+
+bool verify_general_obdii_message(OBDII_MESSAGE general_obdii_message)
+{
+    if (general_obdii_message >= OBDII_MESSAGE_RESERVED)
+        return false;
+
+    return true;
+}
+
+OBDII_MESSAGE get_general_obdii_message(uint8_t idx)
+{
+    if (idx >= MAX_GENERALS)
+        return DEFAULT_GENERAL_OBDII_MESSAGE;
+
+    // Verify the OBD-II Detected Message value is valid
+    if (!verify_general_obdii_message(settings_general_obdii_message[idx]))
+        return DEFAULT_GENERAL_OBDII_MESSAGE;
+
+    return settings_general_obdii_message[idx];
+}
+
+// Set the OBD-II Detected Message
+bool set_general_obdii_message(uint8_t idx, OBDII_MESSAGE general_obdii_message, bool save)
+{
+    if (idx >= MAX_GENERALS)
+        return false;
+
+    // Verify the OBD-II Detected Message value is valid
+    if (!verify_general_obdii_message(general_obdii_message))
+        return false;
+
+    // Check to see if the OBD-II Detected Message EEPROM value needs to be
+    // updated if immediate save is set
+    if (save)
+    {
+        // Reload the current setting saved in EEPROM
+        load_general_obdii_message(idx, &settings_general_obdii_message[idx]);
+
+        if (settings_general_obdii_message[idx] != general_obdii_message)
+        {
+            save_general_obdii_message(idx, &general_obdii_message);
+        }
+    }
+
+    settings_general_obdii_message[idx] = general_obdii_message;
+
+    return 1;
+}
+
+OBDII_MESSAGE get_general_obdii_message_from_string(const char *str)
+{
+    if (str == NULL) return OBDII_MESSAGE_RESERVED;
+    if(strcmp(str, "Popup Message") == 0) return OBDII_MESSAGE_POPUP_MESSAGE;
+    if(strcmp(str, "No Message") == 0) return OBDII_MESSAGE_NO_MESSAGE;
+    return OBDII_MESSAGE_RESERVED;
+}
+
+
+
+/********************************************************************************
+*                             OBD-II Pause Duration                             
+*
+* @param idx_general    index of the general
+* @param obdii_pause    Configure the duration for which the system should pause communication when an OBD-II device is detected
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+const char *obdii_pause_string[] = {
+    "10 Seconds",
+    "30 Seconds",
+    "Until Power Cycle"
+};
+
+static void load_general_obdii_pause(uint8_t idx, OBDII_PAUSE *general_obdii_pause_val)
+{
+    uint8_t bytes[EE_SIZE_GENERAL_OBDII_PAUSE];
+
+    bytes[0] = read_eeprom(map_general_obdii_pause_byte1[idx]);
+
+    memcpy(general_obdii_pause_val, bytes, EE_SIZE_GENERAL_OBDII_PAUSE);
+}
+
+static void save_general_obdii_pause(uint8_t idx, OBDII_PAUSE *general_obdii_pause)
+{
+    uint8_t bytes[EE_SIZE_GENERAL_OBDII_PAUSE];
+
+    memcpy(bytes, general_obdii_pause, EE_SIZE_GENERAL_OBDII_PAUSE);
+
+    write_eeprom(map_general_obdii_pause_byte1[idx], bytes[0]);
+}
+
+bool verify_general_obdii_pause(OBDII_PAUSE general_obdii_pause)
+{
+    if (general_obdii_pause >= OBDII_PAUSE_RESERVED)
+        return false;
+
+    return true;
+}
+
+OBDII_PAUSE get_general_obdii_pause(uint8_t idx)
+{
+    if (idx >= MAX_GENERALS)
+        return DEFAULT_GENERAL_OBDII_PAUSE;
+
+    // Verify the OBD-II Pause Duration value is valid
+    if (!verify_general_obdii_pause(settings_general_obdii_pause[idx]))
+        return DEFAULT_GENERAL_OBDII_PAUSE;
+
+    return settings_general_obdii_pause[idx];
+}
+
+// Set the OBD-II Pause Duration
+bool set_general_obdii_pause(uint8_t idx, OBDII_PAUSE general_obdii_pause, bool save)
+{
+    if (idx >= MAX_GENERALS)
+        return false;
+
+    // Verify the OBD-II Pause Duration value is valid
+    if (!verify_general_obdii_pause(general_obdii_pause))
+        return false;
+
+    // Check to see if the OBD-II Pause Duration EEPROM value needs to be
+    // updated if immediate save is set
+    if (save)
+    {
+        // Reload the current setting saved in EEPROM
+        load_general_obdii_pause(idx, &settings_general_obdii_pause[idx]);
+
+        if (settings_general_obdii_pause[idx] != general_obdii_pause)
+        {
+            save_general_obdii_pause(idx, &general_obdii_pause);
+        }
+    }
+
+    settings_general_obdii_pause[idx] = general_obdii_pause;
+
+    return 1;
+}
+
+OBDII_PAUSE get_general_obdii_pause_from_string(const char *str)
+{
+    if (str == NULL) return OBDII_PAUSE_RESERVED;
+    if(strcmp(str, "10 Seconds") == 0) return OBDII_PAUSE_10_SECONDS;
+    if(strcmp(str, "30 Seconds") == 0) return OBDII_PAUSE_30_SECONDS;
+    if(strcmp(str, "Until Power Cycle") == 0) return OBDII_PAUSE_UNTIL_POWER_CYCLE;
+    return OBDII_PAUSE_RESERVED;
 }
 

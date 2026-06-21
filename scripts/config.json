@@ -418,6 +418,39 @@
             ],
             "limit": "Reserved",
             "EEBytes": 1
+        },
+        {
+            "index" : true,
+            "count" : "max_generals",
+            "cmd": "obdii_message",
+            "name": "OBD-II Detected Message",
+            "desc": "Configure if the system should display a message when an OBD-II device is detected (indicating communication is paused)",
+            "type": "list",
+            "dataType": "OBDII_MESSAGE",
+            "default": "Popup Message",
+            "options": [
+                "Popup Message",
+                "No Message"
+            ],
+            "limit": "Reserved",
+            "EEBytes": 1
+        },
+        {
+            "index" : true,
+            "count" : "max_generals",
+            "cmd": "obdii_pause",
+            "name": "OBD-II Pause Duration",
+            "desc": "Configure the duration for which the system should pause communication when an OBD-II device is detected",
+            "type": "list",
+            "dataType": "OBDII_PAUSE",
+            "default": "10 Seconds",
+            "options": [
+                "10 Seconds",
+                "30 Seconds",
+                "Until Power Cycle"
+            ],
+            "limit": "Reserved",
+            "EEBytes": 1
         }
     ]
 }
